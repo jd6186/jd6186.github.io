@@ -6,10 +6,10 @@ excerpt: Hello peeps, I'm web developer, living in Seoul. This blog for document
 comments: false
 ---
 
-#### Contact LeeJam ✨
+#### Contact JDU ✨
 
 - {{ site.author.email1 }}
-- <a href="https://github.com/LeeJams" target="_blank" rel="noopener">github.com/{{ site.author.github1 }}</a>
+- <a href="https://github.com/jd6186" target="_blank" rel="noopener">github.com/{{ site.author.github1 }}</a>
 
 **Langages**
 
@@ -69,4 +69,4 @@ comments: false
 <!-- #### Contact DongUk ✨
 
 - {{ site.author.email2 }}
-- <a href="https://github.com/LeeJams" target="_blank" rel="noopener">github.com/{{ site.author.github2 }}</a> -->
+- <a href="https://github.com/jd6186" target="_blank" rel="noopener">github.com/{{ site.author.github2 }}</a> -->
