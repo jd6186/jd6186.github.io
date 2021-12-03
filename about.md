@@ -17,7 +17,7 @@ comments: false
 <div>
   <img src="https://img.shields.io/badge/JavaScript-131418?style=for-the-badge&logo=javascript&logoColor=f7df1e" />
   <img src="https://img.shields.io/badge/Java-131418?style=for-the-badge&logo=java&logoColor=ED8B00" />
-
+  <img src ="https://img.shields.io/badge/Python-3776AB.svg?&style=for-the-badge&logo=Python&logoColor=White"/>
 </div>
 
 **Database**
@@ -37,6 +37,7 @@ comments: false
   <img src="https://img.shields.io/badge/Vue.js-131418?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D" />
   <img src="https://img.shields.io/badge/Spring_Boot-131418?style=for-the-badge&logo=spring-boot&logoColor=6DB33F" />
   <img src="https://img.shields.io/badge/Bootstrap-131418?style=for-the-badge&logo=bootstrap&logoColor=7952B3" />
+  <img src ="https://img.shields.io/badge/Django-3776AB.svg?&style=for-the-badge&logo=Django&logoColor=White"/>
 </div>
 
 **Others**
