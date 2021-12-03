@@ -1,0 +1,99 @@
+# Site settings
+title: LeeJam's Coding # site title
+description: >- # site description
+  주니어 개발자들의 소소한 기술블로그 💻
+  <a href="https://github.com/LeeJams" target="_blank" rel="noopener">@github</a>.
+lang: ko-KR # default lang
+timezone: Asia/Seoul # set your timezone
+#https://developers.facebook.com/tools/debug/sharing/batch/, https://developers.kakao.com/tool/clear/og 무효화 시켜야 이미지 갱신 됨
+image: assets/img/ogp.png # This image used for Open Graph more info https://ogp.me/
+repo: https://github.com/LeeJams/LeeJams.github.io # site repo [optional]
+mode: dark # default theme "dark" | "light"
+
+# Profile settings
+author:
+  name: LeeJam / DongUk # author name
+  bio: >- # tell to the world
+    주니어 개발자들의 소소한 기술블로그 💻
+  username1: LeeJam # general username
+  username2: DongUk # general username
+  github1: LeeJams # github username
+  github2: jd6186 # github username
+  twitter: twitter_username # twitter username
+  facebook: https://www.facebook.com/jaemin.lee.5268 # facebook username
+  email1: leejam208@gmail.com # email adress
+  email2: leejam208@gmail.com # email adress
+  avatar1: /assets/img/avatar1.jpg # change with your own avatar
+  avatar2: /assets/img/avatar2.jpg # change with your own avatar
+
+# URL settings
+url: "https://LeeJams.github.io"
+baseurl:
+permalink: /:title/
+fb_appid:
+
+# Analytics
+google_analytics: "2775094717"
+gtag: "G-N7CRZG79RN"
+
+# Collection setting
+collections:
+  posts:
+    output: true
+
+# Markdown settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  syntax_highlighter: rouge
+
+# Default front matter
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: post
+      comments: false
+
+# Jekyll Compose default front matter
+jekyll_compose:
+  post_default_front_matter:
+    modified:
+    tags: []
+    description:
+  draft_default_front_matter:
+    modified:
+    tags: []
+    description:
+
+# Homepage limit posts
+number_of_posts: 5
+
+# Build settings
+# theme: klise
+sass:
+  style: compressed
+
+include:
+  - _redirects
+  - .htaccess
+
+exclude:
+  - CNAME
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - CHANGELOG.md
+  - README.md
+  - node_modules
+  - CODE_OF_CONDUCT.md
+  - CONTRIBUTING.md
+  - lighthouse.png
+  - klise-*.gem
+  - klise.gemspec
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-postfiles
