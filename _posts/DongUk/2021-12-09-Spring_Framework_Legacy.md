@@ -63,17 +63,14 @@ Spirng Framework는 Spring Core에 의해 경량 컨테이너(IoC Container)로 
 <img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/spring_3대_특징.jpg"  width="300"/>
 <br/><br/>
 
-## **IoC란?**
+## Spring IoC(Inversion of Control)란?
 [Spring 3대 특징 중 "IoC"](https://jd6186.github.io/Spring_IoC/)
-<br/><br/>
 
-## AOP란?
+## Spring AOP(Aspect Oriented Programming)란?
 [Spring 3대 특징 중 "AOP"](https://jd6186.github.io/Spring_AOP/)
-<br/><br/>
 
-## Spring PSA(Portable Service Abstraction)
+## Spring PSA(Portable Service Abstraction)란?
 [Spring 3대 특징 중 "PSA"](https://jd6186.github.io/Spring_PSA/)
-<br/><br/>
 
 # Spring Framework의 POJO
 POJO(Plain Old Java Object) 란 말 그대로 평범한 자바 오브젝트입니다.
