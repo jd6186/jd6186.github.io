@@ -1,10 +1,10 @@
 # Spring MVC 작동원리
 
-[20220105_스프링 정리.pptx](Spring%20MVC%20%E1%84%8C%E1%85%A1%E1%86%A8%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8B%E1%85%AF%E1%86%AB%E1%84%85%E1%85%B5%206c59f1eca67c40afb4e95e3b1020150a/20220105_%EC%8A%A4%ED%94%84%EB%A7%81_%EC%A0%95%EB%A6%AC.pptx)
 
 ## Spring을 활용한 Web MVC 작동원리
 
-![Client_to_DB.png](Spring%20MVC%20%E1%84%8C%E1%85%A1%E1%86%A8%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8B%E1%85%AF%E1%86%AB%E1%84%85%E1%85%B5%206c59f1eca67c40afb4e95e3b1020150a/Client_to_DB.png)
+
+<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/Client_to_DB.jpg"  width="900"/>
 
 1. Web Server(Apache)에서 request 수신
 2. tcp/udp 패킷 내 정보를 확인해 Web Application Server로 전달
@@ -53,4 +53,4 @@
         2. return값으로 html을 제작해 return하는 것이 아닌 json데이터만을 넘기기 때문에 통신속도가 매우 빠름
 18. 위 과정을 MVC 부분만 도식화하면 아래와 같다
 
-![SpringMVC.jpg](Spring%20MVC%20%E1%84%8C%E1%85%A1%E1%86%A8%E1%84%83%E1%85%A9%E1%86%BC%E1%84%8B%E1%85%AF%E1%86%AB%E1%84%85%E1%85%B5%206c59f1eca67c40afb4e95e3b1020150a/SpringMVC.jpg)
+<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/SpringMVC.jpg"  width="900"/>
