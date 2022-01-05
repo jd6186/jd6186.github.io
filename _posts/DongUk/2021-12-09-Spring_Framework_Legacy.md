@@ -28,7 +28,7 @@ Java를 기본적으로 사용해보신 적이 있다는 전제하에 글을 쓸
 Spring에 대한 기본적인 내용을 간단하게 확인하면서 넘어가도록 하겠습니다.
 
 아래 글은 김영한님의 스프링 입문 강의를 수강하고 작성하여 관련 내용이 많이 나오므로 시간이 있으신분들은 김영한님의 강의를 수강해보시는걸 추천드립니다.(무료입니다.)<br/>
-Link : https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%EC%9E%85%EB%AC%B8-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8/lecture/49603?tab=curriculum
+[강의 URI](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%EC%9E%85%EB%AC%B8-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8/lecture/49603?tab=curriculum)
 <br/><br/><br/><br/>
 
 
@@ -64,15 +64,15 @@ Spirng Framework는 Spring Core에 의해 경량 컨테이너(IoC Container)로 
 <br/><br/>
 
 ## **IoC란?**
-[Spring 3대 특징 중 "IoC"](./2022-01-05-Spring_IoC.md)
+[Spring 3대 특징 중 "IoC"](../2022-01-05-Spring_IoC.md)
 <br/><br/>
 
 ## AOP란?
-[Spring 3대 특징 중 "AOP"](./2022-01-05-Spring_AOP.md)
+[Spring 3대 특징 중 "AOP"](../2022-01-05-Spring_AOP.md)
 <br/><br/>
 
 ## Spring PSA(Portable Service Abstraction)
-[Spring 3대 특징 중 "PSA"](./2022-01-05-Spring_PSA.md)
+[Spring 3대 특징 중 "PSA"](../2022-01-05-Spring_PSA.md)
 <br/><br/>
 
 # Spring Framework의 POJO
@@ -91,7 +91,7 @@ POJO는 gettet/setter를 가진 단순 자바 오브젝트로 정의되는데 �
 MVC란 (Model View Controller) 사용자 인터페이스와 비지니스 로직을 분리하여 개발 하는 것입니다.
 
 ## 자세한 설명
-[Spring MVC 작동원리](./2022-01-05-Spring_MVC.md)
+[Spring MVC 작동원리](../2022-01-05-Spring_MVC.md)
 <br/><br/>
 
 # Spring Bean Life Cycle
