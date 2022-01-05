@@ -64,15 +64,15 @@ Spirng Framework는 Spring Core에 의해 경량 컨테이너(IoC Container)로 
 <br/><br/>
 
 ## **IoC란?**
-[Spring 3대 특징 중 "IoC"](../2022-01-05-Spring_IoC.md)
+[Spring 3대 특징 중 "IoC"](https://jd6186.github.io/Spring_IoC/)
 <br/><br/>
 
 ## AOP란?
-[Spring 3대 특징 중 "AOP"](../2022-01-05-Spring_AOP.md)
+[Spring 3대 특징 중 "AOP"](https://jd6186.github.io/Spring_AOP/)
 <br/><br/>
 
 ## Spring PSA(Portable Service Abstraction)
-[Spring 3대 특징 중 "PSA"](../2022-01-05-Spring_PSA.md)
+[Spring 3대 특징 중 "PSA"](https://jd6186.github.io/Spring_PSA/)
 <br/><br/>
 
 # Spring Framework의 POJO
@@ -91,7 +91,7 @@ POJO는 gettet/setter를 가진 단순 자바 오브젝트로 정의되는데 �
 MVC란 (Model View Controller) 사용자 인터페이스와 비지니스 로직을 분리하여 개발 하는 것입니다.
 
 ## 자세한 설명
-[Spring MVC 작동원리](../2022-01-05-Spring_MVC.md)
+[Spring MVC 작동원리](https://jd6186.github.io/Spring_MVC/)
 <br/><br/>
 
 # Spring Bean Life Cycle

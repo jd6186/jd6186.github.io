@@ -1,8 +1,12 @@
+---
+layout: post
+title: "Spring Framework Legacy - MVC"
+tags: [Java, Spring, Basic]
+author: "DongUk"
+---
+
 # Spring MVC 작동원리
-
-
 ## Spring을 활용한 Web MVC 작동원리
-
 
 <img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/Client_to_DB.jpg"  width="900"/>
 
