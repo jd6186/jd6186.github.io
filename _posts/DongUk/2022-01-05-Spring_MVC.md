@@ -8,7 +8,7 @@ author: "DongUk"
 # Spring MVC 작동원리
 ## Spring을 활용한 Web MVC 작동원리
 
-<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/Client_to_DB_01.jpg"  width="100%"/>
+<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/Client_to_DB_01.jpg"  width="98vw"/>
 
 1. Web Server(Apache)에서 request 수신
 2. tcp/udp 패킷 내 정보를 확인해 Web Application Server로 전달
@@ -57,4 +57,4 @@ author: "DongUk"
         2. return값으로 html을 제작해 return하는 것이 아닌 json데이터만을 넘기기 때문에 통신속도가 매우 빠름
 18. 위 과정을 MVC 부분만 도식화하면 아래와 같다
 
-<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/SpringMVC_01.jpg"  width="80%"/>
+<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/SpringMVC_01.jpg"  width="100%"/>
