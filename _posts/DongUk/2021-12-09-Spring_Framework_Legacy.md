@@ -79,7 +79,7 @@ POJO(Plain Old Java Object) 란 말 그대로 평범한 자바 오브젝트입�
 <br/><br/>
 이 때문에 다시 조명을 받은게 POJO형식입니다.
 <br/>
-> 생성자, Getter, Setter, 실행 메서드로 구성된 java 객체
+> POJO : 생성자, Getter, Setter, 실행 메서드로 구성된 java 객체
 
 POJO는 gettet/setter를 가진 단순 자바 오브젝트로 정의되는데 단순 오브젝트는 의존성이 없고 추후 테스트 및 유지보수가 편리한 유연성이 장점입니다.
 <br/><br/>
