@@ -5,6 +5,8 @@ tags: [Java, Spring, Basic]
 author: "DongUk"
 ---
 
+[상위 글 "Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/)
+
 # Spring 3대 특징 중 "AOP"
 ## 개념
 AOP(Aspect Oriented Programming)란 말 그대로 관점 지향 프로그래밍입니다.

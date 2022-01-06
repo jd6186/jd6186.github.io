@@ -5,6 +5,9 @@ tags: [Java, Spring, Basic]
 author: "DongUk"
 ---
 
+
+[상위 글 "Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/)
+
 # Spring 3대 특징 중 "IoC"
 ## 개념
 IoC는 Inversion of Control의 약자로 말 그대로 제어의 역전로써 기존 JAVA 프로그램 개발과는 반대로 작업이 진행되는 것을 의미합니다.

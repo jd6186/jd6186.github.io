@@ -5,6 +5,8 @@ tags: [Java, Spring, Basic]
 author: "DongUk"
 ---
 
+[상위 글 "Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/)
+
 # Spring MVC 작동원리
 ## Spring을 활용한 Web MVC 작동원리
 
