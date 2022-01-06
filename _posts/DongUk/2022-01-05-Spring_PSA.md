@@ -5,7 +5,8 @@ tags: [Java, Spring, Basic]
 author: "DongUk"
 ---
 
-[상위 글 "Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/)
+# 상위 글
+** ["Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/) **
 
 # Spring 3대 특징 중 "PSA"
 이해하기 어려울 수도 있는 개념이지만 간단한 예시를 통해 알아보면
