@@ -11,7 +11,7 @@ author: "DongUk"
 # Spring MVC 작동원리
 ## Spring을 활용한 Web MVC 작동원리
 
-<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/Client_to_DB_01.jpg"  width="98vw"/>
+<img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/Client_to_DB_01.jpg"  width="2000px" position="fixed"/>
 
 1. Web Server(Apache)에서 request 수신
 2. tcp, udp등의 패킷 내 request 정보를 확인해 Web Application Server로 전달
