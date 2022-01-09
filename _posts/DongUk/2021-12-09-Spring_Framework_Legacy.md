@@ -7,21 +7,14 @@ author: "DongUk"
 
 ## 목차
 #### [1. Intro](#intro)
-<br/>
 #### [2. Spring Framework(Legacy) 설명](#spring-framework-legacy)
-<br/>
 #### [3. Spring_3대_특징](#spring-3대-특징)
-<br/>
 #### [4. Spring_Framework의_POJO](#spring-framework의-pojo)
-<br/>
 #### [5. Spring MVC](#spring-mvc)
-<br/>
 #### [6. Spring_Bean_Life_Cycle](#spring-bean-life-cycle)
-<br/>
 #### [7. SpringContainer의_종류](#spring-container의-종류)
-<br/>
 #### [8. 마무리하며](#마무리하며)
-<br/><br/><br/><br/>
+<br/><br/>
 
 ## Intro
 안녕하세요 **Donguk**입니다
