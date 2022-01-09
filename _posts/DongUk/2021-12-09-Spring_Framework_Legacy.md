@@ -5,25 +5,25 @@ tags: [Java, Spring, Basic]
 author: "DongUk"
 ---
 
-# 목차
-[1. Intro](#intro)
+## 목차
+#### [1. Intro](#intro)
 <br/>
-[2. Spring Framework(Legacy) 설명](#spring-framework-legacy)
+#### [2. Spring Framework(Legacy) 설명](#spring-framework-legacy)
 <br/>
-[3. Spring_3대_특징](#spring-3대-특징)
+#### [3. Spring_3대_특징](#spring-3대-특징)
 <br/>
-[4. Spring_Framework의_POJO](#spring-framework의-pojo)
+#### [4. Spring_Framework의_POJO](#spring-framework의-pojo)
 <br/>
-[5. Spring MVC](#spring-mvc)
+#### [5. Spring MVC](#spring-mvc)
 <br/>
-[6. Spring_Bean_Life_Cycle](#spring-bean-life-cycle)
+#### [6. Spring_Bean_Life_Cycle](#spring-bean-life-cycle)
 <br/>
-[7. SpringContainer의_종류](#spring-container의-종류)
+#### [7. SpringContainer의_종류](#spring-container의-종류)
 <br/>
-[8. 마무리하며](#마무리하며)
+#### [8. 마무리하며](#마무리하며)
 <br/><br/><br/><br/>
 
-# Intro
+## Intro
 안녕하세요 Jams & Donguk의 **Donguk**입니다
 Spring Boot를 실무에서 사용하다보니 Spring 기본 원리에 대해 다시 한 번 복습하는 과정이 필요할 것 같아 글을 작성하게 되었습니다.<br/>
 Java를 기본적으로 사용해보신 적이 있다는 전제하에 글을 쓸 것이기 때문에 Java를 모르시는 분들에게는 친절한 글이 아닐 수 있습니다.<br/>
@@ -35,7 +35,7 @@ Spring에 대한 기본적인 내용을 간단하게 확인하면서 넘어가�
 
 
 ## Spring Framework Legacy
-## Spring Framework등장 배경
+### Spring Framework등장 배경
 Spring Framework의 등장은 EJB기술의 등장으로 인해 생겼습니다.
 <br/>
 EJB는 점점 IT 시스템이 복잡한 기술이 요구되어 자바의 기초적인 JDK,
@@ -47,7 +47,7 @@ EJB는 점점 IT 시스템이 복잡한 기술이 요구되어 자바의 기초�
 이런 단점을 보완해 나온 것이 Spring Framework이며 EJB가 가지고 있던 시스템 복잡도를 최대한 낮추고 예전 POJO(Plain Old Java Object)방식의 Class를 지향하면서 더 간결한 객체를 만들어 내도록 지원하고 있습니다.
 <br/><br/>
 
-## Spring Framework란?
+### Spring Framework란?
 자바 플랫폼을 위한 오픈소스 애플리케이션 프레임워크로서
 엔터프라이즈급 애플리케이션을 개발하기 위한 모든 기능을 종합적으로 제공하는 경량화된 Framework입니다.
 > 엔터프라이즈급이란?
@@ -59,22 +59,23 @@ EJB는 점점 IT 시스템이 복잡한 기술이 요구되어 자바의 기초�
 Spirng Framework는 Spring Core에 의해 경량 컨테이너(IoC Container)로 자바 객체(Spring Bean)를 담고 직접 관리하며 객체의 Spring Bean의 Life-Cycle을 관리합니다.
 <br/>
 이를 통해 Container에 등록된 Spring Bean을 언제든 필요한 객체를 검색하고 필요로 하는 곳에 주입시켜 사용가능한 것이 큰 특징입니다.
-<br/><br/>
+<br/><br/><br/><br/>
 
-# Spring 3대 특징
+## Spring 3대 특징
 <img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/spring_3대_특징.jpg"  width="300"/>
 <br/><br/>
 
-## Spring IoC(Inversion of Control)란?
+### Spring IoC(Inversion of Control)란?
 [Spring 3대 특징 중 "IoC"](https://jd6186.github.io/Spring_IoC/)
 
-## Spring AOP(Aspect Oriented Programming)란?
+### Spring AOP(Aspect Oriented Programming)란?
 [Spring 3대 특징 중 "AOP"](https://jd6186.github.io/Spring_AOP/)
 
-## Spring PSA(Portable Service Abstraction)란?
+### Spring PSA(Portable Service Abstraction)란?
 [Spring 3대 특징 중 "PSA"](https://jd6186.github.io/Spring_PSA/)
+<br/><br/><br/><br/>
 
-# Spring Framework의 POJO
+## Spring Framework의 POJO
 POJO(Plain Old Java Object) 란 말 그대로 평범한 자바 오브젝트입니다.
 이전 EJB(Enterprise JavaBeans)는 확장 가능한 재사용이 가능한 로직을 개발하기 위해 사용했습니다.
 하지만 EJB는 한가지 기능을 위해 불필요한 복잡한 로직이 과도하게 들어가는 단점이 있다고 말씀드렸죠?
@@ -84,15 +85,15 @@ POJO(Plain Old Java Object) 란 말 그대로 평범한 자바 오브젝트입�
 > POJO : 생성자, Getter, Setter, 실행 메서드로 구성된 java 객체
 
 POJO는 gettet/setter를 가진 단순 자바 오브젝트로 정의되는데 단순 오브젝트는 의존성이 없고 추후 테스트 및 유지보수가 편리한 유연성이 장점입니다.
-<br/><br/>
+<br/><br/><br/><br/>
 
-# Spring MVC
+## Spring MVC
 MVC란 (Model View Controller) 사용자 인터페이스와 비지니스 로직을 분리하여 개발 하는 것입니다.
-## 자세한 설명
+#### 자세한 설명
 [Spring MVC 작동원리](https://jd6186.github.io/Spring_MVC/)
-<br/><br/>
+<br/><br/><br/><br/>
 
-# Spring Bean Life Cycle
+## Spring Bean Life Cycle
 Spring bean 생성 과정 - 생성 시점은 Spring Container 초기화 시 생성됩니다.
 1. Bean Instance
     1. XML 파일 / Java 설정 Class / Annotation 등에서 Bean을 정의하는 내용을 스캔
@@ -109,17 +110,17 @@ Spring bean 생성 과정 - 생성 시점은 Spring Container 초기화 시 생�
 
 <img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/spring_bean_life_cycle.jpg"  width="900"/>
 
-<br/><br/>
+<br/><br/><br/><br/>
 
-# Spring Container의 종류
-## 빈팩토리 BeanFactory
+## Spring Container의 종류
+#### 빈팩토리 BeanFactory
 - 빈을 등록하고 생성하고 조회하고 돌려주고, 그 외에 부가적인 빈을 관리하는 기능을 담당
 - 빈 팩토리가 빈의 정의는 즉시 로딩하는 반면, 빈 자체가 필요하게 되기 전까지는 인스턴스화 X
 - getBean()이 호출되면, 팩토리는 의존성 주입을 이용해 빈을 인스턴스화하고 빈의 특성을 설정하기 시작.
 - 여기서 빈의 일생이 시작
 <br/><br/>
 
-## 어플리케이션 컨텍스트 Application Context
+#### 어플리케이션 컨텍스트 Application Context
 - Bean Factory를 상속하며 Bean Factory를 확장한 향상 된 컨테이너
 - 기본적인 기능은 Bean Factory와 동일하고 Spring이 제공하는 각종 부가 서비스를 추가로 제공
     - 국제화가 지원되는 텍스트 메시지를 관리
@@ -127,7 +128,7 @@ Spring bean 생성 과정 - 생성 시점은 Spring Container 초기화 시 생�
     - 리너스로 등록된 빈에게 이벤트 발생을 알림
 <br/><br/>
 
-## 두 Container의 차이점
+#### 두 Container의 차이점
 - Bean Factory
     - 처음으로 getBean()이 호출된 시점에서야 해당 빈을 생성(lazy loading)
 - Application Context
@@ -137,7 +138,7 @@ Spring bean 생성 과정 - 생성 시점은 Spring Container 초기화 시 생�
     - 이 Application Context를 두고 IoC Container라고도 부름
 <br/><br/><br/><br/>
 
-# 마무리하며
+## 마무리하며
 알듯 말듯 모호했던 내용들을 정리하며 마무리했던 공부과정이었습니다.
 
 Spring 자체가 워낙 방대하다보니 전부를 공부할 수는 없었지만 적어도 Client단부터 DB통신에 이르기까지 이제는 어떤 진행과정에서 문제가 발생한 것인지는 파악이 가능한 정도로 공부는 한 것 같습니다.

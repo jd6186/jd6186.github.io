@@ -5,11 +5,11 @@ tags: [Java, Spring, Basic]
 author: "DongUk"
 ---
 
-# 상위 글
-** ["Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/) **
+## 상위 글
+#### ["Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/) 정리
 
-# Spring 3대 특징 중 "AOP"
-## 개념
+## Spring 3대 특징 중 "AOP"
+### 개념
 AOP(Aspect Oriented Programming)란 말 그대로 관점 지향 프로그래밍입니다.
 Spring을 활용해 개발을 할 때는 Java자체가 OOP이기 때문에 결합도가 낮고 응집도가 높은 형태로 코딩이 가능합니다.
 <br/>
@@ -21,7 +21,7 @@ AOP에서는 OOP와는 다르게 핵심기능과 공통기능을 분리하여 �
 <br/>
 이렇게 개발함에 따라 무분별하게 중복되는 코드를 한 곳에 모아 중복 되는 코드를 제거하며 이를 통해 효율적인 유지보수가 가능, 재활용성이 극대화됩니다.
 
-## Spring AOP 작동 순서
+### Spring AOP 작동 순서
 <img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/aop.jpg"  width="900"/>
 
 위 그림을 분석해보자
@@ -36,7 +36,7 @@ AOP에서는 OOP와는 다르게 핵심기능과 공통기능을 분리하여 �
 <br/>
 이유는 Spring AOP 또한 결국 Spring Bean으로 등록 후 사용되기 때문입니다. 위에서 살펴본 IoC Container가 DL, DI의 작업을 거치는 것 처럼 AOP로 등록된 Bean들도 먼저 어떤 Bean이 현재 사용될지 판단되어야 하고 판단이 되었다면 그 내용을 target에 적용해야하기 때문에 저런식으로 작동됩니다.
 
-## Spring AOP에서 사용되는 용어 정리
+### Spring AOP에서 사용되는 용어 정리
 - Aspect : 위에서 설명한 흩어진 관심사를 핵심 기능과 공통 기능으로 모듈화 한 것. 주로 공통기능을 모듈화함.
 - Target : Aspect를 적용하는 곳 (클래스, 메서드 ... )
 - Advice : 실질적으로 어떤 일을 해야할 지에 대한 것, 실질적인 공통기능을 담은 구현체

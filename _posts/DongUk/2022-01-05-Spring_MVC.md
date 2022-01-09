@@ -5,11 +5,11 @@ tags: [Java, Spring, Basic]
 author: "DongUk"
 ---
 
-# 상위 글
-** ["Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/) **
+## 상위 글
+#### ["Spring Framework Legacy"](https://jd6186.github.io/Spring_Framework_Legacy/) 정리
 
-# Spring MVC 작동원리
-## Spring을 활용한 Web MVC 작동원리
+## Spring MVC 작동원리
+### Spring을 활용한 Web MVC 작동원리
 
 <img src="../../assets/img/2021-12-09-Spring_Framework_Legacy/Client_to_DB_01.jpg"  width="2000px" position="fixed"/>
 
