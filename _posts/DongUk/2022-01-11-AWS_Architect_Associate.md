@@ -9,7 +9,7 @@ author: "DongUk"
 ## 목차
 #### [1. Intro](#intro)
 #### [2. 용어 이해](#용어-이해)
-#### [3. 실제 문제 풀이](#실제-문제-풀이)
+#### [3. AWS 용어 정리](#AWS-용어-정리)
 #### [4. 마무리](#마무리)
 <br/><br/>
 
@@ -24,9 +24,12 @@ AWS 관련 자격증을 준비하며 관련 내용을 공유드리면 좋을 것
 
 준비 과정은 크게 두가지로 나뉩니다.
 1. 용어 이해
+> 아래 정리한 내용 확인
 2. 실제 문제 풀이
+> https://www.whizlabs.com/learn/course/aws-solutions-architect-associate/153 
 
 ## 용어 이해
+### 인프라 네크워크 관련
 용어 이해를 위해서는 먼저 기본적인 레거시 인프라에 대한 간단한 이해가 있으시면 편하실 것 같습니다.
 <br/>
 (위 내용을 알아야 추후 AWS의 각 서비스가 어떤 기능을 담당하는지 아실 수 있습니다.)
@@ -91,7 +94,116 @@ L4를 관리하는 장비는 **로드벨런서**라고 불리며 Port번호를 �
 
 이 외에도 AWS에서는 보안, 역할, 정책 등과 관련된 수 많은 부분이 모두 서비스로 제공되고 있습니다.
 
-## 실제 문제 풀이
+## AWS 용어 정리
+### Compute
+#### EC2
+#### Batch
+#### Elastic Beanstalk
+#### AWS Lambda
+#### SAR
+#### Fargate
+
+### Container
+#### Amazon EKS
+#### Amazon ECS
+#### Amazon ECR
+
+### Storage
+#### Amazon S3
+#### S3 Glacier
+#### AWS Backup
+#### Amazon EBS
+#### Amazon EFS
+#### Amazon FSx(Window File Server)
+#### Amazon FSx(Lustre)
+#### AWS Snowball
+#### AWS Storage Gateway
+
+### Database
+#### Amazon Aurora
+#### Amazon RDS
+#### Amazon DocumentDB
+#### Amazon DynamoDB
+#### Amazon ElastiCache
+#### Amazon KeySpace
+#### Amazon Neptune
+#### Amazon Redshift
+
+### Security, Identity, Compliance
+#### AWS IAM
+#### Amazon Cognito
+#### AWS Directory Service
+#### AWS RAM
+#### AWS Secrets Managers
+#### AWS Security Hub
+
+### Cryptography & PKI
+#### AWS KMS
+#### AWS Certificate Manager
+
+### Management & Govermance
+#### AWS Auto Scaling
+#### AWS CloudFormation
+#### AWS CloudTrail
+#### Amazon CloudWatch
+#### AWS Config
+#### AWS License Manager
+#### AWS Organizations
+#### AWS Systems Manager
+
+### Development Tools
+#### AWS CodeBuild
+#### AWS CodeCommit
+#### AWS CodeDeploy
+#### AWS X-Ray
+
+### Migration & Transfer
+#### AWS DMS
+
+### Networking & Content Delivery
+#### AWS VPC
+#### AWS PrivateLink
+#### AWS Direct Connect
+#### Amazon CloudFront
+#### AWS Route 53
+#### Amazon API Gateway
+#### AWS Trasit Gateway
+#### AWS ELB
+#### AWS Cloud Map
+
+### Front End Web & Mobile
+#### AWS AppSync
+
+### Application Integration
+#### Amazon EventBridge
+#### Amazon SNS
+#### Amazon SQS
+#### AWS Step Functions
+#### Amazon SWF
+
+### Billing & Cost Management
+#### AWS Cost Explorer
+#### AWS Budgets
+#### AWS Cost & Usage
+#### Reports
+#### Reserved Instance
+#### Reporting
+
+### Monitoring
+#### AWS Personal Health
+#### Dashboard
+
+### AWS Management Console
+#### AWS Management
+#### AWS Console
+
+
+
+
+
+
+
+
 
 
 
