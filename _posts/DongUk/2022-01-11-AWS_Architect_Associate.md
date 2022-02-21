@@ -188,6 +188,38 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 
 ### Billing & Cost Management
 #### AWS Cost Explorer
+1. 비용탐색기란?
+    > 1. 비용 및 사용량을 분석할 수 있는 UI 도구
+    > 2. 사용자에게 그래프 지원
+    > 3. CostExplorer의 비용 및 사용 보고서 및 CostExplorer RI 보고서 지원
+    > 4. Billing 또는 CostManagement에서 접근 가능
+2. 분석을 위한 기본 리포트(보고서) 제공
+    > 1. 보고서를 생성하기 위한 일부 필터 및 제약 조건이 있는 보고서
+    > 2. bookmark 또는 CSV 파일로 저장 가능
+3. 기본 리포트 종류
+    1. Cost and usage reports(비용 및 사용 보고서)
+        * 산출된 비용을 이해하기 위한 데이터 제공
+            1. AWS Marketplace
+            2. Daily 비용
+            3. Monthly 계정 비용
+            4. Monthly 서비스 비용
+            5. Monthly EC2 사용 시간에 따른 비용 및 사용 내역
+    2. RI(Reserved Instance) reports(예약 인스턴스 보고서)
+        * 예약된 내역을 이해하기 위한 데이터 제공
+            1. RI utilization reports(RI 활용 보고서)
+                * 예약 인스턴스를 사용함으로써 절감 또는 초과된 **비용**에 대한 내역 제공
+            2. RI coverage reports(RI 적용 범위 보고서)
+                * 예약 인스턴스를 사용함으로써 얼마나 많은 인스턴스 사용 **시간**을 절감 또는 초과하였는지 내역 제공
+3. 기본 리포트 특징
+    1. 유저가 CostExplorer 최초 가입 시 console의 main part로 이동
+        그 후 준비된 비용 및 사용 내역에 관한 12달 간의 과거 히스토리 데이터들, 현재 달, 다음 12달의 데이터를 예측해서 보여줌
+    2. AWS Cost, Usage Reports, billing reports와 동일한 데이터 세트를 사용
+    3. 유저의 기호에 따라 월별, 일별 데이터를 조회할 수 있는 기능 제공
+    4. AWS 컴퓨팅 사용량을 최대 72%까지 절약 가능한 Saving Plan 제공
+    5. Cost Explorer API를 제공하여 개발 시 활용 가능
+4. 가격 정보
+    1. 사용한 비용 및 사용량 분석 조회는 무료
+    2. API 사용 비용은 API Request(요청)당 $0.01
 #### AWS Budgets
 #### AWS Cost & Usage
 #### Reports
