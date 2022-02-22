@@ -259,13 +259,22 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
     * 후속 조치 가능한 각 예산들은 무료 할당량이 종료된 후 부터 일일 $0.1가 부과됨
 
 #### AWS Cost & Usage
-
+1. Cost와 Usage란?
+    * AWS Cost & usage Report(AWS CUR)는 유저들이 AWS 리소스, 가격, Reserved Instances(예약 인스턴스들), Savings Plans들에 대한 메타데이터를 포함한 디테일한 AWS 비용, 사용 데이터 세트에 접근하도록 승인한다.
+2. AWS Cost & Usage Report는 AWS Cost Explorer의 일부분
+    * AWS Cost & Usage Report function의 종류
+        1. Amazon S3 bucket으로 report file 전송
+        2. 하루에 최대 3번 report를 update 진행
+        3. AWS CUR API Reference를 활용해 report를 생성, retrieves(검색), 삭제 진행
+    * 상세한 비용 및 사용 내역 분석을 손쉽게 리포트 안에 컬럼 형태로 추가하고 나열할 수 있는 데이터 사전의 특징을 가짐.
+    * 조회 시에는, reports는 Amazon S3 console으로 부터 다운로드가 가능, Amazon Athena를 사용해 분석 가능하며 또는 Amazon Redshift, Amazon QuickSight를 통해 리포트 upload 가능
+    * IAM 권한들 또는 IAM 역할이 있는 유저들은 리포트에 액세스 및 조회 가능
+    * 조직의 구성원 계정이 비용 및 사용량 보고서를 소유하거나 생성하는 경우 해당 계정이 조직의 구성원이었던 기간 동안의 청구한 데이터에만 액세스할 수 있음
+    * 조직의 마스터 계정이 Cost & Usage Report에 Member 계정들의 접근을 block하고 싶다면 Service Control Policy를 사용할 수 있음.
 
 #### Reports
 
-
 #### Reserved Instance
-
 
 #### Reporting
 
