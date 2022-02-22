@@ -188,14 +188,14 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 
 ### Billing & Cost Management
 #### AWS Cost Explorer
-1. 비용탐색기란?
-    > 1. 비용 및 사용량을 분석할 수 있는 UI 도구
-    > 2. 사용자에게 그래프 지원
-    > 3. CostExplorer의 비용 및 사용 보고서 및 CostExplorer RI 보고서 지원
-    > 4. Billing 또는 CostManagement에서 접근 가능
+1. Cost Explorer(비용 탐색기)란?
+    * 비용 및 사용량을 분석할 수 있는 UI 도구
+    * 사용자에게 그래프 지원
+    * CostExplorer의 비용 및 사용 보고서 및 CostExplorer RI 보고서 지원
+    * Billing 또는 CostManagement에서 접근 가능
 2. 분석을 위한 기본 리포트(보고서) 제공
-    > 1. 보고서를 생성하기 위한 일부 필터 및 제약 조건이 있는 보고서
-    > 2. bookmark 또는 CSV 파일로 저장 가능
+    * 보고서를 생성하기 위한 일부 필터 및 제약 조건이 있는 보고서
+    * bookmark 또는 CSV 파일로 저장 가능
 3. 기본 리포트 종류
     1. Cost and usage reports(비용 및 사용 보고서)
         * 산출된 비용을 이해하기 위한 데이터 제공
@@ -211,19 +211,62 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
             2. RI coverage reports(RI 적용 범위 보고서)
                 * 예약 인스턴스를 사용함으로써 얼마나 많은 인스턴스 사용 **시간**을 절감 또는 초과하였는지 내역 제공
 3. 기본 리포트 특징
-    1. 유저가 CostExplorer 최초 가입 시 console의 main part로 이동
+    * 유저가 CostExplorer 최초 가입 시 console의 main part로 이동
         그 후 준비된 비용 및 사용 내역에 관한 12달 간의 과거 히스토리 데이터들, 현재 달, 다음 12달의 데이터를 예측해서 보여줌
-    2. AWS Cost, Usage Reports, billing reports와 동일한 데이터 세트를 사용
-    3. 유저의 기호에 따라 월별, 일별 데이터를 조회할 수 있는 기능 제공
-    4. AWS 컴퓨팅 사용량을 최대 72%까지 절약 가능한 Saving Plan 제공
-    5. Cost Explorer API를 제공하여 개발 시 활용 가능
+    * AWS Cost, Usage Reports, billing reports와 동일한 데이터 세트를 사용
+    * 유저의 기호에 따라 월별, 일별 데이터를 조회할 수 있는 기능 제공
+    * AWS 컴퓨팅 사용량을 최대 72%까지 절약 가능한 Saving Plan 제공
+    * Cost Explorer API를 제공하여 개발 시 활용 가능
 4. 가격 정보
-    1. 사용한 비용 및 사용량 분석 조회는 무료
-    2. API 사용 비용은 API Request(요청)당 $0.01
+    * 사용한 비용 및 사용량 분석 조회는 무료
+    * API 사용 비용은 API Request(요청)당 $0.01
+
 #### AWS Budgets
+1. AWS Budgets(예산)란?
+    * 유저에게 예산을 자유롭게 설정하게 함으로써 가장 단순한 사용사례부터 복잡한 사용사례까지 비용과 사용량을 track(추적) 가능한 서비스
+2. AWS Budgets 특징
+    * AWS Budgets는 예약 사용률 또는 적용 대상 지정하고 metrics reach the threshold(지표가 임계값에 도달했을 때)일 때 당신에게 email 또는 SNS로 알림을 보내도록 허락하는데 사용 가능.  
+    * AWS Budgets은 EC2, RDS, Redshift, ElasticCache, Elasticsearch에 예약 알림 기능을 제공함
+    * AWS Budgets은 speific dimensions(특정 수치들)로 필터링하여 알림 수신 가능<br/>
+    Service(서비스별), Linked Account(연결된 계정별), Tags(태그별), Availability Zone(AZ, 즉, 가용 영역별), API Operation(API 작동별), API Purchase Option(API 구매 옵션별)
+    * AWS Budgets는 AWS Management Console's service links와 AWS Billing Console을 내에서 접근 가능<br/>
+    또한 Budgets API 또는 CLI는 각 지불 계정별로 최대 20,000개 예산들을 create, edit, delete, view up(조회)하는데 사용 가능
+    * AWS Budgets는 다른 AWS Services와 통합될 수 있다.<br/>
+    AWS Cost Explorer, AWS Chatbot, AWS Amazon Chime room, AWS Service Catalog
+    * AWS Budgets는 AWS 리소스 사용 내역 또는 AWS 비용들을 Monthly(달별), quarterly(분기별), annual(연별) 예산들로 구분해 생성 가능
+3. AWS Budgets를 활용해 만들 수 있는 예산의 타입들
+    1. 비용 예산
+    2. 사용 이력 예산
+    3. RI 활용 예산
+    4. RI 적용 예산
+    5. Saving Plans 활용 예산
+    6. Saving plans 적용 예산
+4. 모범 사례
+    1. 각 예산별로 5가지의 알림을 세팅 가능
+        * 주의 사항
+            1. 알림들은 이번달 비용이 예산액을 초과할 때 알림
+            2. 알림들은 이번달 비용이 예산액의 80%를 넘어설 때 알림
+            3. 알림들은 월별 예상 비용이 예산액을 초과할 때 알림
+    2. Budget API를 활용해 예산들을 생성 시, 만약 여러 유저가 Budgets API에 접근해야 한다면 각 유저별들의 액세스 또는 IAM 역할을 허용하기 위해 따로 구분된 IAM 유저를 만들어야 함
+    3. organization 내 통합 결제 사용을 마스터 계정을 통해 관리하는 경우, IAM policies(정책)는 member 계정별로 예산 접근에 대한 액세스 컨트롤이 가능<br/>
+    각 Member 계정 주인들은 그들의 예산들을 생성을 할 수는 있지만 마스터 계정의 예산들을 변경하거나 수정하는 것은 불가능
+    4. 관련 관리 정책들 중 두가지는 예산 조치를 위해 공급<br/>
+    하나의 정책은 유저가 예산 서비스에 역할을 전달할 수 있도록 함<br/>
+    다른 하나의 정책은 유저가 예산으로 해당 조치를 취할 수 있도록 허용함
+    5. 예산 조치들은 Auto Scaling Groups으로 비용을 제어하는 것 만큼 효과적이진 않음(즉, Auto Scaling groups로 비용 제어하는 것이 더 효과적)
+5. 가격 정책
+    * 예산을 모니터링하는 것과 알림을 받는 것은 무료로 제공
+    * 후속 조치 가능한 각 예산들은 무료 할당량이 종료된 후 부터 일일 $0.1가 부과됨
+
 #### AWS Cost & Usage
+
+
 #### Reports
+
+
 #### Reserved Instance
+
+
 #### Reporting
 
 ### Monitoring
