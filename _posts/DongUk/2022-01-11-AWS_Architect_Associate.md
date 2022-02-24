@@ -184,7 +184,10 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 #### Amazon SNS
 #### Amazon SQS
 #### AWS Step Functions
-#### Amazon SWF
+#### Amazon Simple Workflow Service(SWF)
+1. SWF란?
+
+<br/><br/>
 
 ### Billing & Cost Management
 #### AWS Cost Explorer
@@ -272,19 +275,69 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
     * 조직의 구성원 계정이 비용 및 사용량 보고서를 소유하거나 생성하는 경우 해당 계정이 조직의 구성원이었던 기간 동안의 청구한 데이터에만 액세스할 수 있음
     * 조직의 마스터 계정이 Cost & Usage Report에 Member 계정들의 접근을 block하고 싶다면 Service Control Policy를 사용할 수 있음.
 
-#### Reports
-
-#### Reserved Instance
-
-#### Reporting
+#### Reserved Instance Reporting
+1. Reserved Instance(RI) Reporting이란?
+    * Reserved Instance Utilization and Coverage reports라고도 불리는 RI Reporting은 AWS Cost Explorer에서 이용 가능
+2. RI Reporting 특징
+    * 이는 특정 기간 동안에 AWS Resource에 의해 발생한 RI 사용률 또는 초과 사용된 내역이 존재하는지 확인 할 때 사용할 수 있다.<br/>
+    (Amazon EC2, Amazon Redshift, Amazon RDS, Amazon Elasticsearch Service, Amazon ElastiCache)
+    * AWS Cost Explorer는 과거 사용 내역을 기반으로 RI 구매에 대한 권장 사항을 제공.<br/> 
+    이를 통해 온디멘드 대비 비용을 더 많이 절약할 수 있는 기회 제공
+    * RI Utilization report로 부터 정보에 접근하기 위해서는 AWS Cost Explorer를 사용 필수
+    * Reserved Instance Utilization과 Coverage report는 둘 다 PDF나 CSV 형식으로 내보내기 할 수 있음
+3. Reporting 종류
+    1. RI utilization reports
+        * RI Reporting은 계정에서 사용한 총 RI 시간을 표시하고 모든 RI 및 서비스에 걸쳐 결합된 활용률을 이해하고 모니터링하는데 도움이 됨
+        * AWS는 예약 저축액에서 사용하지 않는 예약 비용을 빼서 총 절감액을 계산함
+    2. RI coverage reports
+        * RI Reporting 은 계정의 instance 사용 시간을 보여주고 당신의 모든 RI들의 적용 내역을 통합하여 이해하기 쉽고 모니터링하기 쉽게 도와줌
+        * RI coverage reports는 구매한 계정들, 인스턴스 형식, 기타 등등을 분석하기 위해 RI Utilization 필터들 대신 Cost Explorer 필터들을 사용한다.
+    3. Reserved Instance Utilization and Coverage reports
+        * RI utilization reports의 목표 이용량과 RI coverage reports의 목표 적용 범위는 차트 안에서 점선 또는 차트 아래 표에 컬러가 들어간 상태 막대 그래프로 표현 가능함.
+            * Red status bar - 인스턴스가 적용은 되어 있으나 사용되지 않은 RI들
+            * Yellow status bar - 목표 이용량보다 아래인 것들
+            * Green status bar - 목표 이용량에 도달한 것들
+            * Gray status bar - 예약에 적용조차 되지 않은 인스턴스들
+        * RI reports는 RI-specific과 Cost Explorer의 필터를 조합해 사용하여 제작
+        * 일간 RI Utilization chart는 이전 3개월 분의 데이터를 활용하여 RI 이용 내역을 보여줌
+        * 월간 RI Utilization chart는 이전 12개월 분의 데이터를 활용하여 RI 이용 내역을 보여줌
+4. 가격 정책
+    * 데이터 조회 요청당 $0.01 USD
+<br/><br/>
 
 ### Monitoring
 #### AWS Personal Health
-#### Dashboard
+1. AWS Personal Health Dashboard란?
+    * AWS Personal Health Dashboard는 AWS Health API를 활용 가능<br/>
+    이를 통해 AWS 리소스 및 인프라와 관련된 문제를 진단하고 해결하기 위한 방법을 제시하거나 알림들을 전달 할 수 있음
+    * AWS Health는 지속적으로 AWS 서비스 성능과 가용성을 시각화하여 제공함
+    * AWS Personal Health Dashboard는 Amazon CloudWatch 이벤트와 통합되어 사용자 지정 규칙을 생성하고 업데이트 적용 작업을 사용하도록 AWS Lambda functions와 같은 대상을 지정할 수 있음
+2. AWS에서 제공하는 두가지 대쉬보드
+    1. AWS Service Health Dashboard
+        * 현재 상태에 대한 액세스를 제공하고 전체 지전안에 있는 전체 서비스들의 완전한 health check를 지원
+    2. The Personal Health Dashboard
+        * 계정에 연결된 리소스들에 영향을 끼칠 수 도 있는 서비스 중단에 대한 알림을 제공
+3. Personal Health Dashboard의 3가지 카테고리
+    1. Open issues
+        * 최근 7일간의 이슈들을 보여줌
+    2. Scheduled changes
+        * 향후 변경 사항이 있는 항복을 보여줌
+    3. Other notifications
+        * 기타 알림
+<br/><br/>
 
 ### AWS Management Console
-#### AWS Management
-#### AWS Console
+#### AWS Management Console
+1. Managment Console이란?
+    * Managment Console은 Web Application<br/>
+    이는 Amazon Web Service들을 관리하기 위해 많은 서비스 콘솔들로 이루어져 있음
+2. Managment Console 특징
+    * Managment Console은 유저가 처음으로 로그인 했을 때 보여질 수 있음
+    * AWS 탐색을 위해 사용자 인터페이스를 제공하고 다른 서비스 콘솔들에 대한 액세스를 제공
+    * AWS Management Console은 네비게이션바 위에 가장 최근에 조회했던 목록 또는 전체 서비스 목록으로 부터 선택할 수 있는 서비스 옵션을 제공함
+    * 네비게이션 바에는 리전을 선택할 수 있는 옵션 존재
+    * 네비게이션 바에는 전체 또는 일부 Service 명을 입력함으로써 AWS 내 모든 Service들을 검색할 수 있는 검색창이 존재
+    * Management Console 이용 시 더 나은 터치 경험을 제공하기 위해 최대된 수평, 수직 공간 그리고 큰 버튼 등을 안드로이드나 iOS와 같은 app을 통해 이용할 수 있음. 
 <br/><br/><br/><br/>
 
 ## 실제 문제 풀이
