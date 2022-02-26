@@ -107,11 +107,13 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 #### AWS Lambda
 #### SAR
 #### Fargate
+<br/><br/>
 
 ### Container
 #### Amazon EKS
 #### Amazon ECS
 #### Amazon ECR
+<br/><br/>
 
 ### Storage
 #### Amazon S3
@@ -123,6 +125,7 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 #### Amazon FSx(Lustre)
 #### AWS Snowball
 #### AWS Storage Gateway
+<br/><br/>
 
 ### Database
 #### Amazon Aurora
@@ -133,6 +136,7 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 #### Amazon KeySpace
 #### Amazon Neptune
 #### Amazon Redshift
+<br/><br/>
 
 ### Security, Identity, Compliance
 #### AWS IAM
@@ -141,10 +145,12 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 #### AWS RAM
 #### AWS Secrets Managers
 #### AWS Security Hub
+<br/><br/>
 
 ### Cryptography & PKI
 #### AWS KMS
 #### AWS Certificate Manager
+<br/><br/>
 
 ### Management & Govermance
 #### AWS Auto Scaling
@@ -155,15 +161,18 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 #### AWS License Manager
 #### AWS Organizations
 #### AWS Systems Manager
+<br/><br/>
 
 ### Development Tools
 #### AWS CodeBuild
 #### AWS CodeCommit
 #### AWS CodeDeploy
 #### AWS X-Ray
+<br/><br/>
 
 ### Migration & Transfer
 #### AWS DMS
+<br/><br/>
 
 ### Networking & Content Delivery
 #### AWS VPC
@@ -175,18 +184,117 @@ https://www.notion.so/AWS-SAA-ef4c542e84094e1c88909ea1c9024cfb
 #### AWS Trasit Gateway
 #### AWS ELB
 #### AWS Cloud Map
+<br/><br/>
 
 ### Front End Web & Mobile
 #### AWS AppSync
+<br/><br/>
 
 ### Application Integration
 #### Amazon EventBridge
 #### Amazon SNS
 #### Amazon SQS
 #### AWS Step Functions
+1. AWS Step Functions란?
+    * Step functions는 완벽하게 관리되는 AWS Service들을 통해 개발자들이 application을 조정할 필요가 없도록 지원한다.
+    * 이 뜻은 당신은 그냥 당신의 코드를 "Steps" 안에 모듈화 시키고 AWS가 자체적으로 "부분 장애 핸들링", "오류 시 재시도", "오류 처리 시나리오 구성"에 대해 관리(걱정)하도록하십시요
+2. Step Functions의 타입들
+    1. Standard workflow
+        * Standard workflow는 장기간 실행, 내구성 필요, 실행 감시 가능한 워크플로우가 필요할 때 사용 가능
+    2. Express workflow
+        * Express workflow는 높은 볼륨 처리, 이벤트 처리 기반 워크플로우에 맞춰 디자인된 서비스
+3. 특징
+    * 정적, 동적 시퀀스를 따라서 워크플로우를 생성하도록 지원
+    * 재시도, 에러 핸들링 기능들이 내재되어 있음
+    * GUI 검사 워크플로우, input/output, 기타 등등을 잘 지원함
+    * GUI는 실패 시 즉각적으로 감지하고 실행중인 프로세스들을 분하는하는 기능을 지원
+    * 고가용성, 고확장성 그리고 낮은 비용으로 이용 가능
+    * workflow 실행 중 응용프로그램 상태관리를 지원
+    * Step functions는 task 컨셉과 상태 시스템을 베이스로 작동
+        * Task들은 활동 또는 AWS Lambda 함수를 사용하여 정의(구성)할 수 있음
+        * 상태 시스템은 연결 관계, input/output들을 포함한 알고리즘을 표현 가능
+4. 모범 사례
+    1. 상태 시스템 내 타임아웃 시간 설정을 통해 task 실행 중 받은 응답에 문제가 있을 시 작업 응답 개선하는데 도움이 됨
+        * Example
+            > "ActivityState": {<br/>
+                "Type": "Task",<br/>
+                "Resource": "arn:aws:state:us-east-1:1234567890:activity:abc",<br/>
+                <span style="background-color:yellow">"TimeoutSeconds": 900</span>,<br/>
+                "HeartbeatSeconds": 40,<br/>
+                "Next": "State2"<br/>
+            }
+    2. Lambda 함수에 값을 전달할 때는 상태 시스템 내 큰 페이로드(짐?) 작성하는 대신 단순한 "S3 arn(Amazon Resource Name)"만 작성해주면 됨
+        * 걍 이거저거 많이 쓰지 말고 S3 arn만 써라 이거임.
+        * Example
+            > {<br/>
+                <span style="background-color:yellow">"Data": "arn:aws:s3:::MyBucket/data.json"</span><br/>
+            }
+    3. Lambda function을 호출하는 동안 상태 시스템의 에러 관리
+        * Example
+            > "Retry": [{<br/>
+                <span style="background-color:yellow">"ErrorEquals": ["Lambda.CreditServiceException"]</span>,<br/>
+                "IntervalSeconds": 2,<br/>
+                "MaxAttempts": 3,<br/>
+                "BackoffRate": 2<br/>
+            }]
+    4. 실행 기록을 살펴보니 25,000개의 hard quota(힘든 몫? 그니까 실행이 너무 많이 됐단 소리)가 존재 할 때 장기 실행을 해야하는 경우<br/> 
+    이 문제를 방지하려면 AWS 람다 함수를 사용하여 패턴을 구현하면 됨
+5. 지원되는 AWS 서비스 종류
+    * Lambda
+    * AWS Batch
+    * DynamoDB
+    * ECS/Fargate
+    * SNS
+    * SQS
+    * SageMaker
+    * EMR
+6. 가격
+    * Step Function Express Workflows를 이용 시 당신이 사용한 것에 대한 비용만 지불하면 OK
+    * 당신의 워크플로우에 대한 요청 회수와 사용한 기간에 따라 요금이 부과될 것
+        * Standard workflows 사용 시 1000번의 상태 변경 마다 $0.025
+        * Express workflows 사용 시 한달에 1번씩 $1.0
+        
 #### Amazon Simple Workflow Service(SWF)
 1. SWF란?
-
+    * SWF는 분산되어 있는 프로그램 워크플로우들을 포괄하는 솔루션을 웹 서비스로 제공
+    * SWF의 가장 주된 개념은 스케줄링, 동시성 처리, 종속성 구현임
+    * 서비스에서는 또한 메세지 흐름, 잠금, 상태관리 관련 작업을 관리함
+    * Amazon SWF는 간단한 API call방식을 제공<br/>
+    이것은 어떤 언어든 상관없이 작성된 코드로 부터 실행되어질 수 있으며 EC2 인스턴스 안에서 실행됨<br/>
+    또한 인스턴스 작업이 배치된 어떤 기계에서든 인터넷을 통해 SWF에 접근할 수 있음.
+1. SWF Actors
+    1. Workflow Starters
+        * 당신의 E-Commerce 웹사이트나 모바일 앱을 만들 수 있는 작업흐름을 트리거할 수 있는 모든 응용프로그램을 통칭.
+    2. Deciders(결정체)
+        * 작업 흐름 실행 중에 활동중인 task들의 흐름을 통제함
+        * 구성 요소 동작을 기반으로 결정자는 다음 단계를 확인
+        * 또한 필요한 경우 조건부 및 동시 프로세스를 적용하는데 도움이 될 수 있음
+    3. Activity Workers
+        * 활동 상태의 task 작업을 수행함
+2. 특징
+    * AWS SWF각 컴포넌트별(구성 요소)들의 논리적 구분
+    * Workflow를 최대 12개월까지 (retention)보존
+    * Task 지향 API structure이며, 프로그래밍 방식 또는 수동으로 호출 가능
+    * Amazon SWF는 task는 한번만 할당된 후 중복 할당 되지 않도록 보장
+    * Application 내 모든 task와 이벤트들을 계속 추적함
+    * task들의 라우팅 또는 큐 역할
+    * 워크플로우가 자기 자식 워크플로우를 가질 수 있음
+    * 작업 핸들링 그리고 감사, 로깅 작업을 재시도함
+    * 변하지 않는 인프라 구조와 잘 맞음
+3. 사용 사례
+    * Video Encoding 또는 미디어 처리작업
+    * 데이터센터 마이그레이션 시
+    * 노동자들에 대한 제품 카탈로그
+    * 데이터 웨어하우스 처리
+4. Data warehouse process
+    * 데이터 웨어하우스 작업 처리에 대한 실시간 예시를 아래 다이어그램으로 확인 가능
+    * 첫단계에서 AWS Console은 워크플로우의 스타터/트리거와 같은 일을 함, decider(결정자)에 의해 행동이 결정되고 decider(결정자)들이 특정 작업을 수행하면 activity worker(작업자)들이 그들의 책임을 수행하는 방식임<br/>
+    > Decider : workflow가 어떤 로직을 타고 흘러가야 하는지 결정하는 주체<br/>
+    Worker : workflow에 연결된 AWS Service들을 의미<br/>
+    <img src="../../assets/img/2022-01-11-AWS_Architect_Associate/AWS_SWF.png"  width="700"/>
+5. 가격
+    * Workflow 실행에 대한 비용 : free tier가 종료된 후 부터 Workflow 실행 한번당 $0.0001
+    * Workflow 유지 비용 : 24시간 당 $0.000005
 <br/><br/>
 
 ### Billing & Cost Management
