@@ -22,7 +22,9 @@ sidebar:
     url: /archive/dev-ops/
     external: false
 
+# Paginator
 paginate: 5
+paginate_path: "/archive:num/"
 
 # Profile settings
 author:
