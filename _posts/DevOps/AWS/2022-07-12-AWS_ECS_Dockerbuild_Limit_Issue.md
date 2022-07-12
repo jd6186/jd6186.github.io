@@ -3,6 +3,7 @@ layout: post
 title: "ECS Build 시 Docker Build Limit에 걸리는 이슈 해결"
 tags: [Back-End AWS]
 author: "Noah"
+categories: "dev_ops"
 ---
 
 ## Intro

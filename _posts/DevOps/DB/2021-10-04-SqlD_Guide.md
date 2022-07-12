@@ -3,6 +3,7 @@ layout: post
 title: "SqlD 준비 과정 및 후기"
 tags: [DevOps DB]
 author: "Noah"
+categories: "dev_ops"
 ---
 
 # SqlD 준비 과정 및 후기

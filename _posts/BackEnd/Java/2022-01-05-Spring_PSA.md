@@ -3,6 +3,7 @@ layout: post
 title: "Spring Framework Legacy - PSA"
 tags: [Back-End JAVA]
 author: "Noah"
+categories: "back_end"
 ---
 
 ## 상위 글
