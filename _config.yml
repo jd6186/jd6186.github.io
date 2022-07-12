@@ -17,10 +17,8 @@ author:
     주니어 개발자의 소소한 기술블로그 💻
   username1: DongUk # general username
   github1: jd6186 # github username
-  twitter: twitter_username # twitter username
-  facebook: facebook_username # facebook username
   email1: wjdehd7991@gmail.com # email adress
-  avatar1: /assets/img/avatar2.jpg # change with your own avatar
+  avatar1: /assets/img/profile.png # change with your own avatar
 
 # URL settings
 url: "https://jd6186.github.io"
