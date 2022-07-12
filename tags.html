@@ -29,18 +29,20 @@ excerpt: Sorted article by tags.
   {% if site.now_page != 1 %}
     <a
             class="page-previous"
-            href="{{ paginator.previous_page_path }}"
             class="previous"
     >
       <span aria-hidden="true">←</span> NEWER POSTS
+      {{ now_page = now_page | minus: 1 }}
     </a>
   {% endif %}
     <span class="page_number"
     > {{ now_page }}</span
     >
   {% if now_page != max_page %}
-    <a class="page-next" href="{{ paginator.next_page_path }}" class="next"
+    <a class="page-next"
+       class="next"
     >OLDER POSTS
+      {{ now_page = now_page | plus: 1 }}
       <span aria-hidden="true">→</span>
     </a>
   {% endif %}
