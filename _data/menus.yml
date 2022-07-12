@@ -5,16 +5,19 @@
 - title: Archive
   url: /archive/
   external: false
+  children:
+    - title: "BackEnd"
+      url: "/back-end/"
+    - title: "FrontEnd"
+      url: "/front-end/"
+    - title: "DevOps"
+      url: "/dev-ops/"
 
 - title: Tags
   url: /tags/
-  external: false # set true if you using external link, see below
+  external: false
 
 - title: About
   url: /about/
-  external: false # set true if you using external link, see below
+  external: false
 
-# Example:
-# - title: github
-#   url: https://github.com/piharpi/jekyll-klise
-#   external: true
