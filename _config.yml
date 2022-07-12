@@ -1,5 +1,5 @@
 # Site settings
-title: Donguk Dev Blog
+title: Donguk Development Note # site title
 description: >- # site description
   주니어 개발자의 소소한 기술블로그 💻
   <a href="https://github.com/jd6186" target="_blank" rel="noopener">@github</a>.
@@ -91,25 +91,3 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-postfiles
-
-scheme: Muse
-
-menu:
-  home: /
-  categories: /categories/
-  about: /about/
-  archives: /archives/
-  tags: /tags/
-  #sitemap: /sitemap.xml
-  #commonweal: /404.html
-
-menu_icons:
-  enable: auto
-  home: home
-  about: user
-  categories: th
-  schedule: calendar
-  tags: tags
-  archives: archive
-  sitemap: sitemap
-  commonweal: heartbeat
