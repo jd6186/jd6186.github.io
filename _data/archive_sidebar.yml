@@ -1,9 +1,10 @@
-- title: BackEnd
-  url: /archive/back-end/
-  external: false
-- title: FrontEnd
-  url: /archive/front-end/
-  external: false
-- title: DevOps
-  url: /archive/dev-ops/
-  external: false
+archive-sidebar:
+  - title: BackEnd
+    url: /archive/back-end/
+    external: false
+  - title: FrontEnd
+    url: /archive/front-end/
+    external: false
+  - title: DevOps
+    url: /archive/dev-ops/
+    external: false
