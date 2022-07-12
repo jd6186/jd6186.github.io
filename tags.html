@@ -24,36 +24,5 @@ excerpt: Sorted article by tags.
     </h3>
   </article>
   {%- endfor -%}
-  {% assign max_page = site.tags[name].size | divided_by: site.paginate %}
-  {{ max_page }}
-  {{ max_page }}
-  {{ max_page }}
-  {{ max_page }}
-  {% assign max_page = max_page | ceil %}
-  {{ max_page }}
-  {{ max_page }}
-  {{ max_page }}
-  {{ max_page }}
-  {{ max_page }}
-  {% assign now_page = site.now_page %}
-  {% if site.now_page != 1 %}
-    <a
-            class="page-previous"
-            class="previous"
-    >
-      <span aria-hidden="true">←</span> NEWER POSTS
-      {{% assign now_page = now_page | minus: 1 %}}
-    </a>
-  {% endif %}
-    <span class="page_number"
-    > {{ max_page }}</span
-    >
-  {% if now_page != max_page %}
-    <a class="page-next"
-       class="next"
-    >OLDER POSTS
-      {{% assign now_page = now_page | plus: 1 %}}
-      <span aria-hidden="true">→</span>
-    </a>
-  {% endif %}
+  {% include pagination.html %}
 {%- endfor -%}
