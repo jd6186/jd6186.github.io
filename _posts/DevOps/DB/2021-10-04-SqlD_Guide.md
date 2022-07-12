@@ -22,7 +22,7 @@ author: "Noah"
 2021년 8월 4일 ~ 9월 4일( > 시험 당일)
 
 ### 준비 시 사용한 책
-![SqlQualificationTestBook](../../assets/img/2021-09-15-SqlD_Guide/SqlQualificationTestBook.jpg)
+![SqlQualificationTestBook](../../../assets/img/2021-09-15-SqlD_Guide/SqlQualificationTestBook.jpg)
 
 준비 시에는 SQL자격 검정 실전 문제집(통칭 노랭이)를 이용해 준비했습니다.
 
@@ -123,7 +123,7 @@ author: "Noah"
   ```
   위와 같은 쿼리가 있을 때 결과값은 아래와 같이 묶여 나온다는 감을 가져야함
 
-  ![QueryResult](../../assets/img/2021-09-15-SqlD_Guide/QueryResult.png)
+  ![QueryResult](../../../assets/img/2021-09-15-SqlD_Guide/QueryResult.png)
 
 
 
