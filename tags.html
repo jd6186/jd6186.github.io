@@ -16,8 +16,7 @@ excerpt: Sorted article by tags.
 {%- for tag in site.tags -%}
   {%- capture name -%}{{ tag | first }}{%- endcapture -%}
   <h2 id="{{ name }}">{{ name | upcase }}</h2>
-  {% assign tags_posts ="{{ site.tags[name] }}" %}
-  {%- for post in paginator.tags_posts %}
+  {%- for post in site.tags[name] %}
   <article class="post-item" id="results-container">
     <span class="post-item-date">{{ post.date | date: "%b %d, %Y" }}</span>
     <h3 class="post-item-title">
@@ -25,21 +24,24 @@ excerpt: Sorted article by tags.
     </h3>
   </article>
   {%- endfor -%}
-  <div class="pagination">
-    {% if paginator.previous_page %}
-    <a href="{{ paginator.previous_page_path }}" class="previous">
-      Previous
+  {% assign max_page = (site.tags[name].size | divided_by: site.paginate) | ceil %}
+  {% assign now_page = site.now_page %}
+  {% if site.now_page != 1 %}
+    <a
+            class="page-previous"
+            href="{{ paginator.previous_page_path }}"
+            class="previous"
+    >
+      <span aria-hidden="true">←</span> NEWER POSTS
     </a>
-    {% else %}
-    <span class="previous">Previous</span>
-    {% endif %}
-    <span class="page_number ">
-          Page: {{ paginator.page }} of {{ paginator.total_pages }}
-        </span>
-    {% if paginator.next_page %}
-    <a href="{{ paginator.next_page_path }}" class="next">Next</a>
-    {% else %}
-    <span class="next ">Next</span>
-    {% endif %}
-  </div>
+  {% endif %}
+    <span class="page_number"
+    > {{ now_page }}</span
+    >
+  {% if now_page != max_page %}
+    <a class="page-next" href="{{ paginator.next_page_path }}" class="next"
+    >OLDER POSTS
+      <span aria-hidden="true">→</span>
+    </a>
+  {% endif %}
 {%- endfor -%}

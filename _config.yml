@@ -24,7 +24,7 @@ sidebar:
 
 # Paginator
 paginate: 5
-paginate_path: "/archive:num/"
+now_page: 1
 
 # Profile settings
 author:
@@ -109,4 +109,3 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-postfiles
-  - jekyll-paginate
