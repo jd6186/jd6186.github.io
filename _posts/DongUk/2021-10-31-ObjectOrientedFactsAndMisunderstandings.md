@@ -2,14 +2,14 @@
 layout: post
 title: "객체지향 관점의 설계"
 tags: [Back-End JAVA]
-author: "DongUk"
+author: "Noah"
 ---
 
 
 <img src="../../assets/img/2021-10-31-ObjectOrientedFactsAndMisunderstandings/book.jpg"  width="300"/>
 
 ## 객체지향의 사실과 오해
-안녕하세요 **Donguk**입니다
+안녕하세요 **Noah**입니다
 
 최근에 읽은 **<strong style="color: #bb4177;">'객체지향의 사실과 오해'</strong>**라는 책을 읽고 느낀점이 많아 내용을 공유하기 위해 블로그 포스팅을 진행하게 되었습니다.
 

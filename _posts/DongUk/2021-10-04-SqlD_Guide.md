@@ -2,12 +2,12 @@
 layout: post
 title: "SqlD 준비 과정 및 후기"
 tags: [DevOps DB]
-author: "DongUk"
+author: "Noah"
 ---
 
 # SqlD 준비 과정 및 후기
 
-안녕하세요 Donguk & Jams의 **Donguk**입니다
+안녕하세요 **Noah**입니다
 
 이번 9월 4일에 Sqld 시험을 봤는데 합격할 것 같아서 미리 합격 후기 및 과정을 설명드리려 합니다.
 

@@ -1,5 +1,5 @@
 # Site settings
-title: Donguk Development Note # site title
+title: Noah Development Note # site title
 description: >- # site description
   주니어 개발자의 소소한 기술블로그 💻
   <a href="https://github.com/jd6186" target="_blank" rel="noopener">@github</a>.
@@ -26,10 +26,10 @@ paginate: 5
 
 # Profile settings
 author:
-  name: DongUk # author name
+  name: Noah # author name
   bio: >- # tell to the world
     주니어 개발자의 소소한 기술블로그 💻
-  username1: DongUk # general username
+  username1: Noah # general username
   github1: jd6186 # github username
   twitter: twitter_username # twitter username
   facebook: facebook_username # facebook username

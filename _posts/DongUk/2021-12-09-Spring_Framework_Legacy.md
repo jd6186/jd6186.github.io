@@ -2,7 +2,7 @@
 layout: post
 title: "Spring Framework Legacy"
 tags: [Back-End JAVA]
-author: "DongUk"
+author: "Noah"
 ---
 
 ## 목차
@@ -17,7 +17,7 @@ author: "DongUk"
 <br/><br/>
 
 ## Intro
-안녕하세요 **Donguk**입니다
+안녕하세요 **Noah**입니다
 Spring Boot를 실무에서 사용하다보니 Spring 기본 원리에 대해 다시 한 번 복습하는 과정이 필요할 것 같아 글을 작성하게 되었습니다.<br/>
 Java를 기본적으로 사용해보신 적이 있다는 전제하에 글을 쓸 것이기 때문에 Java를 모르시는 분들에게는 친절한 글이 아닐 수 있습니다.<br/>
 Spring에 대한 기본적인 내용을 간단하게 확인하면서 넘어가도록 하겠습니다.
