@@ -12,9 +12,27 @@ comments: false
   </label>
   <input type="search" id="search-input" placeholder="Find some articles here" aria-label="Search">
 </div>
-
+<div>
+  {%- assign sidebars = site.data.archive_sidebar -%}
+  {%- for sidebar in sidebars -%}
+    {%- if url == sidebar.url -%}
+      <a class="menu-link active" href="{{ sidebar.url }}">
+        {{ sidebar.title }}
+      </a>
+    {%- else -%}
+      {%- if sidebar.external -%}
+        <a class="menu-link" href="{{ sidebar.url }}" target="_blank" rel="noopener">
+          {{ sidebar.title }}
+        </a>
+      {%- else -%}
+      <a class="menu-link" href="{{ sidebar.url }}">
+        {{ sidebar.title }}
+      </a>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+</div>
 <ul id="search-results"></ul>
-
 {%- for post in site.posts -%}
   {%- capture current_year -%}{{ post.date | date: "%Y" }}{%- endcapture -%}
   {%- unless current_year == previous_year -%}
