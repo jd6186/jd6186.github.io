@@ -22,6 +22,8 @@ sidebar:
     url: /archive/dev-ops/
     external: false
 
+paginate: 5
+
 # Profile settings
 author:
   name: DongUk # author name

@@ -16,12 +16,29 @@ excerpt: Sorted article by tags.
 {%- for tag in site.tags -%}
   {%- capture name -%}{{ tag | first }}{%- endcapture -%}
   <h2 id="{{ name }}">{{ name | upcase }}</h2>
-  {%- for post in site.tags[name] limit: site.number_of_posts -%}
+  {%- for post in paginator.site.tags[name] %}
     <article class="post-item" id="results-container">
       <span class="post-item-date">{{ post.date | date: "%b %d, %Y" }}</span>
       <h3 class="post-item-title">
         <a href="{{ post.url }}">{{ post.title | escape }}</a>
-      </h3> 
+      </h3>
     </article>
   {%- endfor -%}
+  <div class="pagination">
+    {% if paginator.previous_page %}
+      <a href="{{ paginator.previous_page_path }}" class="previous">
+        Previous
+      </a>
+    {% else %}
+      <span class="previous">Previous</span>
+    {% endif %}
+      <span class="page_number ">
+        Page: {{ paginator.page }} of {{ paginator.total_pages }}
+      </span>
+    {% if paginator.next_page %}
+      <a href="{{ paginator.next_page_path }}" class="next">Next</a>
+    {% else %}
+      <span class="next ">Next</span>
+    {% endif %}
+  </div>
 {%- endfor -%}
