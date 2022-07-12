@@ -10,6 +10,18 @@ image: assets/img/ogp.png # This image used for Open Graph more info https://ogp
 repo: https://github.com/jd6186/jd6186.github.io # site repo [optional]
 mode: dark # default theme "dark" | "light"
 
+# Sidebar
+sidebar:
+  - title: "FrontEnd"
+    url: /archive/front-end/
+    external: false
+  - title: "BackEnd"
+    url: /archive/back-end/
+    external: false
+  - title: "DevOps"
+    url: /archive/dev-ops/
+    external: false
+
 # Profile settings
 author:
   name: DongUk # author name

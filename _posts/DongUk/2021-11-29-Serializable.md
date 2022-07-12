@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Serialization"
-tags: [Java, Serialization, 직렬화]
+tags: [Back-End JAVA]
 author: "DongUk"
 ---
 

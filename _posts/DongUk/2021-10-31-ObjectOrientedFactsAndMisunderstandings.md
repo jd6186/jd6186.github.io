@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "객체지향 관점의 설계"
-tags: [Object-Oriented, JAVA]
+tags: [Back-End JAVA]
 author: "DongUk"
 ---
 

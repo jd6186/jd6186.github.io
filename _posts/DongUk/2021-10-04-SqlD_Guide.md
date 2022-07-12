@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "SqlD 준비 과정 및 후기"
-tags: [SQL]
+tags: [DevOps DB]
 author: "DongUk"
 ---
 

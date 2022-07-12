@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Spring Framework Legacy - MVC"
-tags: [Java, Spring, Basic]
+tags: [Back-End JAVA]
 author: "DongUk"
 ---
 

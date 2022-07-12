@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Spring Framework Legacy - AOP"
-tags: [Java, Spring, Basic]
+tags: [Back-End JAVA]
 author: "DongUk"
 ---
 
