@@ -2,12 +2,11 @@
 layout: post
 title: "Serialization"
 tags: [Back-End JAVA]
-author: "DongUk"
+author: "Noah"
 ---
 
-
 ## Intro
-안녕하세요 **Donguk**입니다
+안녕하세요 **Noah**입니다
 
 오늘은 데이터 통신에 이용되는 DTO, VO등에 많이 사용되는 **<strong style="color: #bb4177;">'Serialization(직렬화)'</strong>**를 공부해 봤습니다.
 
