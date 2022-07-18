@@ -110,3 +110,5 @@ plugins:
   - jekyll-sitemap
   - jekyll-postfiles
   - jekyll-paginate
+
+navigation: True
