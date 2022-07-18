@@ -17,7 +17,7 @@ comments: false
 
 {%- for tag in site.tags -%}
 {%- capture name -%}{{ tag | first }}{%- endcapture -%}
-{% if {{ name | upcase }} == "BACKEND JAVA" %}
+{% if name == "BackEnd JAVA" %}
 <h2 id="{{ name }}">{{ name | upcase }}</h2>
 <div class="backEnd">
   <h2 class="post-list-heading">Back End</h2>
