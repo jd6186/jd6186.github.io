@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Serialization"
-tags: [Back-End JAVA]
+tags: [BackEnd JAVA]
 author: "Noah"
 categories: "back_end"
 ---

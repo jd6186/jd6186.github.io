@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Spring Framework Legacy - AOP"
-tags: [Back-End JAVA]
+tags: [BackEnd JAVA]
 author: "Noah"
 categories: "back_end"
 ---
