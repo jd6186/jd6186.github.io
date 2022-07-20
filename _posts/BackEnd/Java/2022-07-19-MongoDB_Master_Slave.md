@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[AWS DocumentDB(MongoDB)]Spring Boot 환경에서 Master Slave 구조로 연결하는 방법"
-tags: [BackEnd JAVA, DevOps AWS]
+title: "[Spring Boot]Spring Boot 환경에서 AWS DocumentDB(MongoDB)연결 시 Master Slave 구조로 연결하는 방법"
+tags: [BackEnd JAVA]
 author: "Noah"
 categories: "back_end"
 ---
