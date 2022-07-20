@@ -460,7 +460,7 @@ DocumentDB 자체가 MongoDB 엔진을 사용하고 있기 때문에 MongoDB를 
             }
         }
     ```
-
+<br/><br/><br/><br/>
 
 ## 마치며
 War로 빌드 시 Resources 내 파일 조회 방법에는 아래와 같은 유의사항이 있습니다.
