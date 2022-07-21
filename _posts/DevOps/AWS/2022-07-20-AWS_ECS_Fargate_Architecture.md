@@ -11,6 +11,8 @@ published: true
 
 오늘은 간단한 ECS Architecture Diagram을 보고 이를 분석해보는 시간은 가져보도록 하겠습니다.
 > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/architecture_diagram.jpg"  width="1400"/>
+
+제가 작성한 글 내 허점이 있거나 더 좋은 아이디어가 있으시다면 피드백 주시면 감사하겠습니다~
 <br/><br/><br/><br/>
 
 ## ECS(Elastic Container Service) 사용 이유
@@ -26,7 +28,25 @@ ECS는 컨테이너(Docker)를 활용하기 때문에 확장성이 뛰어나고 
 <br/><br/><br/><br/>
 
 ## ECS 컨테이너 배포 방법
-오늘은 요새 회사에서 자주 구축하고 있는 지속적인 통합 및 지속적인 배포(CI/CD) 형태로 배포하는 방법에 대해 알아보겠습니다.
+오늘은 요새 회사에서 자주 구축하고 있는 지속적인 통합 및 지속적인 배포(CI/CD) 형태로 배포하는 방법에 대해 알아보겠습니다.<br/>
 AWS를 활용해서 CI/CD를 구현하기 위한 가장 쉬운 방법은 대중적으로 사용되는 Github과 함께 CodePipeline을 활용하는 것입니다.
+<br/><br/>
 
-1. CodePipeline을 생성 시 Github Hook 이용
+> ### CodePipeline 작동 순서
+> 1. CodePipeline을 생성 시 Github Webhook을 이용해 지정한 Github branch 내 데이터 변경을 감지
+> 2. 데이터 변경 시 CodePipeline이 이를 감지하고 해당 변경 내용이 서버에 반영되도록 Build, Deploy 순서로 작업 진행
+> 3. Build 시 작업할 내역을 Buildspec.yml 내에 정의하고 이를 CodePipeline에 맵핑<br/>
+> <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/buildspec.png"  width="400"/>
+> 4. Build 완료 후 생성된 Docker Image를 ECR 내 저장
+> 5. CodePipeline CodeDeploy와 연결된 ECS 클러스터 및 서비스 조회
+> 6. 서비스에 설정된 작업(task)를 새롭게 배포 이 때 설정과 관련된 파일이 필요(appspec.yml, taskdefinition.json, imageDefinition.json)
+> 7. ECS Blue/Green 사용 시 기존 서버는 그대로 둔 상태에서 새로운 서버를 추가 배포.<br/> 새로운 서버 배포 중 장애 발생 시 현재 서버 계속 유지, 정상 배포 시 새로운 서버로 서버 교체 후 기존 서버는 Shutdown
+> 8. ECS Blue/Green 사용하지 않을 시 기존 서버 Shutdown 후 새로운 서버 배포 진행.<br/> 이렇게 배포 진행 시 장애 발생에 따른 이슈가 크리티컬하기 때문에 Blue/Green 사용 권장
+
+## 
+
+
+
+
+
+
