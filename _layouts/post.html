@@ -82,7 +82,7 @@ layout: compress
       <div>
         <script 
           src="https://utteranc.es/client.js" 
-          repo="jd6186/jd6186.github.io" 
+          repo="LeeJams/LeeJams.github.io" 
           issue-term="pathname"
           theme="github-dark" 
           crossorigin="anonymous" 
@@ -91,6 +91,13 @@ layout: compress
       </div>
 
     </main>
+
+    {% if page.modified %}
+    <small class="post-updated-at">updated_at {{page.modified | date: "%d-%m-%Y"}}</small>
+    {% endif %}
+    {% if page.next or page.previous %}
+    {% include navigation.html %}
+    {% endif %}
 
     {% include footer.html %}
   </div>

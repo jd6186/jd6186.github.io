@@ -2,7 +2,6 @@
 layout: post
 title: "객체지향 관점의 설계"
 tags: [BackEnd JAVA]
-author: "Noah"
 ---
 
 

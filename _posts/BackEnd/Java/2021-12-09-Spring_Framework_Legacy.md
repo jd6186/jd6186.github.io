@@ -2,7 +2,6 @@
 layout: post
 title: "Spring Framework Legacy"
 tags: [BackEnd JAVA]
-author: "Noah"
 ---
 
 ## 목차

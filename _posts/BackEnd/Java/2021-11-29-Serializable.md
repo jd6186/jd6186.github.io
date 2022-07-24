@@ -2,7 +2,6 @@
 layout: post
 title: "Serialization"
 tags: [BackEnd JAVA]
-author: "Noah"
 ---
 
 ## Intro

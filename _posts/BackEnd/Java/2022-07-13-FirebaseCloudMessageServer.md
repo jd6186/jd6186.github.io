@@ -2,7 +2,6 @@
 layout: post
 title: "Firebase Cloud Message 전송 서버 구축"
 tags: [BackEnd JAVA]
-author: "Noah"
 ---
 
 ## Intro

@@ -2,8 +2,6 @@
 layout: post
 title: "ECS 설계"
 tags: [DevOps AWS]
-author: "Noah"
-published: true
 ---
 
 ## Intro

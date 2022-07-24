@@ -2,7 +2,6 @@
 layout: post
 title: "Spring Framework Legacy - MVC"
 tags: [BackEnd JAVA]
-author: "Noah"
 ---
 
 ## 상위 글

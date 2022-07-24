@@ -2,7 +2,6 @@
 layout: post
 title: "SqlD 준비 과정 및 후기"
 tags: [DevOps DB]
-author: "Noah"
 ---
 
 # SqlD 준비 과정 및 후기
