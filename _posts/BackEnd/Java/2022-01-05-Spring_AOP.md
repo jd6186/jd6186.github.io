@@ -3,7 +3,6 @@ layout: post
 title: "Spring Framework Legacy - AOP"
 tags: [BackEnd JAVA]
 author: "Noah"
-categories: "back_end"
 ---
 
 ## 상위 글

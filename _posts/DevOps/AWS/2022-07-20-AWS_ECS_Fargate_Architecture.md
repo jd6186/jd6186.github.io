@@ -3,7 +3,6 @@ layout: post
 title: "ECS 설계"
 tags: [DevOps AWS]
 author: "Noah"
-categories: "dev_ops"
 ---
 
 ## Intro

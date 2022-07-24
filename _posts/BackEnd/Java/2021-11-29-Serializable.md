@@ -3,7 +3,6 @@ layout: post
 title: "Serialization"
 tags: [BackEnd JAVA]
 author: "Noah"
-categories: "back_end"
 ---
 
 ## Intro
