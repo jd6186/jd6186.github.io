@@ -37,47 +37,49 @@ AWS를 활용해서 CI/CD를 구현하기 위한 가장 쉬운 방법은 대중�
     <br/><br/>
 
 2. 1단계를 완료하셨으면 ECR로 접근하셔서 앞으로 배포할 도커 이미지들이 저장될 <strong style="color: #bb4177;">'레포지토리'</strong>를 하나 생성해주시면 됩니다.
-    * 아래는 ECR 생성 샘플입니다.<br/>
-    > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecr.png"  width="700"/>
-    <br/>
+   <br/><br/>
+   > 아래는 ECR 생성 샘플입니다.<br/>
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecr.png"  width="700"/>
 
-     * Maven을 기본 이미지로한 간단한 <strong style="color: #bb4177;">'Dockerfile'</strong>코드<br/>
-    (작업을 완료하셨으면 Root 유저로 사용하지 않도록 변경해 주시는게 좋습니다.)
-    ```dockerfile
-    FROM maven:3.8.6-amazoncorretto-11
-    
-    ## Root User로 권한 설정
-    USER root
-    
-    ## Linux 설정 및 필요 파일 Copy
-    RUN yum update -y
-    ARG SRC=/src
-    COPY ${SRC} /src
-    
-    ARG POM_FILE=/pom.xml
-    COPY ${POM_FILE} pom.xml
-    
-    ## Maven Build
-    RUN ["mvn","clean","package"]
-    
-    ## Port 설정
-    EXPOSE 8080
-    
-    ### 작업 완료 시 User 변경
-    RUN useradd -ms /bin/bash testserver
-    USER testserver
-    
-    ## War 실행
-    ENTRYPOINT java -Xms256m -Xmx4g -jar ./target/server-0.0.1-SNAPSHOT.war
-    ```
+<br/>
+
+##### Maven을 기본 이미지로한 간단한 <strong style="color: #bb4177;">'Dockerfile'</strong>코드<br/>
+- 작업을 완료하셨으면 Root 유저로 사용하지 않도록 변경해 주시는게 좋습니다.
+```dockerfile
+FROM maven:3.8.6-amazoncorretto-11
+
+## Root User로 권한 설정
+USER root
+
+## Linux 설정 및 필요 파일 Copy
+RUN yum update -y
+ARG SRC=/src
+COPY ${SRC} /src
+
+ARG POM_FILE=/pom.xml
+COPY ${POM_FILE} pom.xml
+
+## Maven Build
+RUN ["mvn","clean","package"]
+
+## Port 설정
+EXPOSE 8080
+
+### 작업 완료 시 User 변경
+RUN useradd -ms /bin/bash testserver
+USER testserver
+
+## War 실행
+ENTRYPOINT java -Xms256m -Xmx4g -jar ./target/server-0.0.1-SNAPSHOT.war
+```
 <br/><br/>
 
 3. 2단계를 완료하셨으면 <strong style="color: #bb4177;">'작업 정의(Task)'</strong>를 생성해주시면 됩니다. 마찬가지로 Fargate를 선택해주시고 작업과 관련된 설정을 진행해주시면 됩니다.<br/>여기서 설정을 하긴 하지만 추후 배포 시 taskdefinition.json을 통해 설정을 변경할 수 있으니 가볍게 작업해주시면 됩니다.
-   * 아래는 작업 정의 생성 샘플입니다.<br/>
+   아래는 작업 정의 생성 샘플입니다.<br/>
     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/작업정의_ecs_fargate_sample.png"  width="700"/>
     <br/>
    
-   * <strong style="color: #bb4177;">'taskdefinition.json'</strong> 샘플
+   <strong style="color: #bb4177;">'taskdefinition.json'</strong> 샘플
     ```json
     {
       "executionRoleArn": "사용할 Role에 대한 Arn 주소값",
@@ -118,18 +120,19 @@ AWS를 활용해서 CI/CD를 구현하기 위한 가장 쉬운 방법은 대중�
     ```
 <br/><br/>
 
-4. 작업 정의 생성 시 사용할 <strong style="color: #bb4177;">'컨테이너'</strong>를 제작해줍니다. 이 또한 taskdefinition.json에서 정의해 수정할 수 있으므로 가볍게 제작해주시면 됩니다.
-    * 컨테이너 생성 샘플입니다.<br/>
-      SecretsManager를 사용하지 않으실 분들은 SECRET_DATA는 생략하셔도 됩니다만 보통 데이터베이스 연결 정보와 같은 민감 정보는 소스코드상에 남기지 말고 Secrets Manager에서 가져와 사용하시는 걸 추천드립니다.<br/>
-      > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/container.jpg"  width="700"/>
+4. 작업 정의 생성 시 사용할 <strong style="color: #bb4177;">'컨테이너'</strong>를 제작해줍니다. 이 또한 taskdefinition.json에서 정의해 수정할 수 있으므로 가볍게 제작해주시면 됩니다.<br/>
+   > 아래는 컨테이너 구성 샘플입니다.
+   > SecretsManager를 사용하지 않으실 분들은 'SECRET_DATA' 부분은 생략하셔도 됩니다만 보통 데이터베이스 연결 정보와 같은 민감 정보는 소스코드상에 남기지 말고 Secrets Manager에서 가져와 사용하시는 걸 추천드립니다.<br/>
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/container.jpg"  width="700"/>
       <br/><br/>
 
 5. 이제 제작된 작업 정의(Task)를 기반으로 클러스터 내 <strong style="color: #bb4177;">'Service'</strong>를 제작해줍니다.
-   * 서비스 구성 샘플<br/>
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecs_service.png"  width="700"/>
-     <br/>
+   > 서비스 구성 샘플입니다.<br/>
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecs_service.png"  width="700"/>
+   <br/>
 
-   * 네트워크 구성 샘플<br/> VPC, Subnet, 보안그룹, 로드벨런서, IAM Role 등에 대한 설정은 보통 사내 Infra팀에서 모두 잡아주실 겁니다. 하지만 만약 본인이 직접 설정하시는 분들도 있을 것 같아서 다음에 각각에 대해 설명하는 시간을 만들어보겠습니다.
+   네트워크 구성 샘플<br/> VPC, Subnet, 보안그룹, 로드벨런서, IAM Role 등에 대한 설정은 보통 사내 Infra팀에서 모두 잡아주실 겁니다. 
+   하지만 만약 본인이 직접 설정하시는 분들도 있을 것 같아서 다음에 각각에 대해 설명하는 시간을 만들어보겠습니다.
    <br/><br/>
    여기서 네트워크 구성 시 크게 2가지를 추천드리고 싶은데 먼저 컨테이너간 클러스터링을 기본으로 하는 서비스인 만큼 <strong style="color: #bb4177;">'Application Load Balancer'</strong>와 잘 어울린다는 생각이 듭니다.
    <br/> 
@@ -142,15 +145,14 @@ AWS를 활용해서 CI/CD를 구현하기 위한 가장 쉬운 방법은 대중�
    <br/>
    ECS Blue/Green 사용하지 않을 경우 기존 서버 Shutdown 후 새로운 서버를 배포하기 때문에 순간적으로 서비스가 자동하지 않아 장애가 발생할 수 있습니다.
    <br/><br/>
-   전체 설정은 아래 전체 이미지를 참고해주세요.
-   <br/><br/>
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecs_service_network_load_balancer.png"  width="700"/>
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecs_service_network.png"  width="700"/>
+   > 전체 설정은 아래 전체 이미지들을 참고해주세요.<br/>
+   > 1.<br/><img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecs_service_network_load_balancer.png"  width="700"/><br/><br/>
+   > 2.<br/><img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/ecs_service_network.png"  width="700"/>
 <br/><br/>
 
 6. <strong style="color: #bb4177;">'Auto-Scaling'</strong> 설정은 보통 운영 서버일 경우 진행해주고 개발은 설정하지 않는 경우가 많았습니다.
-   * 아래는 Auto-Scaling 설정화면입니다.
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/auto_scaling.png"  width="700"/>
+   > 아래는 Auto-Scaling 설정화면입니다.
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/auto_scaling.png"  width="700"/>
 <br/><br/>
 
 ### CodePipeline 생성 방법
@@ -161,95 +163,95 @@ AWS를 활용해서 CI/CD를 구현하기 위한 가장 쉬운 방법은 대중�
 
 
 3. <strong style="color: #bb4177;">'Build 스테이지'</strong> 생성 방법
-   * 다음은 CodePipeline에서 Build 스테이지를 생성하는 부분 Sample입니다.<br/> 먼저 아래와 같이 세팅한 후 Code Build 프로젝트를 생성해주어야 합니다.<br/>(이 곳에서 프로젝트를 생성하셔야 프로젝트 생성 시 자동으로 소스공급자가 CodePipeline으로 설정됩니다.)<br/>
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_build.png"  width="700"/>
+   > 다음은 CodePipeline에서 Build 스테이지를 생성하는 부분 Sample입니다.<br/> 먼저 아래와 같이 세팅한 후 Code Build 프로젝트를 생성해주어야 합니다.<br/>(이 곳에서 프로젝트를 생성하셔야 프로젝트 생성 시 자동으로 소스공급자가 CodePipeline으로 설정됩니다.)<br/>
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_build.png"  width="700"/>
+   <br/>
+
+   > <strong style="color: #bb4177;">'Code Build 프로젝트'</strong> 생성 예시<br/>
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_build_project.png"  width="700"/>
     <br/>
 
-   * <strong style="color: #bb4177;">'Code Build 프로젝트'</strong> 생성 예시<br/>
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_build_project.png"  width="700"/>
-    <br/>
-  
-  * 아래는 위 예시에서 보신 <strong style="color: #bb4177;">'dev.buildspec.yml'</strong> 샘플 코드입니다. 개발환경 예시라 dev가 앞에 붙은 것을 확인하실 수 있습니다.<br/>보시게 되면 $AWS_ACCOUNT_ID와 같이 환경변수를 가져온 것을 보실 수 있는데 이는 위에서 Code Build 프로젝트를 생성하실 때 지정하신 환경변수 내 값을 가져오는 것이므로 위에서 잘 세팅해주셔야 합니다. 
-    ```yml
-    version: 0.1
-    
-    phases:
-      pre_build:
+##### 아래는 위 이미지에서 보신 <strong style="color: #bb4177;">'dev.buildspec.yml'</strong> 샘플 코드입니다. 개발환경 예시라 dev가 앞에 붙은 것을 확인하실 수 있습니다.<br/>보시게 되면 $AWS_ACCOUNT_ID와 같이 환경변수를 가져온 것을 보실 수 있는데 이는 위에서 Code Build 프로젝트를 생성하실 때 지정하신 환경변수 내 값을 가져오는 것이므로 위에서 잘 세팅해주셔야 합니다. 
+```yml
+version: 0.1
+
+phases:
+    pre_build:
         commands:
           - echo AWS Connect
           - aws --version
           - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      build:
+    build:
         commands:
           - echo Build started on `date`
           - echo Make Docker image
           - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -f Dockerfile .
           - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      post_build:
+    post_build:
         commands:
           - echo Build completed on `date`
           - echo Pushing the Docker image to ECR
           - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
           - printf '[{"name":"%s","imageUri":"%s"}]' $IMAGE_REPO_NAME $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG  > imagedefinitions.json
-    artifacts:
-      files:
+artifacts:
+    files:
         - imagedefinitions.json
         - appspec.yml
         - taskdefinition.json
-      discard-paths: yes
-    ```
-    <br/>
+    discard-paths: yes
+```
 
-    * 위 파일 내용 중 artifacts 내 3가지 파일이 보이실 겁니다. 그 중 appspec과 taskdefinition은 아래에서 따로 설명드리도록 하고 Docker Image에 대한 설정을 하는 imagedefinitions.json 파일만 살펴보고 넘어가겠습니다. 
-      ```json
-      [
-        {
-          "name": "kordevtest-api",
-          "imageUri": "ECR 내 배포된 Docker Image URI를 입력"
-        }
-      ]
-      ```
+##### 위 파일 내용 중 artifacts 내 3가지 파일이 보이실 겁니다. 그 중 appspec과 taskdefinition은 아래에서 따로 설명드리도록 하고 Docker Image에 대한 설정을 하는 imagedefinitions.json 파일만 살펴보고 넘어가겠습니다. 
+```json
+[
+    {
+      "name": "kordevtest-api",
+      "imageUri": "ECR 내 배포된 Docker Image URI를 입력"
+    }
+]
+```
 <br/><br/>
 
 
 4. <strong style="color: #bb4177;">'Code Deploy 스테이지'</strong> 생성 방법
-   * 다음은 CodePipeline에서 Deploy 스테이지를 생성하는 부분 Sample입니다.<br/> 먼저 아래와 같이 세팅한 후 Code Deploy Application 및 Deploy Group을 생성해주어야 합니다.<br/>
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_deploy_stage.png"  width="700"/>
+   > 다음은 CodePipeline에서 Deploy 스테이지를 생성하는 부분 Sample입니다.<br/> 먼저 아래와 같이 세팅한 후 Code Deploy Application 및 Deploy Group을 생성해주어야 합니다.<br/>
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_deploy_stage.png"  width="700"/>
      <br/>
    
-   * <strong style="color: #bb4177;">'Code Deploy Application'</strong> 생성 예제
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_deploy_application.png"  width="700"/>
+   > <strong style="color: #bb4177;">'Code Deploy Application'</strong> 생성 예제
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_deploy_application.png"  width="700"/>
      <br/>
 
-   * <strong style="color: #bb4177;">'Deploy Group'</strong> 생성 예제
+   > <strong style="color: #bb4177;">'Deploy Group'</strong> 생성 예제
      위에서 ECS 클러스터 및 서비스를 생성할 때 선택했던 내용들을 다시 여기서 선택해줍니다.<br/>
      서비스 생성 시 지정한 역할(Role), 로드벨런서, 대상그룹(Target Group)<br/><br/>
      추가 주의사항으로 원래 개정 종료 시간을 <strong style="color: #bb4177;">'0일 0시간 0분'</strong>으로 하지 않으면 ECS 서비스 내 새로운 작업이 생성되어도 저 시간동안 교체되지 않고 있게 됩니다. 그 때문에 저는 보통 0, 0, 0으로 세팅하고 있습니다.
-     > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_deploy_deploy_group.png"  width="700"/>
-     <br/>
-      
-   * <strong style="color: #bb4177;">'dev.appspec.yml'</strong> 예시<br/>
-     (dev.taskdefinition.json에 대한 예시는 위에 있습니다.)
-     ```yml
-     version: 0.1
-     Resources:
-       - TargetService:
-           Type: AWS::ECS::Service
-           Properties:
-             TaskDefinition: "제작한 작업정의(Task)의 Arn 주소"
-             LoadBalancerInfo:
-               ContainerName: "제작한컨테이너명"
-               ContainerPort: 사용한포트번호(8080)
-             PlatformVersion: "LATEST"
-             NetworkConfiguration:
-               AwsvpcConfiguration:
-                 Subnets: ["지정한서브넷들_01", "지정한서브넷들_02"]
-                 SecurityGroups:
-                   [
-                     "지정한보안그룹들_01"
-                   ]
-                 AssignPublicIp: "DISABLED"
-     ```
+   > <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/code_deploy_deploy_group.png"  width="700"/>
+
+<br/><br/>
+
+##### 위 이미지 내용 중 <strong style="color: #bb4177;">'dev.appspec.yml'</strong> 예시<br/>
+- dev.taskdefinition.json에 대한 예시는 위에 있습니다.
+```yml
+version: 0.1
+Resources:
+    - TargetService:
+        Type: AWS::ECS::Service
+        Properties:
+            TaskDefinition: "제작한 작업정의(Task)의 Arn 주소"
+            LoadBalancerInfo:
+                ContainerName: "제작한컨테이너명"
+                ContainerPort: 사용한포트번호(8080)
+            PlatformVersion: "LATEST"
+        NetworkConfiguration:
+            AwsvpcConfiguration:
+                Subnets: ["지정한서브넷들_01", "지정한서브넷들_02"]
+                SecurityGroups:
+                    [
+                      "지정한보안그룹들_01"
+                    ]
+                AssignPublicIp: "DISABLED"
+```
 <br/><br/><br/><br/>
 
 
