@@ -1,16 +1,17 @@
 ---
 layout: post
-title: "[AWS] ECS 설계"
+title: "[AWS] ECS를 활용한 CI/CD 환경 구축"
 tags: [DevOps AWS]
 ---
 
 ## Intro
 안녕하세요 **Noah**입니다.
 
-이번엔 간단한 ECS Architecture Diagram을 보고 이를 분석해보는 시간은 가져보도록 하겠습니다.
-> <img src="../../../assets/img/2022-07-20-AWS_ECS_Fargate_Architecture/architecture_diagram.jpg"  width="1400"/>
+오늘은 ECS를 CodePipeline과 연결하여 CI/CD 환경을 가볍게 구축해보는 시간을 가지려합니다.
 
-제가 작성한 글에 수정할 사항이 있거나 더 좋은 아이디어가 있으시다면 피드백 주시면 감사하겠습니다~
+여러 서비스들마다 세부적인 설정은 서비스에 맞춰 변경이 필요하겠지만 약간 보일러플레이트처럼 활용하실 수 있게 글을 구성해보았습니다.
+
+글 읽다가 이해가 안 가시거나 설명이 미흡한 부분이 있다면 추가로 알려주시면 감사하겠습니다.
 <br/><br/><br/><br/>
 
 ## ECS(Elastic Container Service) 사용 이유
