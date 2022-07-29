@@ -22,7 +22,7 @@ Refactoring은 org.apache.http API에서 org.springframework.http API로 변경�
 작업을 진행하게 된 이유는 org.apache.http를 사용하여 Brightcove Solution과 통신 시 charset을 설정하여도 한글이 깨지는 현상이 존재했기 때문입니다.<br/>
 필자는 해당 이슈를 해결하면서도 어지러운 코드들을 깔끔하게 정리하기 위하여 API를 변경하기로 결정하였습니다.
 
-- <strong style="color: #bb4177;">'기존 코드'</strong>
+- <strong style="color: #bb4177;">'기존 코드'</strong><br/>
     ```java
     @Slf4j
     @Getter
@@ -233,7 +233,7 @@ Refactoring은 org.apache.http API에서 org.springframework.http API로 변경�
     결론적으로는 계속 한글이 깨지는 현상을 목격하였고 결국 아래와 같은 코드로 변경하였습니다.
     <br/><br/><br/>
     
-- <strong style="color: #bb4177;">'변경된 코드'</strong>
+- <strong style="color: #bb4177;">'변경된 코드'</strong><br/>
     API를 org.springframework.http로 변경하였으며 get, post, put, delete와 같은 Http 메서드별 요청이 사라진 것을 보실 수 있습니다.<br/>
     또한 작동 방식이 간결해져 별도의 주석 작업 또한 필요가 없어져 더 간결한 코드형태를 볼 수 있어 만족스럽습니다.
     
@@ -313,7 +313,7 @@ Refactoring은 org.apache.http API에서 org.springframework.http API로 변경�
 ## 관리 객체 변경 후 호출 방식의 변화
 REST API 요청 관리 객체를 변경한 후로 Request를 전달하는 방식 또한 바뀌게 되었습니다.
 
-- 기존 객체 호출부
+- 기존 객체 호출부<br/>
     ```java
     RestApiManager restApiManager = new RestApiManager(new HttpPost(url), "02");
     restApiManager.setXApiKeyHeader();
@@ -321,7 +321,7 @@ REST API 요청 관리 객체를 변경한 후로 Request를 전달하는 방식
     ```
     기존 내용을 보면 요청할 Solution타입을 "02"로 설정 필요하며 사용할 헤더 정보도 여기서 설정이 필요합니다.<br/> 이 두가지가 모두 세팅되어야 요청 전달이 가능했습니다.
 
-- 변경 후 호출부
+- 변경 후 호출부<br/>
     ```java
     BrightcoveRestApiManager brightcoveRestApiManager = new BrightcoveRestApiManager();
     JsonObject result = brightcoveRestApiManager.request(url, requestData, HttpMethod.PUT);
@@ -332,6 +332,7 @@ REST API 요청 관리 객체를 변경한 후로 Request를 전달하는 방식
 <br/><br/><br/><br/>
 
 ## 글을 마치며
+
 프로젝트를 시작하기 전 어떤 API를 어디에 사용할 것인지 결정하는 부분이 굉장히 중요하다는 사실을 이번에 느낄 수 있었고
 더 이상 사용하지 않는 서비스 로직이 있다면 과감하게 주석처리를 하든 아니면 새로운 객체를 생성하든 해서 
 코드를 더 간결하고 서비스 친화적으로 작성하는 것이 중요하다는 것을 이번 기회를 통해 많이 느꼈습니다.
