@@ -11,7 +11,7 @@ tags: [BackEnd JAVA]
 이번엔 제가 오늘 Refactoring 진행한 내용을 공유드리려 합니다.
 
 기존에는 동영상을 관리하던 Brightcove라는 Solution과 콘텐츠를 관리하는 Contentstack이라는 Solution을 혼용하여 사용하였습니다.
-때문에 API 서버에서는 두 서버 모두와 통신하기 위한 Rest API Manager 객체를 생성하였었습니다.<br/>
+때문에 API 서버에서는 두 서버 모두와 통신하기 위한 Rest API Manager 객체를 생성하였었습니다.
 
 하지만 고객사 정책으로 Contentstack Solution은 배제되면서 Brightcove Solution 서버와만 통신하면 되는 상황이 되어 Refactoring을 진행한 경험을 공유하고자 합니다.<br/>
 (서버에서 현재 발생하고 있던 1가지 이슈 해결 내용도 포함되어 있습니다.)
@@ -306,7 +306,7 @@ Refactoring은 org.apache.http API에서 org.springframework.http API로 변경�
         }
     }
     ```
-    Parameter를 받아야하는 부분에서 따로 Parameter를 전달할 요소가 따로 없다면 'params' 변수를 빈값("")으로 값을 전달하도록 규약을 만들었고 모든 요청은 request()라는 메서드를 통해 요청하도록 만들었습니다.
+    Parameter를 받아야하는 부분에서 따로 Parameter를 전달할 요소가 따로 없다면 'params' 변수를 빈값("")으로 값을 전달하도록 규약을 만들었고 모든 요청은 request()라는 메서드를 통해 요청하도록 만들었습니다.<br/>
     (getAuthToken() Method는 기존 방식을 그대로 사용하고 있는 것을 확인하실 수 있을텐데 이는 해당 Solution 업체 공식 가이드라 해당 내용을 그대로 사용하고 있는 것입니다.)
 <br/><br/><br/><br/>
     
