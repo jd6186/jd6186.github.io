@@ -2,6 +2,7 @@
 title: Noah Development Note # site title
 description: >- # site description
   주니어 개발자의 소소한 기술블로그 💻
+  <a href="https://jd6186.github.io/archive" target="_blank" rel="noopener">Archive</a>에서 더 많은 글을 확인하실 수 있습니다.
   <a href="https://github.com/jd6186" target="_blank" rel="noopener">@github</a>.
 lang: ko-KR # default lang
 timezone: Asia/Seoul # set your timezone
@@ -15,6 +16,7 @@ author:
   name: Noah # author name
   bio: >- # tell to the world
     주니어 개발자의 소소한 기술블로그 💻
+    <a href="https://jd6186.github.io/archive" target="_blank" rel="noopener">Archive</a>에서 더 많은 글을 확인하실 수 있습니다.
   username1: Noah # general username
   github1: jd6186 # github username
   twitter: twitter_username # twitter username
