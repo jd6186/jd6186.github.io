@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[Python] FastAPI 'Global Exception'와 'Filter' 구현 가이드"
+title: "[Python] FastAPI 'Global Exception'과 'Filter' 구현 가이드"
 tags: [BackEnd PYTHON]
 ---
 
