@@ -141,17 +141,71 @@ perform_actions(dog)
 이 코드에서 각 동물 클래스는 필요한 인터페이스만을 구현하고 있습니다. 
 클라이언트 코드에서는 각 동물이 어떤 기능을 제공하는지 확인한 후 필요한 기능을 사용할 수 있습니다. 
 이렇게 하면 각 동물 클래스가 자신이 필요로 하는 인터페이스에만 의존하게 되어 ISP를 준수하게 됩니다.
-
-> * from abc import ABC, abstractmethod는 Python의 abc 모듈에서 ABC 클래스와 abstractmethod 데코레이터를 가져오는 구문입니다.<br/>
-> * ABC: 추상 기반 클래스(Abstract Base Class)의 약자로, 이를 상속받은 클래스들이 추상 메서드를 포함하고 있음을 나타냅니다. 추상 클래스는 직접 인스턴스화할 수 없으며, 서브클래스에서 구현해야 하는 메서드를 정의할 수 있습니다.<br/> 
-> * abstractmethod: 메서드를 추상 메서드로 정의하는 데코레이터입니다. 추상 메서드는 구현이 없는 메서드이며, 서브클래스에서 반드시 재정의해야 합니다. 이를 통해 추상 클래스는 해당 메서드를 반드시 구현해야 함을 강제할 수 있습니다.
+* from abc import ABC, abstractmethod는 Python의 abc 모듈에서 ABC 클래스와 abstractmethod 데코레이터를 가져오는 구문입니다.<br/>
+* ABC: 추상 기반 클래스(Abstract Base Class)의 약자로, 이를 상속받은 클래스들이 추상 메서드를 포함하고 있음을 나타냅니다. 추상 클래스는 직접 인스턴스화할 수 없으며, 서브클래스에서 구현해야 하는 메서드를 정의할 수 있습니다.<br/> 
+* abstractmethod: 메서드를 추상 메서드로 정의하는 데코레이터입니다. 추상 메서드는 구현이 없는 메서드이며, 서브클래스에서 반드시 재정의해야 합니다. 이를 통해 추상 클래스는 해당 메서드를 반드시 구현해야 함을 강제할 수 있습니다.
 
 이러한 구문을 사용하여 추상 클래스를 정의하고 추상 메서드를 선언함으로써 상속 관계에서의 인터페이스를 정의할 수 있습니다.
 위의 코드에서는 이러한 기능을 사용하여 인터페이스를 분리하는데 활용되었습니다.
+<br/><br/>
 
+### DIP(Dependency Inversion Principle)
+상위 수준의 모듈은 하위 수준의 모듈에 의존해서는 안 되며, 둘 모두 추상화에 의존해야 한다는 원칙입니다. 
+또한, 추상화는 세부 사항에 의존해서는 안 되며, 세부 사항은 추상화에 의존해야 한다는 원칙도 포함하고 있습니다.
+이 원칙을 준수하면서 의존성을 주입함으로써 상위 모듈이 하위 모듈에 의존하지 않도록 할 수 있습니다.<br/>
+말만 들으면 어려워보이는 다음 예시를 통해 이해해보도록 합시다.
+```python
+from abc import ABC, abstractmethod
 
-### 응용방법
-각 클래스를 별도의 파일로 분리하여 구현할 수 있습니다. 아래는 각 클래스를 별도의 파일로 분리한 예시입니다.<br/>
+class Car(ABC):
+    @abstractmethod
+    def start(self):
+        pass
+
+    @abstractmethod
+    def drive(self):
+        pass
+
+    @abstractmethod
+    def stop(self):
+        pass
+
+class Benz(Car):
+    def start(self):
+        print("Benz: Engine started")
+
+    def drive(self):
+        print("Benz: Driving")
+
+    def stop(self):
+        print("Benz: Stopped")
+
+class Ferrari(Car):
+    def start(self):
+        print("Ferrari: Engine started")
+
+    def drive(self):
+        print("Ferrari: Driving")
+
+    def stop(self):
+        print("Ferrari: Stopped")
+
+class BMW(Car):
+    def start(self):
+        print("BMW: Engine started")
+
+    def drive(self):
+        print("BMW: Driving")
+
+    def stop(self):
+        print("BMW: Stopped")
+```
+위 코드에서는 Car 상위 클래스를 추상화로 사용하여 다양한 하위 자동차 브랜드 클래스를 구현하고 있습니다.
+이를 통해 자동차 브랜드 클래스들은 모두 Car 클래스에 의존하게 되며, 추상화에만 의존하게 됩니다.
+<br/><br/>
+
+### 실제 서비스에 SOLID 원칙 응용 예시
+실제 서비스에서도 SOILD 원칙을 적용한 예시들을 볼 수 있습니다.
 > 코드는 FastAPI를 사용하고, MySQL 데이터베이스에 SqlAlchemy를 통해 연결하겠습니다.
 
 1. main.py
@@ -180,7 +234,7 @@ class ErrorResponse(BaseResponse):
     error_code: int
 ```
 
-2. routers/item_router.py
+3. routers/item_router.py
 ```python
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -211,7 +265,7 @@ def read_item(item_id: int, db: Session = Depends(get_db), service: ItemService 
         return ErrorResponse(success=False, message="Failed to retrieve item", error_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 ```
 
-3. service.py
+4. service.py
 ```python
 from sqlalchemy.orm import Session
 from models import Item
@@ -228,7 +282,7 @@ def get_item(db: Session, item_id: int):
     return db.query(Item).filter(Item.id == item_id).first()
 ```
 
-4. models.py
+5. models.py
 ```python
 from sqlalchemy import Column, Integer, String
 from database import Base
@@ -243,7 +297,7 @@ class Item(Base):
     tax = Column(Float)
 ```
 
-5. schemas.py
+6. schemas.py
 ```python
 from pydantic import BaseModel
 
@@ -257,7 +311,7 @@ class ItemCreate(ItemBase):
     pass
 ```
 
-6. database.py
+7. database.py
 ```python
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -295,7 +349,6 @@ def get_db():
 * DIP (종속성 역전 원칙):
   * 응답 데이터 전송을 위한 DTO(Data Transfer Object)를 구현
 <br/><br/><br/><br/>
-
 
 ## 글을 마치며
 오늘은 FastAPI와 SOLID 디자인 원칙을 적용하여 효율적이고 견고한 API를 개발하는 방법에 대해 알아보았습니다. 
