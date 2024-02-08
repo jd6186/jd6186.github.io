@@ -26,14 +26,22 @@ async def read_item(item_id: int):
 
 ### 개방-폐쇄 원칙 (OCP)
 라우터 함수는 개방-폐쇄 원칙을 준수하여 확장에는 열려 있어야 하고 수정에는 닫혀 있어야 합니다.
-이는 새로운 기능을 추가할 때 기존의 코드를 수정하지 않고 새로운 라우터 함수를 추가함으로써 구현됩니다.
+이는 새로운 기능을 추가할 때 기존의 코드를 수정하지 않고 새로운 라우터 함수를 추가함으로써 구현됩니다.<br/>
+예를 들어, 아래의 Printer 클래스는 개방-폐쇄 원칙을 준수합니다.
 ```python
-@app.put("/items/{item_id}")
-async def update_item(item_id: int, item: Item):
-    # item_id에 해당하는 아이템을 업데이트하는 기능
-    pass
+class Printer:
+    def print_message(self, message):
+        # 프린터로 메시지를 출력하는 기능
+        pass
+
+class ColorPrinter(Printer):
+    def print_message(self, message, color):
+        # 색상을 지정하여 메시지를 출력하는 기능
+        pass
 ```
-이와 같은 방식으로 새로운 기능을 추가할 때 기존의 코드를 수정하지 않고 새로운 라우터 함수를 추가함으로써 개방-폐쇄 원칙을 준수할 수 있습니다.
+위의 Printer 클래스는 확장에 열려 있습니다.<br/>
+여기서 확장에 열려있다는 말은 새로운 기능을 추가할 때 Printer 클래스를 수정할 필요 없이 ColorPrinter와 같은 새로운 서브클래스를 만들어 확장할 수 있다는 뜻입니다.<br/>
+이와 같은 방식으로 새로운 기능을 추가할 때 기존의 코드를 수정하지 않고, 원본 객체를 상속받은 새로운 객체를 추가함으로써 개방-폐쇄 원칙을 준수할 수 있습니다.
 <br/><br/>
 
 ### 리스코프 치환 원칙 (LSP)
@@ -143,119 +151,156 @@ perform_actions(dog)
 
 
 ### 응용방법
-각 클래스를 별도의 파일로 분리하여 구현할 수 있습니다. 아래는 각 클래스를 별도의 파일로 분리한 예시입니다.
+각 클래스를 별도의 파일로 분리하여 구현할 수 있습니다. 아래는 각 클래스를 별도의 파일로 분리한 예시입니다.<br/>
+> 코드는 FastAPI를 사용하고, MySQL 데이터베이스에 SqlAlchemy를 통해 연결하겠습니다.
 
-user.py (DTO)
+1. main.py
+```python
+from fastapi import FastAPI
+from routers import item_router
+
+app = FastAPI()
+app.include_router(item_router.router)
+```
+
+2. dtos/response_dto.py
+```python
+from pydantic import BaseModel
+from typing import Union
+from fastapi import status
+
+class BaseResponse(BaseModel):
+    success: bool
+    message: str = None
+
+class SuccessResponse(BaseResponse):
+    data: dict = None
+
+class ErrorResponse(BaseResponse):
+    error_code: int
+```
+
+2. routers/item_router.py
+```python
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from dependencies import get_db, get_item_service
+from schemas import ItemCreate
+from response_dto import SuccessResponse, ErrorResponse
+from services import ItemService
+
+router = APIRouter()
+
+@router.post("/items/", response_model=SuccessResponse)
+def create_item(item: ItemCreate, db: Session = Depends(get_db), service: ItemService = Depends(get_item_service)):
+    try:
+        created_item = service.create_item(db=db, item=item)
+        return SuccessResponse(success=True, message="Item created successfully", data=created_item)
+    except Exception as e:
+        return ErrorResponse(success=False, message="Failed to create item", error_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@router.get("/items/{item_id}", response_model=Union[SuccessResponse, ErrorResponse])
+def read_item(item_id: int, db: Session = Depends(get_db), service: ItemService = Depends(get_item_service)):
+    try:
+        db_item = service.get_item(db=db, item_id=item_id)
+        if db_item:
+            return SuccessResponse(success=True, message="Item retrieved successfully", data=db_item)
+        else:
+            return ErrorResponse(success=False, message="Item not found", error_code=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return ErrorResponse(success=False, message="Failed to retrieve item", error_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+```
+
+3. service.py
+```python
+from sqlalchemy.orm import Session
+from models import Item
+from schemas import ItemCreate
+
+def create_item(db: Session, item: ItemCreate):
+    db_item = Item(**item.dict())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+def get_item(db: Session, item_id: int):
+    return db.query(Item).filter(Item.id == item_id).first()
+```
+
+4. models.py
+```python
+from sqlalchemy import Column, Integer, String
+from database import Base
+
+class Item(Base):
+    __tablename__ = "items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(String, index=True)
+    price = Column(Float)
+    tax = Column(Float)
+```
+
+5. schemas.py
 ```python
 from pydantic import BaseModel
 
-class UserDTO(BaseModel):
-    id: int
-    username: str
-    email: str
+class ItemBase(BaseModel):
+    name: str
+    description: str = None
+    price: float
+    tax: float = None
 
-    class Config:
-        orm_mode = True
-
+class ItemCreate(ItemBase):
+    pass
 ```
 
-user_dao.py (DAO)
+6. database.py
 ```python
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-from models import User
-
-class UserDAO:
-    def __init__(self, session: AsyncSession):
-        self.session = session
-
-    async def get_user_by_id(self, user_id: int) -> User:
-        result = await self.session.execute(
-            selectinload(User).where(User.id == user_id)
-        )
-        user = result.scalars().first()
-        return user
-
-```
-
-models.py (Domain)
-```python
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
-
-class User(Base):
-    __tablename__ = 'users'
-
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, index=True)
-    email = Column(String, index=True)
-
-```
-
-user_service.py (Service)
-```python
-from sqlalchemy.ext.asyncio import AsyncSession
-from dao import UserDAO
-from dto import UserDTO
-
-class UserService:
-    def __init__(self, user_dao: UserDAO):
-        self.user_dao = user_dao
-
-    async def get_user_by_id(self, user_id: int) -> UserDTO:
-        user = await self.user_dao.get_user_by_id(user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        return UserDTO(**user.dict())
-```
-
-main.py (FastAPI Router)
-```python
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_session
-from service import UserService
-from dto import UserDTO
-
-app = FastAPI()
-
-@app.on_event("startup")
-async def startup_db_client():
-    async with async_engine.begin() as conn:
-        await conn.run_sync(models.Base.metadata.create_all)
-
-async def get_user_service(session: AsyncSession = Depends(get_session)) -> UserService:
-    user_dao = UserDAO(session)
-    return UserService(user_dao)
-
-@app.get("/users/{user_id}", response_model=UserDTO)
-async def read_user(user_id: int, user_service: UserService = Depends(get_user_service)):
-    return await user_service.get_user_by_id(user_id)
-```
-
-database.py
-```python
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-async_engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True, future=True)
+SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://user:password@localhost/db_name"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
-async_session = sessionmaker(
-    async_engine, class_=AsyncSession, expire_on_commit=False
-)
-
-def get_session() -> AsyncSession:
-    return async_session()
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 ```
-각 파일은 단일 책임 원칙을 준수하고, 모듈 간의 의존성을 적절히 관리하여 SOLID 원칙을 따르고 있습니다. 이렇게 파일을 분리함으로써 코드의 가독성과 유지보수성이 향상될 수 있습니다.
 
+#### SOLID 원칙 적용 설명:
+* SRP (단일 책임 원칙):
+    * 각 파일과 클래스는 하나의 기능 또는 책임만을 가지고 있습니다.
+    * main.py는 앱의 진입점으로서의 역할만 수행합니다.
+    * routers/item_router.py는 Item과 관련된 라우팅과 요청 처리를 담당합니다.
+    * service.py는 비즈니스 로직을 처리합니다.
+    * models.py는 데이터 모델을 정의합니다.
+    * schemas.py는 Pydantic 모델을 정의합니다.
+    * database.py는 데이터베이스 설정과 연결을 담당합니다.
+* OCP (개방-폐쇄 원칙):
+  * 새로운 기능이 추가될 때 기존의 코드를 수정하지 않고 확장할 수 있도록 설계되었습니다. 예를 들어, 새로운 API 엔드포인트를 추가하려면 새로운 라우터 함수만 추가하면 됩니다.
+* LSP (리스코프 치환 원칙):
+  * 서브 클래스인 ItemCreate이 부모 클래스인 ItemBase를 대체 가능합니다.
+* ISP (인터페이스 분리 원칙):
+  * 인터페이스를 명시적으로 정의한 부분은 없지만, FastAPI의 의존성 주입을 통해 인터페이스 분리를 구현하였습니다. 종속성을 주입함으로써 의존성이 하위 모듈에서 상위 모듈로 향하지 않고 상위 모듈이 하위 모듈에 의존하지 않습니다.
+* DIP (종속성 역전 원칙):
+  * 응답 데이터 전송을 위한 DTO(Data Transfer Object)를 구현
 <br/><br/><br/><br/>
 
 
 ## 글을 마치며
+오늘은 FastAPI와 SOLID 디자인 원칙을 적용하여 효율적이고 견고한 API를 개발하는 방법에 대해 알아보았습니다. 
+SOLID 원칙을 준수하면서 코드를 작성하면 유지 보수가 쉽고 확장성 있는 애플리케이션을 구축할 수 있습니다. 하지만 하시는 업무에 따라 지킬 수 없는 상황일 수도 있으니 상황에 맞게 적용하시길 바랍니다. 
+
+앞으로도 이러한 디자인 원칙을 염두에 두고 개발을 진행하여 더 나은 소프트웨어를 만들어 가시길 바라겠습니다.
+
+감사합니다.
