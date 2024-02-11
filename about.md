@@ -50,7 +50,6 @@ comments: false
 <hr>
 <div>
   <img src="https://img.shields.io/badge/IntelliJIDEA-131418?style=for-the-badge&logo=intellij-idea&logoColor=white" />
-  <img src="https://img.shields.io/badge/Pycharm-131418?style=for-the-badge&logo=pycharm&logoColor=6DB33F" />
   <img src="https://img.shields.io/badge/Visual_Studio_Code-131418?style=for-the-badge&logo=visual%20studio%20code&logoColor=0078D4" />
   <img src="https://img.shields.io/badge/eclipse-131418?&style=for-the-badge&logo=EclipseIDE&logoColor=525C86" />
 </div>
