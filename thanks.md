@@ -1,3 +1,4 @@
+
 ---
 title: Acknowledgment
 permalink: /thanks/
