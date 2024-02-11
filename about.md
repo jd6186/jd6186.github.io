@@ -1,11 +1,12 @@
+
 ---
 title: About Us.
 permalink: /about/
 layout: page
 excerpt: Hello peeps, I'm web developer, living in Korea. This blog for documentation about my programming journey.
 comments: false
-excerpt_separator: <!--more-->
 ---
+
 
 #### Contact JDU ✨
 
