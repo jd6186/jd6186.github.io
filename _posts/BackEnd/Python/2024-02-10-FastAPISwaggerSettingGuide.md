@@ -127,8 +127,8 @@ API 명세는 개발자 효율성을 향상시키고 일관성 및 표준화를 
 여러분들도 명확한 API 명세를 통해 효율적인 개발을 진행하시길 바랍니다. 감사합니다.
 <br/><br/>
 
-[참고자료]
-* [FastAPI 공식 문서](https://fastapi.tiangolo.com/ko/)
-* [OpenAPI 스펙](https://swagger.io/specification/)
-* [Swagger UI](https://swagger.io/tools/swagger-ui/)
-* [ReDoc](https://redocly.github.io/redoc/)
+* 참고자료
+  * [FastAPI 공식 문서](https://fastapi.tiangolo.com/ko/)
+  * [OpenAPI 스펙](https://swagger.io/specification/)
+  * [Swagger UI](https://swagger.io/tools/swagger-ui/)
+  * [ReDoc](https://redocly.github.io/redoc/)

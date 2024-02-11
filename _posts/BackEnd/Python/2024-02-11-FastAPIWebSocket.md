@@ -124,5 +124,5 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 인증과 관련된 내용은 제 [FastAPI와 JWT](https://jd6186.github.io/FastAPI_JWT) 포스팅을 참고하시면 더 많은 정보를 얻을 수 있습니다. 다들 즐코하세요~ 🚀
 <br/><br/>
 
-[참고자료]
-* [FastAPI 공식 문서](https://fastapi.tiangolo.com/ko/)
+* 참고자료
+  * [FastAPI 공식 문서](https://fastapi.tiangolo.com/ko/)

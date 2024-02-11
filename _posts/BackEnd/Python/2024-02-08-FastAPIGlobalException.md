@@ -89,5 +89,7 @@ async def application_filter(request: Request, call_next):
 이를 통해 예외 및 요청에 대한 통제를 효율적으로 관리할 수 있게 되셨을 겁니다. 궁금하신 점이나 추가적인 질문이 있으시다면 언제든지 댓글로 남겨주세요.<br/>
 아래는 참고자료로 FastAPI 공식 문서를 첨부하겠습니다. 모두 FastAPI를 통해 효율적인 개발을 진행하시길 바랍니다.<br/>
 감사합니다.
-[FastAPI 공식 문서](https://fastapi.tiangolo.com/advanced/middleware/)
+
+* 참고자료
+  * [FastAPI 공식 문서](https://fastapi.tiangolo.com/advanced/middleware/)
 
