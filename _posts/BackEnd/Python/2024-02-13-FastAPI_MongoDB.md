@@ -15,10 +15,6 @@ FastAPI는 Python 기반 웹 API 프레임워크로, 빠르고 효율적인 API 
 ### 기본 조건
 * Python 3.7 이상
 * MongoDB 서버 (설치 및 실행)
-* API 설치
-  ```bash
-  pip install fastapi motor
-  ```
 
 ### MongoDB 연결 가이드
 아래 로직을 따라 MongoDB와 FastAPI를 연동하여 사용자 정보를 저장하고 조회하는 코드를 작성해보겠습니다.<br/>
