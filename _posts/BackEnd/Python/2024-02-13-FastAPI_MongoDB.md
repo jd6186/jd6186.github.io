@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[Python] FastAPI WebSocket 사용 가이드"
+title: "[Python] FastAPI MongoDB 연동 가이드"
 tags: [BackEnd PYTHON]
 ---
 
@@ -312,6 +312,11 @@ certifi
 pytest -o log_cli=true
 ```
 pytest를 사용하여 테스트를 실행합니다. log_cli=true 옵션을 사용하여 테스트 로그를 표시합니다.
+<br/><br/><br/><br/>
+
+### 조회는 되는데 입력/수정/삭제가 되지 않는 경우
+
+
 <br/><br/><br/><br/>
 
 ### RDBMS와의 차이점
