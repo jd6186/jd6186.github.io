@@ -400,6 +400,37 @@ format=[%(asctime)s] %(levelname)s : %(message)s
 datefmt=
 ```
 log 관련 설정을 모아 둔 파일입니다.
+
+---
+**log_util.py**
+
+```python
+import logging.config
+
+# set up logging
+logging.config.fileConfig("log.ini")
+logger = logging.getLogger('sLogger')
+
+
+def info(message):
+    logger.info(message)
+
+
+def debug(message):
+    logger.debug(message)
+
+
+def error(message):
+    logger.error(message)
+
+
+def warning(message):
+    logger.warning(message)
+
+
+def critical(message):
+    logger.critical(message)
+```
 <br/><br/><br/><br/>
 
 ### RDBMS와의 차이점
