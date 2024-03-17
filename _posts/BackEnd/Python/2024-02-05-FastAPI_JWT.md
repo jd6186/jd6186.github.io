@@ -19,7 +19,8 @@ JWT 토큰은 세 개의 부분으로 구성됩니다.
 페이로드: 사용자 정보를 포함합니다.<br/>
 서명: 토큰의 무결성을 검증하는 데 사용됩니다.<br/>
 다음은 Python 라이브러리 PyJWT를 사용하여 JWT 토큰을 생성하는 코드 예시입니다.
-```Python
+
+```python
 import jwt
 
 # 사용자 정보
@@ -42,7 +43,8 @@ print(token)
 ### JWT 토큰 적용 방법
 JWT 토큰은 HTTP 요청 헤더에 Authorization 키를 사용하여 전송됩니다.<br/>
 다음은 FastAPI에서 JWT 토큰을 적용하는 코드 예시입니다.
-```Python
+
+```python
 from fastapi import Depends, FastAPI, HTTPException, Security
 
 # JWT 라이브러리
@@ -80,7 +82,8 @@ def get_user(user_info: dict = Depends(verify_token)):
 ### JWT 토큰을 적용할 라우터와 적용하지 않을 라우터를 구분하는 방법
 Depends 데코레이터를 사용하여 특정 라우터에만 JWT 토큰 검증을 적용할 수 있습니다.<br/>
 다음은 토큰 검증을 적용하지 않을 라우터 예시입니다.
-```Python
+
+```python
 @app.post("/token")
 def refresh_token(form_data: OAuth2PasswordRequestForm = Depends()):
     # 로그인 처리
@@ -92,7 +95,8 @@ def refresh_token(form_data: OAuth2PasswordRequestForm = Depends()):
 router 그룹단위로 JWT 토큰 검증을 적용할 수도 있습니다.<br/>
 다음은 router 그룹에 JWT 토큰 검증을 적용하는 코드 예시입니다.<br/>
 Guest 영역은 토큰 검증을 적용하지 않고, 이외 영역은 토큰 검증을 적용합니다.
-```Python
+
+```python
 import jwt
 import datetime
 from fastapi import APIRouter, Depends
