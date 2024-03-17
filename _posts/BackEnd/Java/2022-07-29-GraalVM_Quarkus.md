@@ -79,14 +79,14 @@ GraalVM을 Container에서 활용할 수 있도록 이번엔 Docker를 활용해
 
 - GraalVM 설치 후 환경변수 설정<br/>
   GRAALVM_HOME 환경변수와 JAVA_HOME의 환경변수 값을 GraalVM설치 위치로 지정해주시면 됩니다.<br/>
-  > <img src="../../../assets/img/2022-07-29-GraalVM/env.jpg"  width="700"/>
+  > <img src="../../../assets/img/BackEnd/Java/2022-07-29-GraalVM/env.jpg"  width="700"/>
 
 <br/>
 
 - Intellij를 활용해서 Quarkus 프로젝트 생성<br/>
   여기서는 Gradle을 활용했습니다.(Maven 사용하셔서 만드셔도 괜찮습니다.)<br/>
   SDK는 아까 다운로드받은 GraalVM의 디렉토리 Path를 잡아주시면 됩니다.<br/>
-  > <img src="../../../assets/img/2022-07-29-GraalVM/quarkus_new_project.png"  width="700"/>
+  > <img src="../../../assets/img/BackEnd/Java/2022-07-29-GraalVM/quarkus_new_project.png"  width="700"/>
 
 <br/>
 
@@ -103,7 +103,7 @@ GraalVM을 Container에서 활용할 수 있도록 이번엔 Docker를 활용해
   완료되면 'quarkus dev' 실행<br/>
   이렇게 실행하면 http://localhost:8080 으로 서버가 오픈됩니다.<br/>
   참 쉽죠?<br/>
-  > <img src="../../../assets/img/2022-07-29-GraalVM/server_open.png"  width="700"/>
+  > <img src="../../../assets/img/BackEnd/Java/2022-07-29-GraalVM/server_open.png"  width="700"/>
 
 <br/>
 
@@ -115,7 +115,7 @@ GraalVM을 Container에서 활용할 수 있도록 이번엔 Docker를 활용해
   
   1. 생성 이유<br/>
      - Dockerfile Path<br/>
-       > <img src="../../../assets/img/2022-07-29-GraalVM/dockerfile_path.png"  width="700"/>
+       > <img src="../../../assets/img/BackEnd/Java/2022-07-29-GraalVM/dockerfile_path.png"  width="700"/>
      <br/>
       
      - quarkus-micro-image 사용이유<br/>

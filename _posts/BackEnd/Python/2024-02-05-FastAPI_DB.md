@@ -65,7 +65,7 @@ tags: [BackEnd PYTHON]
 
 4. FastAPI 애플리케이션<br/>
    - 폴더구조
-     - ![folder.png](..%2F..%2F..%2Fassets%2Fimg%2F2024-02-05-FastAPI_DB%2Ffolder.png)
+     - ![folder.png](..%2F..%2F..%2Fassets%2Fimg%2FBackEnd%2FPython%2F2024-02-05-FastAPI_DB%2Ffolder.png)
 
    - main.py:
      - ```Python

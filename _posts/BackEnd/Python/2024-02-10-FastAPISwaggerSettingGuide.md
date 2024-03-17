@@ -96,7 +96,7 @@ parameter를 설정할 때 'Optional'을 통해 null을 허용할 것인지 명�
 #### 1. Swagger
 docs_url은 기본적으로 base url + /docs로 설정됩니다. 우리가 흔히 아는 Swagger 문서 형식을 제공합니다.<br/>
 schema를 통해 필수값에 대한 명세를 확인할 수 있습니다.<br/>
-![img.png](../../../assets/img/2024-02-10-FastAPI_SwaggerSettingGuide/docs.png)<br/>
+![img.png](../../../assets/img/BackEnd/Python/2024-02-10-FastAPI_SwaggerSettingGuide/docs.png)<br/>
 ![docs_schema.png](..%2F..%2F..%2Fassets%2Fimg%2F2024-02-10-FastAPI_SwaggerSettingGuide%2Fdocs_schema.png)
 <br/><br/><br/><br/>
 
@@ -118,7 +118,7 @@ app = FastAPI(
 )
 ```
 글색이 변경된 모습 확인 가능<br/>
-![img.png](../../../assets/img/2024-02-10-FastAPI_SwaggerSettingGuide/thema.png)
+![img.png](../../../assets/img/BackEnd/Python/2024-02-10-FastAPI_SwaggerSettingGuide/thema.png)
 <br/><br/><br/><br/>
 
 ## 글을 마치며

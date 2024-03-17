@@ -19,7 +19,7 @@ FCM은 타겟 모바일에 푸시를 보낼 수 있도록 해주는 Google 솔�
 >   아래에서 만들어볼 로직이 아래 라이프사이클과 같이 작동하는 것이므로 간단하게 인지하시고 넘어가시면 좋을 것 같습니다.<br/>
 >   (Admin이 임의로 발송하길 원하신다면 저 Batch 대신 Admin이 들어간다고 생각하시면 됩니다.)
 >
->   <img src="../../../assets/img/2022-07-13-FirebaseCloudMessageServer/fcmConsoleSetting.png"  width="700"/>
+>   <img src="../../../assets/img/BackEnd/Java/2022-07-13-FirebaseCloudMessageServer/fcmConsoleSetting.png"  width="700"/>
 <br/><br/><br/><br/>
 
 ## FCM 적용 방법
@@ -36,10 +36,10 @@ FCM을 사용하기 위해서는 크게 4가지 작업이 필요합니다.
 
 ### FCM ServiceAccountKey 발급 방법
 아래 이미지를 따라 FCM 홈페이지로 부터 파일을 받아 resources 폴더 내에 위치시켜주고 아래 이미지와 같이 파일명을 변경해주세요
-> <img src="../../../assets/img/2022-07-13-FirebaseCloudMessageServer/fcmConsoleSetting.png"  width="700"/>
+> <img src="../../../assets/img/BackEnd/Java/2022-07-13-FirebaseCloudMessageServer/fcmConsoleSetting.png"  width="700"/>
 
 처음 받으면 아래와 같은 파일명이 아닙니다. dev와 prod용을 구분하기 좋게 파일명을 저는 이렇게 지정하였습니다.
-> <img src="../../../assets/img/2022-07-13-FirebaseCloudMessageServer/serviceAccountKeyPath.png"  width="700"/>
+> <img src="../../../assets/img/BackEnd/Java/2022-07-13-FirebaseCloudMessageServer/serviceAccountKeyPath.png"  width="700"/>
 <br/><br/>
 
 ### FCM관련 Config 설정
