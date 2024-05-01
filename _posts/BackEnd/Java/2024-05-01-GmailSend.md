@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[Python] Java Email(Gmail) 발송 가이드"
+title: "[Java] Java Email(Gmail) 발송 가이드"
 tags: [BackEnd JAVA GMAIL EMAIL]
 ---
 
