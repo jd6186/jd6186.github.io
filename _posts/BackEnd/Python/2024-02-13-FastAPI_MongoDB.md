@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "[Python] FastAPI MongoDB 연입 가이드"
+title: "[Python] FastAPI MongoDB 연결 가이드"
 tags: [BackEnd PYTHON]
 ---
 
 ## Intro
 안녕하세요 **Noah**입니다.<br/>
-MongoDB는 문서 중심 NoSQL 데이터베이스로, 빠르고 확장 가능하며 개발자 친화적입니다.
+MongoDB는 문서 중심 NoSQL 데이터베이스로, 문자열 그대로를 사용하기 때문에 빠르게 확장 가능하며 개발자 친화적인 데이터베이스입니다.
 FastAPI는 Python 기반 웹 API 프레임워크로, 빠르고 효율적인 API 개발을 지원합니다.<br/>
 이 두 기술을 함께 사용해 웹 API를 만들어 보겠습니다.
 <br/><br/><br/><br/>
