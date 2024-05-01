@@ -14,11 +14,11 @@ tags: [BackEnd JAVA GMAIL EMAIL]
 ## 본문
 ### 1. Gmail 설정
 * Gmail 설정에서 2차 인증을 설정합니다.
-  * ![1.png](..%2F..%2F..%2Fassets%2Fimg%2FBackEnd%2FJava%2F2024-05-01-GmailSend%2F1.png)
+  * <img src="../../../assets/img/BackEnd/Java/2024-05-01-GmailSend/1.png"  alt="1"/>
 * 앱 비밀번호를 생성합니다.
-  * ![2.png](..%2F..%2F..%2Fassets%2Fimg%2FBackEnd%2FJava%2F2024-05-01-GmailSend%2F2.png)
+  * <img src="../../../assets/img/BackEnd/Java/2024-05-01-GmailSend/2.png"  alt="2"/>
 * 앱을 생성해줍니다.
-  * ![3.png](..%2F..%2F..%2Fassets%2Fimg%2FBackEnd%2FJava%2F2024-05-01-GmailSend%2F3.png)
+  * <img src="../../../assets/img/BackEnd/Java/2024-05-01-GmailSend/3.png"  alt="3"/>
 
 <br/><br/>
 
