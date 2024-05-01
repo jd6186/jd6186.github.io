@@ -50,72 +50,103 @@ async def websocket_endpoint(websocket: WebSocket):
 
 <br/><br/>
 
-### 채팅방 관리
+### 다중 웹소캣 연결 관리(EX-단체 채팅방)
 회원들이 연결된 소켓을 관리하려면 다음과 같은 접근 방법을 고려할 수 있습니다
 1. 세션 관리: 각 클라이언트의 연결을 세션으로 추적하고 관리합니다.
 2. 인증 및 권한 부여: 회원들의 연결을 관리할 때 인증 및 권한 부여를 구현하여 허가된 사용자만 연결할 수 있도록 합니다.
 3. 상태 관리: 연결된 소켓의 상태를 추적하고 필요한 경우 연결을 종료하거나 다시 연결합니다.
-```python
-from fastapi import FastAPI, WebSocket
 
-app = FastAPI()
-chat_rooms = {}
+> 2024-05-01 수정
 
-@app.websocket("/ws/{room_id}")
-async def websocket_endpoint(websocket: WebSocket, room_id: str):
-   await websocket.accept()
-   if room_id not in chat_rooms:
-      chat_rooms[room_id] = []
-   chat_rooms[room_id].append(websocket)
-   try:
-      while True:
-         data = await websocket.receive_text()
-         # 메시지를 받아서 채팅방의 모든 클라이언트에게 전송
-         for client in chat_rooms[room_id]:
-            await client.send_text(data)
-   finally:
-      # 클라이언트 연결이 끊겼을 때 채팅방에서 제거
-      chat_rooms[room_id].remove(websocket)
+```Python
+    from fastapi import APIRouter, WebSocket
+    
+    router = APIRouter()
+    chat_rooms = {}
+   
+   
+    @app.websocket("/chat-api/{chat_room_id}")
+    async def chat_room_websocket_endpoint(chat_room_id: int, websocket: WebSocket):
+        # Socket Manager 정보 조회 후 없으면 생성
+        logger.info(f"__________________________________________ Chat Room Setting START __________________________________________")
+        if chat_room_id not in chat_rooms:
+            chat_rooms[chat_room_id] = {
+            "chat_room_id": chat_room_id
+            , "socket_group": []
+            }
+            socket_group = chat_rooms[chat_room_id]["socket_group"]
+        if websocket not in socket_group:
+            socket_group.append(websocket)
+    
+        await websocket.accept()
+        logger.info(f"__________________________________________ Chat Room Setting END __________________________________________")
+        try:
+            while True:
+                if websocket.client_state == WebSocketState.DISCONNECTED:
+                    raise WebSocketDisconnect
+                message = await websocket.receive_text()
+                logger.info(f"__________________________________________ GROUP WEBSOCKET REQUEST MESSAGE START __________________________________________")
+                logger.info(f"{message}")
+                logger.info(f"__________________________________________ GROUP WEBSOCKET REQUEST MESSAGE END __________________________________________")
+                if message is None:
+                    continue
+                if message == "ping":
+                    await single_send(websocket, "pong")
+                else:
+                    result = await chat_room_main_logic(chat_room_id, message)
+                    if result is not None:
+                        await broadcast(result, chat_rooms[chat_room_id]["socket_group"])
+        except Exception as e:
+            exception_type_name = type(e).__name__
+            logger.error(f"########################### GROUP Disconnect Title : {exception_type_name}")
+        finally:
+            # 연결이 끊겼을 때, 채팅방 내에서 소캣 정보 제거 후 명시적으로 websocket.close()를 호출하여 연결을 정리
+            if websocket in socket_group:
+                socket_group.remove(websocket)
+            await websocket.close()
+   
+   
+    # 채팅을 친 당사자에게만 메시지 전송
+    async def single_send(websocket: WebSocket, message: str):
+        logger.info(f"__________________________________________ SINGLE_SEND MESSAGE START __________________________________________")
+        await websocket.send_text(message)
+        logger.info(f"__________________________________________ SINGLE_SEND MESSAGE END __________________________________________")
+
+   
+    # 채팅방 내 모든 소켓에 메시지 전송
+    async def broadcast(message: str, socket_group: List[WebSocket]):
+        for websocket in socket_group:
+            logger.info(
+            f"__________________________________________ BROADCAST MESSAGE START __________________________________________")
+            await websocket.send_text(message)
+            logger.info(
+            f"__________________________________________ BROADCAST MESSAGE END __________________________________________")
+    
+   
+    # 채팅 관련 로직 처리 함수
+    async def chat_room_main_logic(chat_room_id, message):
+        try:
+            chat_data, result = await chat_room_router(json.loads(message))
+            # 채팅방 종료 시 채팅방 정보 삭제
+            if chat_data.chat_type_code == GameRoomGroupApiTypeCode.CLOSE_GAME_ROOM_GROUP.value:
+                chat_rooms.pop(chat_room_id)
+            return result
+        except Exception as e:
+            logger.error(f"########################### GROUP MainLogicError : {e}")
 ```
 이러한 접근 방법을 활용하여 회원들이 연결된 소켓을 효과적으로 관리할 수 있습니다.
 <br/><br/>
 
-### Router를 통한 WebSocket 경로 추가
-1. Router 생성:
-   먼저 FastAPI에서 Router를 생성합니다. Router는 WebSocket 경로를 그룹화하고 모듈화하는 데 사용됩니다. 다음과 같이 Router를 생성할 수 있습니다.
-   ```Python
-   from fastapi import APIRouter, WebSocket
-   
-   router = APIRouter()
-   chat_rooms = {}
+### Router를 통한 WebSocket 경로 관리
+Router를 앱에 추가하여 해당 경로를 사용할 수 있도록 합니다. 다음과 같이 Router를 앱에 추가할 수 있습니다.
+```Python
+from fastapi import FastAPI
+from . import my_router  # 여기서 my_router는 생성한 Router 모듈입니다.
 
-   @router.websocket("/ws/{room_id}")
-   async def websocket_endpoint(websocket: WebSocket, room_id: str):
-      await websocket.accept()
-      if room_id not in chat_rooms:
-         chat_rooms[room_id] = []
-      chat_rooms[room_id].append(websocket)
-      try:
-         while True:
-            data = await websocket.receive_text()
-            # 메시지를 받아서 채팅방의 모든 클라이언트에게 전송
-            for client in chat_rooms[room_id]:
-                await client.send_text(data)
-      finally:
-         # 클라이언트 연결이 끊겼을 때 채팅방에서 제거
-         chat_rooms[room_id].remove(websocket)
-   ```
+app = FastAPI()
 
-2. Router를 앱에 추가:
-   Router를 앱에 추가하여 해당 경로를 사용할 수 있도록 합니다. 다음과 같이 Router를 앱에 추가할 수 있습니다.
-   ```Python
-   from fastapi import FastAPI
-   from . import my_router  # 여기서 my_router는 생성한 Router 모듈입니다.
-   
-   app = FastAPI()
-   
-   app.include_router(my_router)
-   ```
+app.include_router(my_router)
+```
 <br/><br/><br/><br/>
 
 ## 글을 마치며
