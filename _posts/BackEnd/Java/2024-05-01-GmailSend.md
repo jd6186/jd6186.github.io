@@ -19,7 +19,8 @@ tags: [BackEnd JAVA GMAIL EMAIL]
   * <img src="../../../assets/img/BackEnd/Java/2024-05-01-GmailSend/2.png"  alt="2"/>
 * 앱을 생성해줍니다.
   * <img src="../../../assets/img/BackEnd/Java/2024-05-01-GmailSend/3.png"  alt="3"/>
-
+* 생성 시 나오는 패스워드는 반드시 저장해주셔야합니다.
+  * 추후 환경변수에 작성할 것이므로 별도로 안전한 곳에 저장해줍니다.
 <br/><br/>
 
 ### 2. 의존성 추가
