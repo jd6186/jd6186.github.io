@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[Java] Java Email(Gmail) 발송 가이드"
-tags: [BackEnd JAVA GMAIL EMAIL]
+title: "[Java] Java Email(Gmail) 발송 가이드(Docker 활용)"
+tags: [BackEnd JAVA GMAIL EMAIL Docker]
 ---
 
 ## Intro
@@ -12,7 +12,24 @@ tags: [BackEnd JAVA GMAIL EMAIL]
 <br/><br/><br/><br/>
 
 ## 본문
-### 1. Gmail 설정
+### 1. 이메일 발송 프로토콜(SMTP)
+#### SMTP (Simple Mail Transfer Protocol)와 HTTP (Hypertext Transfer Protocol) 차이점
+##### 1) 목적
+  SMTP: SMTP는 주로 이메일을 보내고 받는 데 사용됩니다. 이 프로토콜은 이메일 서버 간에 이메일 메시지를 전송하고, 사용자가 이메일 클라이언트를 통해 메일 서버로 이메일을 보낼 때 사용됩니다.<br/>
+  HTTP: HTTP는 웹 서버와 클라이언트(웹 브라우저) 사이의 정보를 교환하기 위해 사용됩니다. 웹 페이지, 이미지, 비디오 등의 자원을 불러오는 데 사용됩니다.<br/>
+##### 2) 작동 방식
+  SMTP: 이메일을 보낼 때 SMTP는 "푸시" 방식을 사용합니다. 즉, 발신자의 메일 서버가 수신자의 메일 서버로 직접 이메일을 보내며, 연결이 성공하면 메일을 전송합니다. SMTP 서버는 보내는 이의 이메일 클라이언트와 수신 이의 메일 서버 사이에서 통신합니다.<br/>
+  HTTP: 클라이언트(브라우저)가 서버에 요청을 보내고 서버가 그 요청에 응답을 보내는 "요청-응답" 방식을 사용합니다. 사용자가 URL을 입력하면, HTTP는 해당 웹 서버로부터 정보를 요청하고, 서버는 요청받은 자원을 클라이언트에게 전송합니다.<br/>
+##### 3) 사용되는 포트
+  SMTP: 일반적으로 SMTP는 25번 포트를 사용합니다. 보안이 강화된 전송을 위해 SSL/TLS를 사용하는 경우 465번 또는 587번 포트를 사용할 수 있습니다.<br/>
+  HTTP: HTTP는 기본적으로 80번 포트를 사용하며, 보안이 강화된 HTTPS는 443번 포트를 사용합니다.<br/>
+##### 4) 보안
+  SMTP: SMTP 자체는 메시지 내용을 암호화하지 않기 때문에 메시지가 중간에 가로채질 위험이 있습니다. 이를 보완하기 위해 SMTPS(SSL을 사용한 SMTP)가 개발되었습니다.<br/>
+  HTTP: HTTP도 기본적으로 암호화되지 않지만, HTTPS(SSL/TLS를 사용한 HTTP)는 데이터를 암호화하여 통신합니다.<br/>
+  이 두 프로토콜은 각각 특화된 목적과 기능을 가지고 있어, 이메일 전송이 필요할 때는 SMTP를, 웹 컨텐츠 전송이 필요할 때는 HTTP를 사용합니다.
+<br/><br/><br/><br/>
+
+### 2. Gmail Console 설정
 * Gmail 설정에서 2차 인증을 설정합니다.
   * <img src="../../../assets/img/BackEnd/Java/2024-05-01-GmailSend/1.png"  alt="1"/>
 * 앱 비밀번호를 생성합니다.
@@ -21,9 +38,9 @@ tags: [BackEnd JAVA GMAIL EMAIL]
   * <img src="../../../assets/img/BackEnd/Java/2024-05-01-GmailSend/3.png"  alt="3"/>
 * 생성 시 나오는 패스워드는 반드시 저장해주셔야합니다.
   * 추후 환경변수에 작성할 것이므로 별도로 안전한 곳에 저장해줍니다.
-<br/><br/>
+<br/><br/><br/><br/>
 
-### 2. 의존성 추가
+### 3. 의존성 추가
 ```gradle
 // Email
 implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
@@ -35,7 +52,7 @@ implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
 
 <br/><br/>
 
-### 3. 환경변수 설정
+### 4. 환경변수 설정
 GMAIL_EMAIL, GMAIL_PASSWORD 환경변수를 설정합니다.
 
 ```dockerfile
@@ -66,7 +83,7 @@ ENTRYPOINT java -jar app.jar -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} 
 
 <br/><br/>
 
-### 4. 메일 발송 서비스 구현
+### 5. 메일 발송 서비스 구현
 ```java
 import lombok.AllArgsConstructor;
 import lombok.Getter;
