@@ -1,14 +1,13 @@
 ---
 layout: post
-title: "[Java] Java Email(Gmail) 발송 가이드(Docker 활용)"
-tags: [BackEnd JAVA GMAIL EMAIL Docker]
+title: "Kafka 기본 개념정리"
+tags: [BackEnd Kafka]
 ---
 
 # Intro
 안녕하세요 **Noah**입니다.<br/>
 오늘은 제가 막연하게 어려운 기술이라고 생각했던 Kafka라는 기술에 대해 공부하면서 알게된 기본적인 지식들에 대해 공유해보려 합니다.<br/>
-REST API와 AWS Infra 구축을 주로 다루다보니 이벤트 기반의 메시지 처리기술에 대한 지식이 부족했는데,<br/>
-이번 기회에 Kafka에 대해 공부하면서 이해도를 높이고자 했습니다.<br/>
+REST API와 AWS Infra 구축을 주로 다루다보니 이벤트 기반의 메시지 처리기술에 대한 지식이 부족했는데, 이번 기회에 Kafka에 대해 공부하면서 이해도를 높이고자 했습니다.<br/>
 이제부터 제가 Kafka에 대해 공부하면서 알게된 내용들 + 삽질했던 이력들을 개념정리와 함께 공유해보겠습니다.
 <br/><br/><br/><br/>
 
