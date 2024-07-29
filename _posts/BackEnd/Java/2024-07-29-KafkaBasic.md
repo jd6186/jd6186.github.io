@@ -63,7 +63,7 @@ brew services start kafka
     - 때문에 성능이슈가 발생할 수 있어 Topic 추가 및 partition 개수 설정 시에는 서버 성능을 고려해 추가해야함
 - consumer들은 이 topic을 기준으로 작업을 처리함
 - Topic 생성에 따라 Patition이 추가된 모습
-    1. Topic 추가 시 지정된 명령어로 partition도 여러개 생긴 모습
+    - Topic 추가 시 지정된 명령어로 partition도 여러개 생긴 모습
 
         ```shell
         # Topic 추가
@@ -116,20 +116,20 @@ brew services start kafka
 
                 - 일반적인 데이터 전송 과정 예시
                     - 일반적인 데이터 전송과정은 아래와 같이 데이터가 여러번 복사되면서 CPU 사용량을 증가시키고 전송 속도를 저하
-                    1. Producer > Broker 메시지 발송
+                    - Producer > Broker 메시지 발송
                         - 데이터가 유저 공간에서 커널 공간으로 복사됨
-                    2. 브로커가 데이터를 디스크에 저장
+                    - 브로커가 데이터를 디스크에 저장
                         - 브로커가 데이터를 수신하고, 이를 다시 유저 공간에서 커널 공간으로 복사하여 디스크에 쓰기 실행
-                    3. 브로커가 데이터를 컨슈머에 전송
+                    - 브로커가 데이터를 컨슈머에 전송
                         - 브로커가 데이터를 컨슈머에 보낼 때, 데이터는 다시 유저 공간에서 커널 공간으로 복사
                 - Zero Copy를 활용한 전송 과정 예시
                     - 주로 “sendfile“ 시스템 콜을 활용해 구현되며, 이는 파일을 소켓으로 직접 전송하는 시스템콜이라 데이터를 유저 공간으로 복사하지 않고 커널 공간에서 직접 처리
-                    1. Producer > Broker 메시지 발송
+                    - Producer > Broker 메시지 발송
                         - 데이터가 유저 공간에서 커널 공간으로 복사됨(이건 동일)
-                    2. 브로커가 데이터를 디스크에 저장
+                    - 브로커가 데이터를 디스크에 저장
                         - 브로커는 데이터를 디스크에 쓸 때 sendfile을 사용하여, 데이터를 유저 공간으로 복사하지 않고 커널 공간에서 직접 디스크로 전송
                         - 이 과정에서 데이터는 메모리 매핑을 통해 OS 페이지 캐시에 저장
-                    3. 브로커가 데이터를 컨슈머에게 전송
+                    - 브로커가 데이터를 컨슈머에게 전송
                         - 브로커가 컨슈머에게 데이터를 전송할 때도 ‘sendfile’을 사용해 전달
                         - 데이터는 디스크에서 직접 소켓으로 전송되며, 유저 공간으로 복사되지 않음
             - 유저 공간과 커널 공간이란?**(결국 메모리 영역임)**
@@ -153,21 +153,21 @@ brew services start kafka
     - acks란?
         - 메시지가 성공적으로 처리되었음을 확인하는 신호
         - 메시지 신뢰성과 성능을 조절하는 중요한 요소
-    1. acks=0
+    - acks=0
         - 개념
             - 프로듀서가 메시지를 브로커로 보내고 나서 ACK를 대기하지 않는 상태
         - 장점
             - 가장 빠른 전송 속도 제공
         - 단점
             - 메시지가 브로커에 도달하지 못하거나 데이터 손실이 발생하더라도 프로듀서가 모름
-    2. acks=1
+    - acks=1
         - 개념
             - 리더 브로커가 메시지를 성공적으로 기록한 후 프로듀서에게 ACK를 발송
         - 장점
             - 리더 브로커에 데이터가 기록된 것을 보장
         - 단점
             - 리더 브로커가 장애를 겪으면 해당 메시지에 대한 추적 불가
-    3. acks=all
+    - acks=all
         - 개념
             - 리더 브로커와 모든 동기화된 팔로워 브로커가 메시지를 기록한 후 프로듀서에게 ACK 발송
         - 장점
@@ -309,7 +309,7 @@ brew services start kafka
         - Consumer가 장애가 발생해 disconnect 되더라도 rebalance를 통해 바로 다른 consumer를 활용해 해당 작업을 처리할 수 있음
         - 이후 사용자가 지정한 consumer 개수만큼 다시 consumer를 create하고 consumer가 다 만들어지면 다시 rebalance 수행
 - consumer 실험
-    1. Consumer group은 topic에 종속적이며 topic을 삭제하면 같이 삭제
+    - Consumer group은 topic에 종속적이며 topic을 삭제하면 같이 삭제
 
         ```shell
         dave.jeong@Daveui-MacBookAir bin % ./kafka-console-producer --topic test-consumer-topic --bootstrap-server localhost:9092
@@ -336,7 +336,7 @@ brew services start kafka
         keyword-farmer-group
         ```
 
-    2. Consumer Group에서 Consumer 할당 확인
+    - Consumer Group에서 Consumer 할당 확인
 
         ```shell
         # Consumer Group에 Consumer 할당 전
@@ -372,7 +372,7 @@ brew services start kafka
 - Consumer는 작업이 완료될 시 Offset Commit을 실행해 자신이 해당 작업을 처리했음을 알림.
     - 저장된 offset commit 이력은 내부 토픽 “__consumer_offsets“에 저장됨
 - Offset 실험
-    1. consumer가 메시지를 읽고 처리할 경우 offset이 시퀀셜하게 변경되는 모습
+    - consumer가 메시지를 읽고 처리할 경우 offset이 시퀀셜하게 변경되는 모습
 
         ```shell
         # Topic 생성
@@ -431,9 +431,9 @@ brew services start kafka
         - 새로운 consumer가 추가(connect)되었을 경우
             - 기존 consumer가 처리하던 일부 partifion이 새로운 consumer에 할당 될 수 있음
 - 파티션 실험
-    1. 리벨런싱 실험
-        1. Consumer 추가 시
-            1. PARTITION[0, 1]의 CONSUMER-ID 값이 리벨런싱된 것을 확인 가능
+    - 리벨런싱 실험
+        - Consumer 추가 시
+            - PARTITION[0, 1]의 CONSUMER-ID 값이 리벨런싱된 것을 확인 가능
 
             ```shell
             # 1개 할당 시
@@ -452,8 +452,8 @@ brew services start kafka
             test-consumer-group test-consumer-topic 2 0 0 0 console-consumer-a68c4fd8-e3f8-40bd-936d-4ce7b9ac4bd7 /127.0.0.1 console-consumer
             ```
 
-        2. Consumer 삭제 시
-            1. PARTITION[0, 1]의 CONSUMER-ID 값이 리벨런싱된 것을 확인 가능
+        - Consumer 삭제 시
+            - PARTITION[0, 1]의 CONSUMER-ID 값이 리벨런싱된 것을 확인 가능
 
                 ```shell
                 dave.jeong@Daveui-MacBookAir bin % ./kafka-consumer-groups --bootstrap-server localhost:9092 --group test-consumer-group --describe
@@ -469,7 +469,7 @@ brew services start kafka
                 test-consumer-group test-consumer-topic 2 0 0 0 console-consumer-a68c4fd8-e3f8-40bd-936d-4ce7b9ac4bd7 /127.0.0.1 console-consumer
                 ```
 
-    2. 분산처리 실험 > 작업이 몇만개 몰렸을 시 처리되고 있는 모습
+    - 분산처리 실험 > 작업이 몇만개 몰렸을 시 처리되고 있는 모습
 
         ```shell
         // topic에 들어온 요청을 broker가 적절한 partition을 찾아 나눠 작업시키고 있는 모습
@@ -508,11 +508,11 @@ brew services start kafka
         - 브로커에 새로운 Leader Zookeeper서버를 선정 후 관리
             - <img src="../../../assets/img/BackEnd/Java/2024-07-29-KafkaBasic/img.png"  alt="img"/>
             - 리더 선출 과정
-                1. **초기 상태**: 3대의 Zookeeper 서버가 존재
-                2. **서버 1 고장**: 서버 1이 고장 나고, 서버 2와 서버 3이 존재
-                3. **상태 교환**: 서버 2와 서버 3이 서로의 상태를 교환
-                4. **투표**: 서버 2와 서버 3이 서로를 지목할 경우, ZXID(리더 적합도 점수라고 생각하면 편함)와 Epoch 번호를 비교하여 최종적으로 하나의 리더를 선택
-                5. **Quorum 달성**: 과반수 이상의 지지를 얻은 서버가 리더로 선출
+                - **1. 초기 상태**: 3대의 Zookeeper 서버가 존재
+                - **2. 서버 A 장애**: 서버 A가 장애 발생, 서버 B와 서버 C이 존재
+                - **3. 상태 교환**: 서버 B와 서버 C가 서로의 상태를 교환
+                - **4. 투표**: 서버 B와 서버 C가 서로를 지목할 경우, ZXID(리더 적합도 점수라고 생각하면 편함)와 Epoch 번호를 비교하여 최종적으로 하나의 리더를 선택
+                - **5. Quorum 달성**: 과반수 이상의 지지를 얻은 서버가 리더로 선출
         - 고장난 서버가 복구되면, Leader 서버로부터 최신 데이터를 복제받아 동기화
 - Zookeeper 서버 3대를 구성하면 각 브로커당 Zookeeper 서버 1대가 Leader로 동작을 하며, 나머지는 Follower 상태로 대기
 
