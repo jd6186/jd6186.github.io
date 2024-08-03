@@ -365,12 +365,6 @@ public class KafkaConsumerService {
 <br/><br/><br/><br/>
 
 
-
-# Spring Boot로 Producer 구현
-<br/><br/><br/><br/>
-
-
-
 # 예시 코드
 여러분들이 이해하실 수 있게 간단한 예시 코드를 작성해보겠습니다.<br/>
 핵심은 작업을 쪼개 병렬적으로 작업을 처리해 성능을 확보한다는 것에 있습니다.<br/>
