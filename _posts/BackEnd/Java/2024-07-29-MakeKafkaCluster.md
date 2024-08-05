@@ -36,142 +36,115 @@ Kafka를 운영하기 위해서는 Zookeeper와 Kafka 브로커가 필요합니�
 ## Docker Compose 파일 작성
 우선, Docker Compose 파일을 작성합니다. 이 파일은 Zookeeper와 Kafka 브로커를 설정하는데 필요한 모든 정보를 담고 있습니다.
 
+아래 블로그에서 작성된 docker-compose.yml 파일을 활용하고 각 설정이 어떤 내용인지 주석을 추가하였습니다. 아래 글도 확인해보시면 좋을 것 같아요
+
+[[Kafka] Docker Compose로 멀티브로커 Kafka 구성하기](https://devocean.sk.com/blog/techBoardDetail.do?ID=164016)
+
 ```yaml
 # Docker Compose 파일 버전을 명시합니다. 여기서는 버전 3.8을 사용합니다.
 version: '3.8'
 
 # services 섹션은 실행할 개별 서비스를 정의합니다.
 services:
-  # 첫 번째 Zookeeper 인스턴스를 정의합니다.
-  my-zookeeper-1:
-    # 사용할 도커 이미지와 버전을 명시합니다. 여기서는 confluentinc/cp-zookeeper 이미지의 7.0.1 버전을 사용합니다.
-    image: confluentinc/cp-zookeeper:7.0.1
-    # 호스트 이름을 설정합니다.
-    hostname: my-zookeeper-1
-    # 호스트와 컨테이너 간의 포트 매핑을 설정합니다. 여기서는 호스트의 2181 포트를 컨테이너의 2181 포트에 매핑합니다.
-    ports:
-      - "2181:2181"
-    # Zookeeper의 환경 변수를 설정합니다.
+  # 첫 번째 Zookeeper 서비스를 정의합니다.
+  zookeeper-1:
+    # 사용할 Docker 이미지와 태그를 지정합니다. 최신 버전의 confluentinc/cp-zookeeper 이미지를 사용합니다.
+    image: confluentinc/cp-zookeeper:latest
+    # 환경 변수를 설정하여 Zookeeper 인스턴스를 구성합니다.
     environment:
-      # Zookeeper 서버 ID를 설정합니다.
-      ZOOKEEPER_SERVER_ID: 1
-      # 클라이언트가 Zookeeper 서버에 접속하는 데 사용하는 포트입니다.
-      ZOOKEEPER_CLIENT_PORT: 2181
-      # 틱 타임을 설정합니다.
-      ZOOKEEPER_TICK_TIME: 2000
-      # 초기화 제한 시간을 설정합니다.
-      ZOOKEEPER_INIT_LIMIT: 20
-      # 동기화 제한 시간을 설정합니다.
-      ZOOKEEPER_SYNC_LIMIT: 5
-      # 선거 포트 바인딩 재시도 횟수를 설정합니다.
-      ZOOKEEPER_electionPortBindRetry: 20
-      # Zookeeper 서버 목록을 설정합니다. > 특이한 점은 자기 자신이 제일 먼저 위치할 경우 투표 시 장애가 발생할 수 있습니다.(이거 때문에 삽질 오래했습니다. ㅠㅠ)
-      ZOOKEEPER_SERVERS: |
-        server.2=my-zookeeper-2:2888:3888
-        server.3=my-zookeeper-3:2888:3888
-        server.1=my-zookeeper-1:2888:3888
-
-  # 두 번째 Zookeeper 인스턴스를 정의합니다.
-  my-zookeeper-2:
-    image: confluentinc/cp-zookeeper:7.0.1
-    hostname: my-zookeeper-2
+      ZOOKEEPER_SERVER_ID: 1 # Zookeeper 서버의 ID를 설정합니다.
+      ZOOKEEPER_CLIENT_PORT: 2181 # 클라이언트가 연결할 포트를 지정합니다.
+      # Zookeeper의 Heartbeat 주기 등의 시간을 밀리초 단위로 설정합니다.
+      ZOOKEEPER_TICK_TIME: 2000 # Zookeeper 틱 타임을 밀리초 단위로 설정합니다.
+      # ZOOKEEPER_INIT_LIMIT: 5일 때, Zookeeper 서버가 초기화하는 동안 팔로워(follower)와 리더(leader) 간의 초기 동기화를 완료하는 데 허용되는 틱(tick) 수를 정의합니다. 5 * 2000 밀리초 = 10000 밀리초(10초)
+      ZOOKEEPER_INIT_LIMIT: 5 # 이걸 설정 안하면 Zookeeper 서버가 올라오다가 떨어지는 경우가 있습니다.
+      # ZOOKEEPER_SYNC_LIMIT: 2일 때, 팔로워가 리더와의 동기화를 완료하는 데 걸릴 수 있는 최대 시간은 2 * 2000 밀리초 = 4000 밀리초(4초)
+      ZOOKEEPER_SYNC_LIMIT: 2 # 팔로워가 리더와의 동기화를 완료할 때까지의 최대 시간을 설정합니다.
+    # 호스트와 컨테이너 간의 포트 매핑을 설정합니다.
     ports:
-      - "2182:2181"
+      - "22181:2181" # 호스트의 포트 22181을 컨테이너의 포트 2181에 매핑합니다.
+
+  # 두 번째 Zookeeper 서비스를 정의합니다.
+  zookeeper-2:
+    image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 2
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 20
-      ZOOKEEPER_SYNC_LIMIT: 5
-      ZOOKEEPER_electionPortBindRetry: 20
-      ZOOKEEPER_SERVERS: |
-        server.1=my-zookeeper-1:2888:3888
-        server.2=my-zookeeper-2:2888:3888
-        server.3=my-zookeeper-3:2888:3888
-
-  # 세 번째 Zookeeper 인스턴스를 정의합니다.
-  my-zookeeper-3:
-    image: confluentinc/cp-zookeeper:7.0.1
-    hostname: my-zookeeper-3
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
     ports:
-      - "2183:2181"
+      - "32181:2181"
+
+  # 세 번째 Zookeeper 서비스를 정의합니다.
+  zookeeper-3:
+    image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 3
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 20
-      ZOOKEEPER_SYNC_LIMIT: 5
-      ZOOKEEPER_electionPortBindRetry: 20
-      ZOOKEEPER_SERVERS: |
-        server.1=my-zookeeper-1:2888:3888
-        server.2=my-zookeeper-2:2888:3888
-        server.3=my-zookeeper-3:2888:3888
-
-  # 첫 번째 Kafka 브로커를 정의합니다.
-  kafka-broker-1:
-    # 사용할 도커 이미지와 버전을 명시합니다. 여기서는 confluentinc/cp-kafka 이미지의 7.0.1 버전을 사용합니다.
-    image: confluentinc/cp-kafka:7.0.1
-    # 호스트 이름을 설정합니다.
-    hostname: kafka-broker-1
-    # 호스트와 컨테이너 간의 포트 매핑을 설정합니다. 여기서는 호스트의 9092 포트를 컨테이너의 9092 포트에 매핑합니다.
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
     ports:
-      - "9092:9092"
-    # 컨테이너의 환경 변수를 설정합니다.
-    environment:
-      # Kafka 브로커의 고유 ID를 설정합니다.
-      KAFKA_BROKER_ID: 1
-      # Kafka 브로커가 연결할 Zookeeper 서버 목록을 설정합니다.
-      KAFKA_ZOOKEEPER_CONNECT: my-zookeeper-1:2181,my-zookeeper-2:2181,my-zookeeper-3:2181
-      # Kafka 브로커의 광고된 리스너 주소를 설정합니다.
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:9092
-      # Kafka 브로커의 리스너 주소를 설정합니다.
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      # 오프셋 토픽의 복제 인자 수를 설정합니다. 복제 인자가 3인 이유는 데이터의 안정성과 가용성을 높이기 위함입니다.
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
-    # 의존성을 설정하여 Zookeeper가 먼저 시작되도록 합니다.
+      - "42181:2181"
+
+  # 첫 번째 Kafka 브로커 서비스를 정의합니다.
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    # Kafka 브로커가 시작되기 전에 의존하는 Zookeeper 서비스를 정의합니다.
     depends_on:
-      - my-zookeeper-1
-      - my-zookeeper-2
-      - my-zookeeper-3
-
-  # 두 번째 Kafka 브로커를 정의합니다.
-  kafka-broker-2:
-    image: confluentinc/cp-kafka:7.0.1
-    hostname: kafka-broker-2
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     ports:
-      - "9093:9092"
+      - 29092:29092 # 호스트의 포트 29092를 컨테이너의 포트 29092에 매핑합니다. > 여기서 사용한 Port번호를 외부에서 사용하게 되니 잘 확인해주세요.
+    environment:
+      KAFKA_BROKER_ID: 1 # Kafka 브로커의 ID를 설정합니다.
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181 # Zookeeper 연결 정보를 설정합니다.
+      # KAFKA_ADVERTISED_LISTENERS애 작성한 내용을 기반으로 외부에서 접속하게 되니 잘 확인해주세요.
+      # PLAINTEXT > 내부통신용
+      # PLAINTEXT_HOST > 외부통신용
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:29092 # 브로커의 리스너 정보를 설정합니다. 
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT # 리스너 보안 프로토콜 맵을 설정합니다.
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT # 브로커 간 통신에 사용할 리스너 이름을 설정합니다.
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 # 트랜잭션 상태 로그 복제 계수를 설정합니다.
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 # 트랜잭션 상태 로그 최소 ISR(동기화된 복제본)의 수를 설정합니다.
+
+  # 두 번째 Kafka 브로커 서비스를 정의합니다.
+  kafka-2:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+    ports:
+      - "39092:39092"
     environment:
       KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: my-zookeeper-1:2181,my-zookeeper-2:2181,my-zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-2:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
-    depends_on:
-      - my-zookeeper-1
-      - my-zookeeper-2
-      - my-zookeeper-3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9092,PLAINTEXT_HOST://localhost:39092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
-  # 세 번째 Kafka 브로커를 정의합니다.
-  kafka-broker-3:
-    image: confluentinc/cp-kafka:7.0.1
-    hostname: kafka-broker-3
+  # 세 번째 Kafka 브로커 서비스를 정의합니다.
+  kafka-3:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     ports:
-      - "9094:9092"
+      - "49092:49092"
     environment:
       KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: my-zookeeper-1:2181,my-zookeeper-2:2181,my-zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-3:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
-    depends_on:
-      - my-zookeeper-1
-      - my-zookeeper-2
-      - my-zookeeper-3
-
-# 네트워크 설정을 정의해, 모든 서비스가 동일한 네트워크를 공유하도록 합니다.
-networks:
-  default:
-    name: kafka-network
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9092,PLAINTEXT_HOST://localhost:49092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 ```
 
 이 Docker Compose 파일은 다음을 수행합니다
@@ -268,35 +241,61 @@ spring:
   kafka:
     consumer:
       # Kafka broker 서버 목록을 설정합니다.
-      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
-      # Consumer 그룹 ID를 설정합니다.
-      group-id: my-group
+      bootstrap-servers: localhost:29092,localhost:39093,localhost:49094
       # 메시지 키를 문자열로 역직렬화합니다.
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       # 메시지 값을 문자열로 역직렬화합니다.
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       # 자동 오프셋이 어디서부터 데이터를 읽어올 것인지 설정합니다.
-      auto-offset-reset: earliest
+      auto-offset-reset: latest
+      # 수동 커밋을 활용하고 싶을 경우 false, 기본은 auto-commit: true
+      enable-auto-commit: false
+      properties:
+        heartbeat.interval.ms: 1000  # heartbeat 간격을 1초로 설정
+        session.timeout.ms: 15000    # session timeout을 15초로 설정
+        max.poll.interval.ms: 300000 # 최대 poll 간격을 5분으로 설정
+    listener:
+      # poll() 메소드의 타임아웃을 설정합니다.
+      # 3초(3000밀리초)로 설정되어 있습니다.
+      poll-timeout: 3000
+      # 메시지 처리 후 수동으로 확인(ack)하는 방식을 사용합니다.
+      # MANUAL로 설정하면 직접 메시지를 확인해야 합니다. > 수동 커밋 시에는 MANUAL로 설정해주셔야만 작동합니다.
+      ack-mode: MANUAL
+      # true로 설정하면 누락된 토픽이 있으면 애플리케이션이 시작하지 않습니다.
+      # false로 설정되어 있으므로 누락된 토픽이 있어도 애플리케이션이 계속 실행됩니다.
+      missing-topics-fatal: false
     # 혹시 Consumer에서 메시지를 처리후 다른 Consumer로 메시지를 다시 전달하고 싶다면, Producer 설정도 추가해주세요.
     producer:
-      # Kafka broker 서버 목록을 설정합니다.
-      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      # Kafka broker 서버 목록을 설정합니다. > docker를 활용하셨을 경우에는 설정하신 port번호를 잘 보고 작성해주셔야합니다.
+      bootstrap-servers: localhost:29092,localhost:39093,localhost:49094
       # 메시지 키를 문자열로 직렬화합니다.
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       # 메시지 값을 문자열로 직렬화합니다.
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 ```
 
-위 설정에서 주의 깊게 봐야할 부분은 '직렬화, 역직렬화'와 'Partition Offset' 설정입니다. <br/>
+### serializer, deserializer란?
 직렬화하는 이유는 Kafka는 메시지를 바이트 배열로 저장하기 때문에, 이를 적절한 데이터 형식으로 변환하기 위해 역직렬화가 필요합니다. <br/>
-Partition 개념에서 Offset은 해당 Partition에서 어디까지 메시지를 읽었는지를 나타내는 인덱스 값입니다. <br/>
-Offset 설정은 다음과같은 종류가 있습니다.
+
+### auto-offset-reset
+Offset을 읽어오는 설정은 다음과같은 종류가 있습니다.
 - **earliest**: 가장 처음부터 데이터를 읽어옵니다.
 - **latest**: 가장 최근부터 데이터를 읽어옵니다.
 - **none**: 오프셋을 찾을 수 없을 때 예외를 발생시킵니다.
 
-[Code 구현]
+### ack-mode
+ack-mode는 메시지 처리 후 확인 방식을 설정합니다. 다음과 같은 옵션이 있습니다.
+- **RECORD**: 각 레코드가 처리될 때마다 개별적으로 확인합니다. 처리된 각 메시지에 대해 acknowledge 메소드가 호출됩니다.
+- **BATCH**: 한 번의 poll() 호출로 가져온 모든 레코드를 배치로 확인합니다. 현재 배치의 마지막 레코드에 대해 acknowledge 메소드가 호출됩니다.
+- **TIME**: 일정 시간 간격으로 레코드를 확인합니다. 설정된 시간 간격마다 확인이 이루어집니다.
+- **COUNT**: 일정 수의 레코드가 처리될 때마다 확인합니다. 설정된 레코드 수마다 확인이 이루어집니다.
+- **COUNT_TIME**: 일정 수의 레코드가 처리되거나 일정 시간이 경과할 때마다 확인합니다. 설정된 레코드 수 또는 시간 간격 중 먼저 도달하는 조건에 따라 확인이 이루어집니다.
+- **MANUAL**: 애플리케이션이 수동으로 확인을 호출합니다. 메시지 처리가 끝난 후 acknowledge 메소드를 직접 호출해야 합니다.
+- **MANUAL_IMMEDIATE**: MANUAL과 유사하지만, 확인이 즉시 이루어집니다. acknowledge 메소드 호출 시 즉시 커밋됩니다.
+<br/><br/><br/>
 
+## Code 구현 시 몇가지 팁
+### 기본 Consumer 구현 방법
 ```java
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -313,22 +312,26 @@ public class KafkaConsumerService {
 ```
 
 위 예제에서는 my-topic이라는 토픽에서 메시지를 읽어오는 Kafka Consumer를 구현했습니다. 메시지가 수신되면 listen 메서드가 호출됩니다.<br/>
-위 코드에서 'KafkaListener'를 통해 원하는 topic의 원하는 groupId에 해당하는 메시지를 수신할 수 있습니다. <br/> 
+위 코드에서 'KafkaListener'를 통해 원하는 topic의 원하는 groupId에 해당하는 메시지를 수신할 수 있습니다.<br/>
+하지만 위와 같이 구현 시 auto-commit이 진행됩니다. 이렇게 되면 메시지 처리 중 예외가 발생했을 때 메시지를 다시 처리하기 어려울 수 있습니다.
 
-## 수동 커밋 구현 방법
+<br/><br/>
+
+### 수동 커밋 구현 방법
 Spring Kafka의 Consumer 설정은 기본적으로 자동 커밋입니다.<br/>
-하지만, 수동으로 커밋하는 방법을 사용하면 메시지 처리 중 예외가 발생했을 때 다양하게 메시지를 재처리할 수 있습니다.
-
-[설정방법]
-
+하지만, 수동으로 커밋하는 방법을 사용하면 메시지 처리 중 예외가 발생했을 때 다양하게 메시지를 재처리할 수 있습니다.<br/>
+application.yml에서 다음을 설정해줍니다.
 ```yaml
 spring:
   kafka:
     consumer:
+      ...
       enable-auto-commit: false
+    listener:
+      ...
+      ack-mode: MANUAL
 ```
 
-[커밋 방법]
 수동 커밋을 위해 @KafkaListener 메서드에서 Acknowledgment 객체를 사용합니다.
 
 ```java
@@ -368,108 +371,16 @@ public class KafkaConsumerService {
 # 예시 코드
 여러분들이 이해하실 수 있게 간단한 예시 코드를 작성해보겠습니다.<br/>
 핵심은 작업을 쪼개 병렬적으로 작업을 처리해 성능을 확보한다는 것에 있습니다.<br/>
-(간단하지만 실제로 기업들에서 사용하는 코드와 유사하게 작성해보겠습니다.)
 
-## Spring Boot 서버 간단 예시
-### [Controller]
-```java
-import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpServletRequest;
+Spring Kafka를 구현하실 때는 Controller를 활용해 API를 통해 들어온 요청을 Producer로 전달하고 Producer가 Consumer에게 메시지를 전송하는 방법을 사용합니다.<br/>
+자세한 아래 예시코드와 README를 확인해보시면 좋을 것 같아요.<br/>
 
-import java.util.List;
-
-@Slf4j
-@RestController
-@RequestMapping("/ad")
-public class AdController {
-    private final AdService adService;
-
-    @Autowired
-    public KafkaProducerController(AdService adService) {
-        this.adService = adService;
-    }
-
-    @PostMapping("/click")
-    @Operation(summary = "광고 클릭 API", description = "광고 클릭 API입니다.")
-    public void adClick(HttpServletRequest request) {
-        // TODO - Token에서 userSeq를 추출하여 사용합니다.
-        Long userSeq = tokenProvider.getUserIdFromToken(request);
-        adService.adClick(userSeq);
-    }
-}
-```
-
-### [Service]
-```java
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-
-@Service
-@Slf4j
-public class AdService {
-
-  private final KafkaTemplate<String, String> kafkaTemplate;
-  private final ObjectMapper objectMapper;
-
-  @Autowired
-  public AdService(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
-    this.kafkaTemplate = kafkaTemplate;
-    this.objectMapper = objectMapper;
-  }
-
-  public void adClick(Long userId, Long adId) {
-    try {
-      AdClickMessage message = new AdClickMessage(TopicTypeCode.AD_CLICK.getCode(), userId, adId);
-      String jsonMessage = objectMapper.writeValueAsString(message);
-      // 메시지를 문자열로 변환하여 Kafka Producer에 전송합니다.
-      kafkaTemplate.send(TopicTypeCode.AD_MANAGER.getCode(), jsonMessage);
-    } catch (JsonProcessingException e) {
-      log.error("Producer Failed to process message: {}", jsonMessage);
-      log.error("ERROR Message: {}", e.getMessage());
-    }
-  }
-
-  // 메시지 형식을 나타내는 내부 클래스 > DTO로 분리해서 사용해도 괜찮아요 지금은 이해를 위해 여기에 작성했습니다.
-  @AllArgsConstructor
-  private static class AdClickMessage {
-    private final String taskType;
-    private final Long userId;
-    private final Long adId;
-  }
-}
-```
-
-### [TypeCode]
-```java
-public enum TopicTypeCode {
-    AD_MANAGER("ad-manager"),
-    AD_SCHEDULED_DATA_TRANSFER("ad-scheduled-data-transfer");
-
-    private final String code;
-
-    TopicTypeCode(String code) {
-        this.code = code;
-    }
-
-    public String getCode() {
-        return code;
-    }
-}
-```
+최대한 보일러 플레이트처럼 활용 가능하시게 만들고 싶었는데 아직 부족한 부분이 많은 것 같네요. 시간이 날 때 마다 리팩토링하면서 관리해 보겠습니다~<br/>
 
 ## Kafka 클러스터 구현과 Consumer 예시
 [예시 코드 Gihub 링크](https://github.com/jd6186/sample_kafka)
 
-위 깃헙으로 접근하시면 Producer, Consumer, Kafka 설정, Docker Compose 파일 등을 확인하실 수 있습니다.<br/>
+위 깃헙으로 접근하시면 Producer, Consumer, Kafka 설정, Docker Compose 파일 등은 확인하실 수 있습니다.<br/>
 실제 프로젝트에서는 메시지를 작은 작업 단위로 나누어 병렬적으로 처리하는 것이 중요합니다.<br/>
 이렇게 하면 성능을 향상시킬 수 있고, 예외가 발생했을 때 메시지를 다시 처리할 수 있는 유연성을 확보할 수 있으니 한번 참고해보시면 좋을 것 같습니다~<br/>
 <br/><br/><br/><br/>
