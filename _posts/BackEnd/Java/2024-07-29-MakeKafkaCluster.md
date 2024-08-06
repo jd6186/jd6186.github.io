@@ -25,7 +25,7 @@ Docker Compose를 사용하면 필요한 모든 서버와 미들웨어를 한번
 4. [API 연동 예시](#API 연동 예시)
 5. [Outro](#Outro)
 <br/><br/><br/><br/>
-
+---
 
 
 # Docker Compose로 Kafka 클러스터 구성
@@ -200,7 +200,7 @@ docker-compose ps
 
 ![img_1.png](../../../assets/img/BackEnd/Java/2024-07-29-MakeKafkaCluster/img_1.png)
 <br/><br/><br/><br/>
-
+---
 
 
 # Spring Kafka로 Consumer 구현
@@ -366,7 +366,7 @@ public class KafkaConsumerService {
 
 위 예제는 수동 커밋을 구현한 Kafka Consumer입니다. 메시지 처리 중 예외가 발생하면, 해당 메시지를 다시 처리하거나 로그를 남기는 등의 작업을 수행할 수 있습니다.<br/>
 <br/><br/><br/><br/>
-
+---
 
 # 예시 코드
 여러분들이 이해하실 수 있게 간단한 예시 코드를 작성해보겠습니다.<br/>
@@ -384,7 +384,7 @@ Spring Kafka를 구현하실 때는 Controller를 활용해 API를 통해 들어
 실제 프로젝트에서는 메시지를 작은 작업 단위로 나누어 병렬적으로 처리하는 것이 중요합니다.<br/>
 이렇게 하면 성능을 향상시킬 수 있고, 예외가 발생했을 때 메시지를 다시 처리할 수 있는 유연성을 확보할 수 있으니 한번 참고해보시면 좋을 것 같습니다~<br/>
 <br/><br/><br/><br/>
-
+---
 
 
 # Outro
