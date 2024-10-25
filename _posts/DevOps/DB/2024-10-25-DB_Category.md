@@ -16,16 +16,16 @@ tags: [BackEnd, Database, MySQL, PostgreSQL, MongoDB, Hadoop, Redis, Cassandra, 
 
 <br/><br/><br/><br/>
 
-
 # 목차
-1. [MySQL - 관계형 데이터베이스 (RDBMS)](#MySQL (RDBMS - 관계형 데이터베이스))
-2. [PostgreSQL - 객체 관계형 데이터베이스 (ORDBMS)](#PostgreSQL---객체-관계형-데이터베이스-ORDBMS)
-3. [MongoDB - 문서 지향 데이터베이스 (NoSQL)](#MongoDB---문서-지향-데이터베이스-NoSQL)
-4. [Hadoop - 분산 파일 시스템 (HDFS)](#Hadoop---분산-파일-시스템-HDFS)
-5. [Redshift - 열 기반 데이터베이스 (Columnar Database)](#Redshift---열-기반-데이터베이스-Columnar-Database)
-6. [Cassandra - 넓은 열 저장소 (Wide Column Store)](#Cassandra---넓은-열-저장소-Wide-Column-Store)
-7. [Redis - 메모리 기반 키-값 저장소 (In-memory Key-Value Store)](#Redis---메모리-기반-키-값-저장소-In-memory-Key-Value-Store)
-8. [Outro](#Outro)
+1. [MySQL (RDBMS - 관계형 데이터베이스)](#mysql-rdbms-관계형-데이터베이스)
+2. [PostgreSQL (ORDBMS - 객체 관계형 데이터베이스)](#postgresql-ordbms-객체-관계형-데이터베이스)
+3. [MongoDB (NoSQL - 문서 지향 데이터베이스)](#mongodb-nosql-문서-지향-데이터베이스)
+4. [Hadoop (HDFS - 분산 파일 시스템)](#hadoop-hdfs-분산-파일-시스템)
+5. [Column-oriented DB (열 기반 데이터베이스)](#column-oriented-db-열-기반-데이터베이스)
+6. [Cassandra (Wide Column Store - 넓은 열 저장소)](#cassandra-wide-column-store-넓은-열-저장소)
+7. [Redis (In-memory Key-Value Store - 메모리 기반 키-값 저장소)](#redis-in-memory-key-value-store-메모리-기반-키-값-저장소)
+8. [총 정리](#총-정리)
+9. [Outro](#outro)
 
 <br/><br/><br/><br/>
 
