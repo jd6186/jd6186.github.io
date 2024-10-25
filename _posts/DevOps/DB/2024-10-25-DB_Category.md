@@ -23,7 +23,7 @@ tags: [BackEnd, Database, MySQL, PostgreSQL, MongoDB, Hadoop, Redis, Cassandra, 
 4. [Hadoop (HDFS - 분산 파일 시스템)](#hadoop-hdfs---분산-파일-시스템)
 5. [Column-oriented DB (열 기반 데이터베이스)](#column-oriented-db-열-기반-데이터베이스)
 6. [Cassandra (Wide Column Store - 넓은 열 저장소)](#cassandra-wide-column-store---넓은-열-저장소)
-7. [Redis (In-memory Key-Value Store - 메모리 기반 키-값 저장소)](#cassandra-wide-column-store---넓은-열-저장소)
+7. [Redis (In-memory Key-Value Store - 메모리 기반 키-값 저장소)](#redis에-연결하고-데이터-추가하기)
 8. [총 정리](#총-정리)
 9. [Outro](#outro)
 
