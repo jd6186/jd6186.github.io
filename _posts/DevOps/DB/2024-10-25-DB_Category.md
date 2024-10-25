@@ -18,7 +18,7 @@ tags: [BackEnd, Database, MySQL, PostgreSQL, MongoDB, Hadoop, Redis, Cassandra, 
 
 
 # 목차
-1. [MySQL - 관계형 데이터베이스 (RDBMS)](#MySQL---관계형-데이터베이스-RDBMS)
+1. [MySQL - 관계형 데이터베이스 (RDBMS)](#MySQL (RDBMS - 관계형 데이터베이스))
 2. [PostgreSQL - 객체 관계형 데이터베이스 (ORDBMS)](#PostgreSQL---객체-관계형-데이터베이스-ORDBMS)
 3. [MongoDB - 문서 지향 데이터베이스 (NoSQL)](#MongoDB---문서-지향-데이터베이스-NoSQL)
 4. [Hadoop - 분산 파일 시스템 (HDFS)](#Hadoop---분산-파일-시스템-HDFS)
