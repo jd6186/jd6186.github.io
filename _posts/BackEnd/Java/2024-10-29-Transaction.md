@@ -274,10 +274,154 @@ public class PaymentService {
 4. **주문 및 결제 최종 확정**: 결제가 정상적으로 완료되었을 때 주문 상태를 "PAID"로 변경하고 포인트나 쿠폰을 차감하여 최종 결제를 확정합니다.
 
 이렇게 설계하면 각 단계의 트랜잭션이 독립적으로 관리되므로 특정 단계에서 문제가 발생해도 그 이전 단계의 데이터가 안전하게 보호됩니다.
+
+하지만 모든 상황에서 저렇게 간단하게 처리되진 않겠죠? 아래 예시를 통해 복잡한 트랜잭션을 살펴보겠습니다.
+<br/><br/><br/><br/>
+
+
+## 복잡한 Transaction 관리 방법
+복잡한 트랜잭션 처리는 주로 **하나의 API가 여러 트랜잭션을 필요로 할 때** 발생합니다. 
+
+예를 들어, 결제 API에서는 사용자의 포인트, 할인 쿠폰, 결제 상태 업데이트, 결제 시스템 호출 등 여러 단계가 필요하며, 각 단계가 개별 트랜잭션으로 처리될 수 있습니다. 
+
+이런 복잡한 프로세스에서는 전체 트랜잭션 관리가 매우 중요하며, 한 단계라도 실패하면 모든 작업을 롤백해야 합니다.
+
+여기서는 예시로 **포인트 결제와 외부 결제 시스템 호출을 포함한 복잡한 결제 API**를 설계해 보겠습니다. 
+
+각 단계별로 트랜잭션이 진행되며, 일부 작업은 독립 트랜잭션으로 처리되어야 하고, 일부는 전체 트랜잭션으로 관리됩니다.
+<br/><br/>
+
+### 1. 예제 시나리오: 결제 API의 복잡한 트랜잭션 처리
+**결제 API 단계:**
+
+1. 사용자 포인트 차감
+2. 할인 쿠폰 적용 여부 확인 및 차감
+3. 결제 요청 상태를 "PENDING"으로 설정
+4. 외부 결제 시스템에 요청 (실패 가능성이 존재)
+5. 결제 성공 시 결제 완료 상태 "COMPLETED"로 설정하고 트랜잭션 로그 기록
+
+각 단계는 트랜잭션 관리가 필요하며, 특히 외부 결제 시스템에서 실패 시에는 모든 작업을 롤백해야 합니다.
+<br/><br/>
+
+### 2. 테이블 설계 (간략히)
+- `Users` : 사용자 정보와 포인트 잔액
+- `Orders` : 주문 정보와 결제 상태
+- `Payments` : 결제 정보와 결제 상태
+- `Discounts` : 할인 쿠폰 정보
+- `TransactionLogs` : 트랜잭션 로그
+  <br/><br/>
+
+### 3. 코드 예시: 결제 API의 트랜잭션 처리
+```java
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class PaymentService {
+
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
+    private final TransactionLogRepository transactionLogRepository;
+    private final ExternalPaymentGateway externalPaymentGateway;
+
+    public PaymentService(UserRepository userRepository,
+                          OrderRepository orderRepository,
+                          PaymentRepository paymentRepository,
+                          TransactionLogRepository transactionLogRepository,
+                          ExternalPaymentGateway externalPaymentGateway) {
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.paymentRepository = paymentRepository;
+        this.transactionLogRepository = transactionLogRepository;
+        this.externalPaymentGateway = externalPaymentGateway;
+    }
+
+    @Transactional
+    public void processPayment(Long userId, Long orderId, double paymentAmount, Long discountId) {
+        // 1. 사용자 포인트 차감
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user.getBalance() < paymentAmount) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+        user.setBalance(user.getBalance() - paymentAmount);
+        userRepository.save(user);
+
+        // 2. 할인 쿠폰 적용 및 차감
+        if (discountId != null) {
+            Discount discount = discountRepository.findById(discountId).orElseThrow(() -> new IllegalArgumentException("Discount not found"));
+            if (discount.isExpired()) {
+                throw new IllegalArgumentException("Discount expired");
+            }
+            discountRepository.delete(discount);  // 할인 쿠폰 사용 완료
+        }
+
+        // 3. 결제 정보 초기화 및 PENDING 상태로 설정
+        Payment payment = new Payment(orderId, userId, paymentAmount, "PENDING");
+        paymentRepository.save(payment);
+
+        // 외부 결제 시스템 호출을 위한 독립 트랜잭션
+        try {
+            completeExternalPayment(payment);
+        } catch (Exception e) {
+            // 외부 결제 실패 시 전체 롤백
+            throw new RuntimeException("Payment failed with external provider", e);
+        }
+    }
+
+    /**
+     * 외부 결제 시스템 호출을 별도의 트랜잭션으로 처리하여,
+     * 외부 결제 실패 시 전체 트랜잭션을 롤백합니다.
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void completeExternalPayment(Payment payment) throws Exception {
+        // 외부 결제 시스템 호출
+        boolean paymentSuccess = externalPaymentGateway.process(payment.getAmount());
+
+        if (!paymentSuccess) {
+            throw new Exception("External payment failed");
+        }
+
+        // 4. 결제 상태를 COMPLETED로 업데이트
+        payment.setStatus("COMPLETED");
+        paymentRepository.save(payment);
+
+        // 5. 트랜잭션 로그 생성
+        TransactionLog log = new TransactionLog(payment.getPaymentId(), "PAYMENT", payment.getAmount(), "SUCCESS");
+        transactionLogRepository.save(log);
+    }
+}
+
+```
+<br/><br/>
+
+### 4. 위 코드 설명
+### 트랜잭션 처리 단계
+1. **사용자 포인트 차감**
+    - 포인트 잔액을 차감하고, 사용자 정보를 업데이트합니다.
+    - 이 작업이 실패하면 결제 전체가 롤백됩니다.
+2. **할인 쿠폰 적용 및 차감**
+    - 할인 쿠폰의 만료 여부를 확인하고, 만료되지 않았으면 쿠폰을 삭제하여 차감 처리합니다.
+    - 이 작업이 실패해도 전체 트랜잭션이 롤백됩니다.
+3. **결제 정보 초기화 및 상태 설정**
+    - `Payment` 엔터티를 생성하고 상태를 "PENDING"으로 설정하여 결제를 초기화합니다.
+    - 결제 상태가 아직 확정되지 않았으므로 외부 결제가 성공해야만 이후 상태를 "COMPLETED"로 업데이트합니다.
+4. **외부 결제 시스템 호출** (`@Transactional(propagation = Propagation.REQUIRES_NEW)`)
+    - 외부 결제 시스템을 호출하여 실제 결제를 수행합니다.
+    - 이 단계는 `Propagation.REQUIRES_NEW`로 설정하여 별도의 트랜잭션으로 처리됩니다.
+    - 외부 결제가 실패하면 예외가 발생하여 상위 트랜잭션이 롤백됩니다.
+    - 외부 결제가 성공하면 결제 상태를 "COMPLETED"로 업데이트하고 트랜잭션 로그를 생성합니다.
+5. **트랜잭션 로그 생성**
+    - 결제가 성공적으로 완료되면 트랜잭션 로그에 기록하여 결제 내역을 추적합니다.
+
+### 중요 부분 요약 설명
+- **독립 트랜잭션**: 외부 결제 시스템 호출과 같은 외부 작업은 실패 확률이 높으므로 `Propagation.REQUIRES_NEW` 트랜잭션으로 관리합니다. 이를 통해 외부 결제 실패 시 전체 롤백이 쉽게 관리됩니다.
+- **전체 트랜잭션 롤백**: 외부 결제에서 실패하면 `processPayment`의 트랜잭션도 모두 롤백됩니다. 이는 결제 과정에서 발생할 수 있는 불일치를 방지하는 역할을 합니다.
+- **예외 처리**: 결제 실패나 외부 호출 실패 시 적절한 예외를 발생시켜 사용자에게 알리고, 필요한 경우 오류를 기록할 수 있습니다.
 <br/><br/><br/><br/>
 
 # Outro
-이번 글에서는 Spring Boot에서 트랜잭션을 관리하는 방법을 결제 프로세스를 예시로 하여 자세히 알아보았습니다. 
+이번 글에서는 Spring Boot에서 트랜잭션을 관리하는 방법을 실무에서 사용할 법한 결제 프로세스를 예시로 하여 자세히 알아보았습니다. 
 
 트랜잭션의 기본 개념부터 @Transactional 애너테이션의 다양한 속성 설정, 그리고 실무에서 자주 사용되는 트랜잭션 관리 예시까지 다룰려고 노력했는데 도움이 되었으면 좋겠습니다 ^^
 
