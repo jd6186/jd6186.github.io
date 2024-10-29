@@ -19,7 +19,29 @@ Python에서는 FastAPI와 함께 SQLAlchemy를 사용하여 트랜잭션을 쉽
 <br/><br/><br/><br/>
 
 # 목차
-
+1. [Intro](#intro)
+2. [기본 Transaction 관리 방법](#기본-transaction-관리-방법)
+   - [1. 트랜잭션 설정](#1-트랜잭션-설정)
+   - [2. Isolation Level 설정 예시](#2-isolation-level-설정-예시)
+   - [3. 트랜잭션 테스트 및 롤백 확인](#3-트랜잭션-테스트-및-롤백-확인)
+3. [결제 프로세스에서 트랜잭션 관리해보기](#결제-프로세스에서-트랜잭션-관리해보기)
+   - [1. 결제와 관련된 테이블 설계](#1-결제와-관련된-테이블-설계)
+   - [2. 트랜잭션을 구분하여 관리하는 이유](#2-트랜잭션을-구분하여-관리하는-이유)
+   - [3. 트랜잭션 관리 코드 예시](#3-트랜잭션-관리-코드-예시)
+   - [4. 트랜잭션 흐름 요약](#4-트랜잭션-흐름-요약)
+4. [복잡한 Transaction 관리 방법](#복잡한-transaction-관리-방법)
+   - [1. 예제 시나리오: 결제 API의 복잡한 트랜잭션 처리](#1-예제-시나리오-결제-api의-복잡한-트랜잭션-처리)
+   - [2. 코드 예시: 결제 API의 트랜잭션 처리](#2-코드-예시-결제-api의-트랜잭션-처리)
+      - [프로젝트 구조](#프로젝트-구조)
+      - [파일별 역할 및 코드 예시](#파일별-역할-및-코드-예시)
+         - [`app/models/user.py` (및 다른 Model 파일)](#appmodelsuserpy-및-다른-model-파일)
+         - [`app/repositories/user_repository.py` (및 다른 Repository 파일)](#apprepositoriesuser_repositorypy-및-다른-repository-파일)
+         - [`app/main.py`](#appmainpy)
+         - [`app/controllers/payment_controller.py`](#appcontrollerspayment_controllerpy)
+         - [`app/services/payment_service.py`](#appservicespayment_servicepy)
+      - [트랜잭션 처리 단계](#트랜잭션-처리-단계)
+      - [중요 부분 요약 설명](#중요-부분-요약-설명)
+5. [Outro](#outro)
 <br/><br/><br/><br/>
 
 ## 기본 Transaction 관리 방법
@@ -107,7 +129,7 @@ def test_create_user_and_place_order(db: Session):
 - `amount`: 결제 금액
 - `status`: 결제 상태 (예: "PENDING", "COMPLETED")
 - `created_at`: 결제 시도 일자
-  <br/><br/>
+<br/><br/>
 
 ### 2. 트랜잭션을 구분하여 관리하는 이유
 결제는 여러 단계로 나뉘며, 각 단계가 성공적으로 처리되지 않으면 이후의 작업을 중단하고 이전 상태로 되돌려야 합니다.
@@ -116,7 +138,7 @@ def test_create_user_and_place_order(db: Session):
 1. **주문 생성 트랜잭션**: 주문을 생성하여 결제 전 준비 상태로 저장.
 2. **결제 초기화 트랜잭션**: 결제 상태를 "PENDING"으로 설정.
 3. **결제 승인 및 트랜잭션 처리 트랜잭션**: 결제가 성공되면 상태를 "COMPLETED"로 변경.
-   <br/><br/>
+<br/><br/>
 
 ### 3. 트랜잭션 관리 코드 예시
 아래는 결제 트랜잭션 관리 예제 코드입니다.
@@ -143,7 +165,6 @@ def complete_payment(db: Session, payment_id):
     db.commit()
 
 ```
-
 <br/><br/>
 
 ### 4. 트랜잭션 흐름 요약
@@ -222,24 +243,6 @@ payment_service/
 
 
 #### 파일별 역할 및 코드 예시
-##### `app/repositories/user_repository.py` (및 다른 Repository 파일)
-**역할**: 데이터베이스와의 상호작용을 담당하며, 각 모델에 대한 CRUD 메소드를 제공합니다.
-
-```python
-from sqlalchemy.orm import Session
-from app.models.user import User
-
-class UserRepository:
-    def __init__(self, db: Session):
-        self.db = db
-
-    def get_user(self, user_id: int):
-        return self.db.query(User).filter(User.id == user_id).first()
-
-# 비슷한 구조로 coupon_repository.py, payment_repository.py, transaction_log_repository.py도 작성
-
-```
-
 ##### `app/models/user.py` (및 다른 Model 파일)
 **역할**: 데이터베이스 테이블을 나타내는 SQLAlchemy 모델을 정의합니다.
 
@@ -253,51 +256,27 @@ class User(Base):
     points = Column(Float, default=0)
 
 # 비슷한 구조로 coupon.py, payment.py, transaction_log.py도 작성
-
 ```
+<br/><br/>
 
-##### `app/db/database.py`
-**역할**: 데이터베이스 연결을 설정합니다.
+##### `app/repositories/user_repository.py` (및 다른 Repository 파일)
+**역할**: 데이터베이스와의 상호작용을 담당하며, 각 모델에 대한 CRUD 메소드를 제공합니다.
 
 ```python
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
+from app.models.user import User
 
-DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+def get_user(db: Session, user_id: int) -> User:
+    return db.query(User).filter(User.id == user_id).first()
 
+def update_user_points(db: Session, user: User, points: float):
+    user.points = points
+    db.add(user)
+    db.commit()
+
+# 비슷한 구조로 coupon_repository.py, payment_repository.py, transaction_log_repository.py도 작성
 ```
-
-##### `app/core/config.py`
-**역할**: 환경 설정 및 데이터베이스 URL, 외부 API 키 등을 관리합니다.
-
-```python
-import os
-
-class Settings:
-    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
-    # 외부 결제 시스템 관련 설정을 포함할 수 있음
-
-settings = Settings()
-
-```
-
-##### `app/dependencies.py`
-**역할**: DB 세션 등 공통 의존성을 관리합니다.
-
-```python
-from app.db.database import SessionLocal
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-```
+<br/><br/>
 
 ##### `app/main.py`
 **역할**: FastAPI 애플리케이션을 초기화하고 라우터를 등록합니다.
@@ -309,112 +288,100 @@ from app.controllers import payment_controller
 app = FastAPI()
 
 app.include_router(payment_controller.router, prefix="/api")
-
 ```
+<br/><br/>
 
 ##### `app/controllers/payment_controller.py`
 **역할**: 결제 API 엔드포인트를 정의하며, 요청을 서비스 계층으로 전달합니다.
 
 ```python
-python
-코드 복사
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.services.payment_service import PaymentService
+from app.dto import PaymentRequestDTO, PaymentResponseDTO
+from app.services.payment_service import process_payment
 from app.dependencies import get_db
 
 router = APIRouter()
 
-@router.post("/payments/")
-def process_payment(user_id: int, amount: float, db: Session = Depends(get_db)):
-    payment_service = PaymentService(db)
+@router.post("/payments/", response_model=PaymentResponseDTO)
+async def process_payment_endpoint(request: PaymentRequestDTO, db: Session = Depends(get_db)):
     try:
-        payment = payment_service.process_payment(user_id=user_id, amount=amount)
-        return {"message": "Payment processed successfully", "payment_id": payment.id}
+        # 요청을 서비스 계층으로 전달하여 결제 처리
+        payment_response = process_payment(request=request, db=db)
+        return payment_response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 ```
+<br/><br/>
 
 ##### `app/services/payment_service.py`
 **역할**: 결제 로직을 관리하며, 트랜잭션 처리 및 외부 결제 시스템 호출을 포함한 비즈니스 로직을 수행합니다.
 
 ```python
 from sqlalchemy.orm import Session
-from app.repositories.user_repository import UserRepository
-from app.repositories.coupon_repository import CouponRepository
-from app.repositories.payment_repository import PaymentRepository
-from app.repositories.transaction_log_repository import TransactionLogRepository
+from app.dto import PaymentRequestDTO, PaymentResponseDTO
+from app.repositories.user_repository import get_user, update_user_points
+from app.repositories.coupon_repository import get_coupon, delete_coupon
+from app.repositories.payment_repository import create_payment
+from app.repositories.transaction_log_repository import create_log
 from app.models.payment import PaymentStatus
 import requests
 
-class PaymentService:
-    def __init__(self, db: Session):
-        self.db = db
-        self.user_repo = UserRepository(db)
-        self.coupon_repo = CouponRepository(db)
-        self.payment_repo = PaymentRepository(db)
-        self.log_repo = TransactionLogRepository(db)
+def process_payment(request: PaymentRequestDTO, db: Session) -> PaymentResponseDTO:
+    try:
+        # Step 1: 사용자 포인트 차감
+        user = get_user(db, request.user_id)
+        if user.points < request.amount:
+            raise ValueError("Insufficient points.")
+        update_user_points(db, user, user.points - request.amount)
 
-    def process_payment(self, user_id: int, amount: float):
-        try:
-            # Step 1: 사용자 포인트 차감
-            user = self.user_repo.get_user(user_id)
-            if user.points < amount:
-                raise ValueError("Insufficient points.")
-            user.points -= amount
+        # Step 2: 할인 쿠폰 적용 및 차감
+        coupon = get_coupon(db, request.user_id)
+        if coupon:
+            request.amount -= coupon.discount_amount
+            delete_coupon(db, coupon)
 
-            # Step 2: 할인 쿠폰 적용 및 차감
-            coupon = self.coupon_repo.get_coupon(user_id)
-            if coupon:
-                amount -= coupon.discount_amount
-                self.coupon_repo.delete_coupon(coupon)
+        # Step 3: 결제 정보 초기화 및 상태 설정
+        payment = create_payment(db, request.user_id, request.amount, PaymentStatus.PENDING)
+        db.commit()
+        db.refresh(payment)
 
-            # Step 3: 결제 정보 초기화 및 상태 설정
-            payment = self.payment_repo.create_payment(user_id, amount, PaymentStatus.PENDING)
-            self.db.commit()  # 초기 상태 커밋
-            self.db.refresh(payment)
+        # Step 4: 외부 결제 시스템 호출
+        external_payment_result = external_payment_system(payment.id, request.amount)
 
-            # Step 4: 외부 결제 시스템 호출
-            external_payment_result = self.external_payment_system(payment.id, amount)
+        if external_payment_result.get("status") != "success":
+            raise ValueError("External payment failed.")
 
-            if external_payment_result.get("status") != "success":
-                raise ValueError("External payment failed.")
+        # Step 5: 트랜잭션 로그 생성
+        payment.status = PaymentStatus.COMPLETED
+        create_log(db, payment_id=payment.id, status="COMPLETED")
 
-            # Step 5: 트랜잭션 로그 생성
-            payment.status = PaymentStatus.COMPLETED
-            self.log_repo.create_log(payment_id=payment.id, status="COMPLETED")
+        db.commit()
 
-            self.db.commit()  # 모든 단계가 성공한 경우에만 최종 커밋
-            return payment
+        # PaymentResponseDTO로 결과 반환
+        return PaymentResponseDTO(payment_id=payment.id, status="COMPLETED")
 
-        except Exception as e:
-            self.db.rollback()  # 오류 발생 시 롤백
-            raise ValueError(f"Payment process failed: {str(e)}")
+    except Exception as e:
+        db.rollback()
+        raise ValueError(f"Payment process failed: {str(e)}")
 
-    def external_payment_system(self, payment_id: int, amount: float):
-        """
-        실제 외부 결제 시스템과 상호작용을 수행하는 메서드.
-        실제 환경에서는 이 메서드가 외부 API를 호출하고 결제 결과를 반환합니다.
-        """
-        try:
-            # 외부 결제 API 호출 예시
-            response = requests.post(
-                "https://api.external-payment.com/charge",
-                json={"payment_id": payment_id, "amount": amount},
-                headers={"Authorization": "Bearer YOUR_API_KEY"},
-                timeout=10
-            )
-            response.raise_for_status()  # 응답이 성공적이지 않으면 예외 발생
+def external_payment_system(payment_id: int, amount: float):
+    """
+    외부 결제 시스템과의 통신을 수행하는 함수.
+    """
+    try:
+        response = requests.post(
+            "https://api.external-payment.com/charge",
+            json={"payment_id": payment_id, "amount": amount},
+            headers={"Authorization": "Bearer YOUR_API_KEY"},
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json()
 
-            # 응답 파싱
-            payment_response = response.json()
-            return payment_response
-
-        except requests.exceptions.RequestException as e:
-            # 네트워크 오류, 타임아웃 등의 예외 처리
-            raise ValueError(f"External payment request failed: {str(e)}")
-
+    except requests.exceptions.RequestException as e:
+        raise ValueError(f"External payment request failed: {str(e)}")
 ```
 <br/><br/>
 
@@ -432,6 +399,7 @@ class PaymentService:
     - 외부 결제 시스템 호출이 실패할 경우 HTTPException을 발생시키고 트랜잭션 전체를 롤백합니다.
 5. **트랜잭션 로그 생성**
     - 결제가 성공적으로 완료되면 트랜잭션 로그에 기록하여 결제 내역을 추적합니다.
+<br/><br/>
 
 #### 중요 부분 요약 설명
 - **독립 트랜잭션**: 일부 작업은 즉각적으로 반영되며, 예를 들어 포인트 차감, 쿠폰 차감 등은 한 번 수행하면 결과가 유지됩니다.
