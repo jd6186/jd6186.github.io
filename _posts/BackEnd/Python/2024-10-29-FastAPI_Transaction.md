@@ -35,7 +35,7 @@ Python에서는 FastAPI와 함께 SQLAlchemy를 사용하여 트랜잭션을 쉽
       - [프로젝트 구조](#프로젝트-구조)
       - [파일별 역할 및 코드 예시](#파일별-역할-및-코드-예시)
          - [`app/models/user.py` (및 다른 Model 파일)](#appmodelsuserpy-및-다른-model-파일)
-         - [`app/repositories/user_repository.py` (및 다른 Repository 파일)](#apprepositoriesuser_repositorypy-및-다른-repository-파일)
+         - [`app/repositories` (여러 Repository 파일)](#apprepositories-여러-repository-파일)
          - [`app/main.py`](#appmainpy)
          - [`app/controllers/payment_controller.py`](#appcontrollerspayment_controllerpy)
          - [`app/services/payment_service.py`](#appservicespayment_servicepy)
@@ -259,10 +259,11 @@ class User(Base):
 ```
 <br/><br/>
 
-##### `app/repositories/user_repository.py` (및 다른 Repository 파일)
+##### `app/repositories/*` (여러 Repository 파일)
 **역할**: 데이터베이스와의 상호작용을 담당하며, 각 모델에 대한 CRUD 메소드를 제공합니다.
 
 ```python
+# repositories/user_repository.py
 from sqlalchemy.orm import Session
 from app.models.user import User
 
@@ -272,9 +273,42 @@ def get_user(db: Session, user_id: int) -> User:
 def update_user_points(db: Session, user: User, points: float):
     user.points = points
     db.add(user)
-    db.commit()
+    
 
-# 비슷한 구조로 coupon_repository.py, payment_repository.py, transaction_log_repository.py도 작성
+# repositories/order_repository.py
+from sqlalchemy.orm import Session
+from app.models.order import Order
+
+def create_order(db: Session, user_id: int, total_amount: float) -> Order:
+    new_order = Order(user_id=user_id, total_amount=total_amount)
+    db.add(new_order)
+    db.flush()  # ID를 확보하지만 커밋하지 않음
+    return new_order
+
+
+# repositories/payment_repository.py
+from sqlalchemy.orm import Session
+from app.models.payment import Payment, PaymentStatus
+
+def create_payment(db: Session, order_id: int, amount: float) -> Payment:
+    payment = Payment(order_id=order_id, amount=amount, status=PaymentStatus.PENDING)
+    db.add(payment)
+    db.flush()  # 커밋하지 않고 ID 확보하기 위해 flush를 통해 임시로 DB에 쿼리 전달
+    return payment
+
+def update_payment_status(db: Session, payment: Payment, status: PaymentStatus):
+    payment.status = status
+    db.add(payment)
+    
+    
+# repositories/transaction_log_repository.py
+from sqlalchemy.orm import Session
+from app.models.transaction_log import TransactionLog
+
+def create_log(db: Session, payment_id: int, status: str):
+    log = TransactionLog(payment_id=payment_id, status=status)
+    db.add(log)
+
 ```
 <br/><br/>
 
@@ -337,31 +371,25 @@ def process_payment(request: PaymentRequestDTO, db: Session) -> PaymentResponseD
         update_user_points(db, user, user.points - request.amount)
 
         # Step 2: 할인 쿠폰 적용 및 차감
-        coupon = get_coupon(db, request.user_id)
-        if coupon:
-            request.amount -= coupon.discount_amount
-            delete_coupon(db, coupon)
+        new_order = create_order(db, user_id=request.user_id, total_amount=request.amount)
 
         # Step 3: 결제 정보 초기화 및 상태 설정
-        payment = create_payment(db, request.user_id, request.amount, PaymentStatus.PENDING)
-        db.commit()
-        db.refresh(payment)
+        payment = create_payment(db, order_id=new_order.id, amount=request.amount)
 
         # Step 4: 외부 결제 시스템 호출
         external_payment_result = external_payment_system(payment.id, request.amount)
-
         if external_payment_result.get("status") != "success":
             raise ValueError("External payment failed.")
+        update_payment_status(db, payment, PaymentStatus.COMPLETED)
 
         # Step 5: 트랜잭션 로그 생성
-        payment.status = PaymentStatus.COMPLETED
-        create_log(db, payment_id=payment.id, status="COMPLETED")
+        create_log(db, payment_id=payment.id, status=PaymentStatus.COMPLETED)
 
+        # 모든 작업 완료 후에야 커밋
         db.commit()
-
+        
         # PaymentResponseDTO로 결과 반환
         return PaymentResponseDTO(payment_id=payment.id, status="COMPLETED")
-
     except Exception as e:
         db.rollback()
         raise ValueError(f"Payment process failed: {str(e)}")
