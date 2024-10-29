@@ -12,6 +12,7 @@
     site.title | escape }}{% endif %}
   </title>
   {% if site.gtag %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.gtag }}"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
