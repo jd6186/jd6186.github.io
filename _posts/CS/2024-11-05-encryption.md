@@ -18,15 +18,22 @@ tags: [Security, Encryption, Java, Python, API, AES, RSA, SHA-256]
 
 ---
 # 목차
-1. [암호화 기초 지식](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-   - [단방향 암호화와 양방향 암호화](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-2. [암호화 모듈 조사](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-3. [암호화 모듈을 지원하는 API](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-   - [Java에서의 API 사용](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-   - [Python에서의 API 사용](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-4. [사용 예시 코드](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-5. [Outro](https://www.notion.so/135c7f0b0a6881b09859c1e6d6791733?pvs=21)
-   <br/><br/><br/><br/>
+1. [암호화 기초 지식](#암호화와-관련된-기초-지식)
+   - [암호화의 필요성](#1-암호화의-필요성)
+   - [단방향 암호화 vs. 양방향 암호화](#2-단방향-암호화-vs-양방향-암호화)
+   - [주요 암호화 알고리즘](#3-주요-암호화-알고리즘)
+   - [암호화 방식의 선택 기준](#4-암호화-방식의-선택-기준)
+   - [암호화 사례](#5-암호화-사례)
+2. [Java에서 사용하는 암호화 모듈](#1-java에서-암호화-모듈을-지원하는-api)
+   - [AES 암호화 - Java API](#1-1-aes-암호화---java-api)
+   - [RSA 암호화 - Java API](#1-2-rsa-암호화---java-api)
+   - [SHA-256 해싱 - Java API](#1-3-sha-256-해싱---java-api)
+3. [Python에서 사용하는 암호화 모듈](#2-python에서-암호화-모듈을-지원하는-api)
+   - [AES 암호화 - Python API](#2-1-aes-암호화---python-api-pycryptodome)
+   - [RSA 암호화 - Python API](#2-2-rsa-암호화---python-api-pycryptodome)
+   - [SHA-256 해싱 - Python API](#2-3-sha-256-해싱---python-api-hashlib)
+4. [Outro](#outro)
+<br/><br/><br/><br/>
 
 ---
 # 암호화와 관련된 기초 지식
@@ -321,7 +328,7 @@ print("SHA-256 Hash:", hash_string)
 
 ---
 # Outro
-오늘은 암호화의 기본 개념부터 Java와 Python에서 AES 암호화 모듈을 활용하는 방법에 대해 알아보았습니다. 
+오늘은 암호화의 기본 개념부터 Java와 Python에서 **AES**, **RSA**, **SHA-256** 등 암호화 모듈을 활용하는 방법에 대해 알아보았습니다. 
 
 각각의 API를 활용해 보면서 암호화의 중요성과 적용 방법을 이해하셨길 바랍니다. 
 
