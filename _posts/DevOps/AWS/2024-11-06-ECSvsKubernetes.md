@@ -14,12 +14,13 @@ ECS와 Kubernetes는 모두 컨테이너 오케스트레이션 도구이지만, 
 <br/><br/><br/><br/>
 
 # 목차
-1. [Intro](https://www.notion.so/2024-11-1-134c7f0b0a68806091c0db5506444982?pvs=21)
-2. [ECS란? (쿠버네티스와 비교)](https://www.notion.so/2024-11-1-134c7f0b0a68806091c0db5506444982?pvs=21)
-   - [멀티 클러스터 관리와 복잡성](https://www.notion.so/2024-11-1-134c7f0b0a68806091c0db5506444982?pvs=21)
-   - [ECS와 Kubernetes의 주요 아키텍처 차이점](https://www.notion.so/2024-11-1-134c7f0b0a68806091c0db5506444982?pvs=21)
-   - [서비스 배포 및 업데이트 관리 방법](https://www.notion.so/2024-11-1-134c7f0b0a68806091c0db5506444982?pvs=21)
-3. [Outro](https://www.notion.so/2024-11-1-134c7f0b0a68806091c0db5506444982?pvs=21)<br/><br/><br/><br/>
+1. [Intro](#intro)
+2. [ECS란? (쿠버네티스와 비교)](#ecs란-쿠버네티스와-비교)
+3. [ECS와 Kubernetes의 주요 차이점](#ecs와-kubernetes의-주요-차이점)
+   - [멀티 클러스터 관리와 복잡성](#1-멀티-클러스터-관리와-복잡성)
+   - [ECS와 Kubernetes의 주요 아키텍처 차이점](#2-ecs와-kubernetes의-주요-아키텍처-차이점)
+   - [서비스 배포 및 업데이트 관리 방법](#3-서비스-배포-및-업데이트-관리-방법)
+4. [Outro](#outro)
 <br/><br/><br/><br/>
 
 
