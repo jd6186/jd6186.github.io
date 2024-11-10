@@ -10,7 +10,8 @@ tags: [Kubernetes, DevOps]
 처음 Kubernetes를 설치하고 클러스터를 설정하는 단계부터 배포, 모니터링, 스케일링, 업데이트, 롤백, 그리고 로깅까지 실무에서 꼭 필요한 핵심 기능들을 자세히 설명해보겠습니다.<br/>
 Kubernetes를 처음 사용하는 분들이나 실무에서 자주 마주치는 문제를 해결하고자 하는 분들에게 유용한 참고 자료가 됐으면 좋겠습니다.<br/>
 
-아마... Kafka 글에 이어 분량 조절 실패할 것 같은 글이지만, 목차라도 잘 구분해서 적어보겠습니다 ㅎㅎ
+아마... Kafka 글에 이어 분량 조절 실패할 것 같은 글이지만, 목차라도 잘 구분해서 적어보겠습니다 ㅎㅎ<br/>
+(급하신 분들은 [Kubernetes 클러스터에 배포 및 모니터링 방법](#kubernetes-클러스터에-배포-및-모니터링-방법) 부터 보시면 될 것 같아요.)
 
 그럼 시작해 보겠습니다.
 <br/><br/><br/><br/>
@@ -40,7 +41,8 @@ Kubernetes를 처음 사용하는 분들이나 실무에서 자주 마주치는 
      3. [Deployment 설정 파일 배포하기](#1-3-deployment-설정-파일-배포하기)
      4. [Service 설정 파일 배포하기](#1-4-service-설정-파일-배포하기)
      5. [Horizontal Pod Autoscaler(HPA) 설정 파일 배포하기](#1-5-horizontal-pod-autoscalerhpa-설정-파일-배포하기)
-     6. [배포 후 Pod 상태 확인 및 문제 해결](#1-6-배포-후-pod-상태-확인-및-문제-해결)
+     6. [배포할 이미지 Kind에 로드하기](#1-6-배포할-이미지-kind에-로드하기)
+     6. [배포 후 Pod 상태 확인 및 문제 해결](#1-7-배포-후-pod-상태-확인-및-문제-해결)
    - [Kubernetes 클러스터 모니터링하기](#2-kubernetes-클러스터-모니터링하기)
      1. [기본 모니터링 명령어 활용하기](#2-1-기본-모니터링-명령어-활용하기)
      2. [리소스 사용량 모니터링하기 (CPU/메모리)](#2-2-리소스-사용량-모니터링하기)
@@ -433,6 +435,8 @@ project-root/
 각 조건을 충족하는 파일들을 아래와 같이 작성할 수 있습니다.
 
 **[`deployment.yaml` (Deployment 설정 파일)]**<br/>
+아래 글을 설정하기 전에 `export KUBECONFIG="$(kind get kubeconfig-path --name=<클러스터_이름>)"`을 통해 kind의 docker 클러스터 kubectl이 접속 가능해야 합니다.<br/>
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -451,15 +455,18 @@ spec:
         app: fastapi-app
     spec:
       containers:
-      - name: fastapi-app
-        image: my-fastapi-app:latest
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"      # 최소 0.5 CPU 코어 요청
-          limits:
-            memory: "1Gi"    # 최대 1GB 메모리
-            cpu: "1000m"     # 최대 1.0 CPU 코어
+        - name: fastapi-app
+          image: my-fastapi-app:latest  # 로컬에서 빌드한 이미지 사용
+          imagePullPolicy: Never        # 이미지를 당겨오지 않고 로컬 이미지를 사용
+          resources:
+            requests:          # 요청한 최소 리소스
+              memory: "512Mi"  # 최소 512Mb 메모리 요청
+              cpu: "500m"      # 최소 0.5 CPU 코어 요청
+            limits:            # 최대 사용 가능한 리소스
+              memory: "1Gi"    # 최대 1GB 메모리
+              cpu: "1000m"     # 최대 1.0 CPU 코어
+          ports:
+            - containerPort: 8000
 ```
 
 **[`service.yaml` (Service 설정 파일)]**<br/>
@@ -512,11 +519,25 @@ spec:
 #### 4-3. 파일 적용 방법
 아래 kubectl 명령어를 사용하여 각각 적용할 수 있습니다.<br/>
 ```bash
+# Docker Desktop을 사용하는 경우
+brew install kind
+
+# Kubernetes Cluster 생성
+kind create cluster --name my-cluster
+
+# Deployment, Service, HPA 리소스 파일 적용
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/hpa.yaml
+
+# 추후 문제가 있을 시 삭제 방법
+kubectl delete -f k8s/deployment.yaml
+kubectl delete -f k8s/service.yaml
+kubectl delete -f k8s/hpa.yaml
 ```
+
 <br/><br/><br/><br/>
+
 
 ---
 # Kubernetes 클러스터에 배포 및 모니터링 방법
@@ -527,27 +548,62 @@ kubectl apply -f k8s/hpa.yaml
 ### 1-1 클러스터 초기 준비사항
 Kubernetes에 애플리케이션을 배포하기 전 준비가 필요합니다. 배포 준비 과정에서는 아래 사항을 꼭 확인하세요.
 
-1. **kubectl 설치 확인**<br/>
+
+1. **Dockerfile Build 해두기**<br/>
+   `Docker`가 설치되어 있는 상태여야 합니다.<br/>
+    ```bash
+    docker build -t my-fastapi-app:latest .
+    ```
+
+2. **kubectl 설치 확인**<br/>
    `kubectl`이 설치되어 있고, 클러스터에 연결된 상태여야 합니다.<br/>
     ```bash
     kubectl version --client
+    ```
+
+   이 명령어로 `kind` 클라이언트가 정상적으로 설치되어 있는지 확인하세요. 설치가 되어 있지 않다면, Homebrew를 사용해 설치할 수 있습니다<br/>
+    ```bash
+    brew install kind
     ```
    
    이 명령어로 `kubectl` 클라이언트가 정상적으로 설치되어 있는지 확인하세요. 설치가 되어 있지 않다면, Homebrew를 사용해 설치할 수 있습니다<br/>
     ```bash
     brew install kubectl
     ```
-2. **Kubernetes 클러스터 연결 확인**<br/>
+3. **Kubernetes 클러스터 생성 및 Docker 이미지 로드 방법**<br/>
+   아래 명령어를 활용해 클러스터 생성
+    ```bash
+    # 클러스터 생성
+    kind create cluster --name my-cluster
+    # 추후 문제가 있을 시 삭제 방법
+    kind delete cluster --name my-cluster
+   
+    # 생성된 클러스터 확인
+    kind get clusters
+    kubectl config get-contexts
+    ```
+4. **Kubernetes 클러스터 연결 확인**<br/>
    클러스터와의 연결 상태를 확인해 봅니다. 클러스터의 노드 목록이 출력되면 연결이 잘 된 상태입니다. 노드가 출력되지 않는다면 클러스터 설정을 다시 확인해 주세요.<br/>
     ```bash
     kubectl get nodes
     ```
+
+**[실제 예시]**<br/>
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/kind_download.png" alt="kind_download"/><br/>
+kind를 사용하여 클러스터를 생성하고, `kubectl get nodes` 명령어로 노드 목록을 확인합니다.
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/cluster_create.png" alt="cluster_create"/><br/>
+설치되고 나면 위와 같이 확인 가능합니다.
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/control_plane_node.png" alt="control_plane_node"/><br/>
+컨트롤 플레인 노드가 마스터 노드라고 생각하면 됩니다 > 상단의 공식 홈페이지 이미지 참조
 <br/><br/>
 
 
 ### 1-2 배포 파일 구조 재확인
 클러스터에 배포할 때, 파일 구조가 정확해야 하며 설정 파일이 올바른 디렉터리에 있어야 합니다.<br/>
 이 가이드에서는 `k8s` 폴더에 배포와 관련된 YAML 파일을 저장하도록 했습니다.<br/>
+이제 YAML 파일을 차례로 `kubectl apply` 명령어로 클러스터에 적용하겠습니다.
 
 ```plaintext
 project-root/
@@ -556,8 +612,11 @@ project-root/
     ├── service.yaml      # Service 설정 파일
     └── hpa.yaml          # Horizontal Pod Autoscaler 설정 파일
 ```
-<br/>
-이제 YAML 파일을 차례로 `kubectl apply` 명령어로 클러스터에 적용하겠습니다.
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/directory_setting.png" alt="directory_setting"/>
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/yaml_execution.png" alt="yaml_execution"/>
+
 <br/><br/>
 
 ### 1-3 Deployment 설정 파일 배포하기
@@ -609,25 +668,60 @@ Deployment가 준비되면, 이제 Pod을 외부와 연결해줄 **Service** 리
     ```
 <br/><br/>
 
-### 1-6 배포 후 Pod 상태 확인 및 문제 해결
-1. **Pod 상태 점검**:
+### 1-6 배포할 이미지 Kind에 로드하기
+**Docker 이미지 로드**: 본인이 빌드한 도커 이미지를 Kind에 로드 후 kubernetes가 인식할 수 있도록 합니다.<br/>
+(**이렇게 안하면 이미지를 찾을 수 없다는 에러가 발생합니다!!**)
+
+```bash
+kind load docker-image <your-app>:latest --name <cluster-name>
+```
+
+**[실제 예시]**<br/>
+```bash
+# 로컬 Docker 이미지를 kind로 생성한 클러스터에 로딩 시키는 코드
+kind load docker-image my-fastapi-app:latest --name my-cluster
+
+# 해당 이미지가 로드 되었는지 체크
+kubectl kubectl get deployments
+```
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/docker_image_load.png" alt="docker_image_load"/><br/>
+본인이 빌드한 도커 이미지를 클러스터에 로드
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/docker_image_ready.png" alt="docker_image_ready"/><br/>
+이미지가 정상 실행되었는지 체크
+
+위 과정에서 실수가 있었으면 처음하실 때는 그냥 클러스터부터 삭제하시고 다시 시작하는 것을 추천드립니다. ㅋㅋㅋㅋ
+<br/><br/>
+
+### 1-7 배포 후 Pod 상태 확인 및 문제 해결
+1. **Pod 상태 점검**<br/>
    `kubectl get pods` 명령어로 모든 Pod의 상태를 확인하세요. Pod이 정상적으로 `Running` 상태인지 확인하고, `STATUS`가 `Pending`이나 `CrashLoopBackOff`인 경우 리소스 제한 또는 설정 오류일 수 있습니다.
-2. **Pod 로그 확인**:
+2. **Pod 로그 확인**<br/>
    배포 중에 문제가 발생하거나 특정 Pod에서 오류가 발생할 경우 다음 명령어로 Pod의 로그를 확인할 수 있습니다.<br/>
    오류 메시지와 스택 트레이스를 분석해, 잘못된 설정이 있는지, 리소스가 부족한지 등을 파악합니다.<br/>
     ```bash
+    # pod명 확인
+    kubectl get pods
+    # pod 로그 확인
     kubectl logs <pod-name>
     ```
-3. **Event 확인**:
+   
+   <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/node_test.png" alt="node_test"/><br/>
+   <br/><br/>
+3. **Event 확인**<br/>
    문제가 있는 Pod이나 서비스에서 발생한 이벤트를 통해 오류 원인을 찾을 수도 있습니다.<br/>
    이 명령어를 사용해 Event 섹션에서 자세한 오류 메시지를 확인할 수 있습니다.<br/>
     ```bash
+    # pod명 확인
+    kubectl get pods
+    # pod 상세 정보 확인
     kubectl describe pod <pod-name>
     ```
-<br/><br/>
 
-위 단계를 통해 Kubernetes 클러스터에 설정 파일을 기반으로 FastAPI 애플리케이션을 배포했습니다.<br/>
-배포 후 Pod 및 Service의 상태를 점검하고, 리소스 사용량에 따라 자동으로 스케일 조정이 가능하도록 설정하는 데까지 완료했습니다.
+   <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/event_log.png" alt="event_log"/><br/>
+   <br/>
+   위 단계를 통해 Kubernetes 클러스터에 설정 파일을 기반으로 FastAPI 애플리케이션을 배포한 모습입니다.<br/>
 <br/><br/><br/><br/>
 
 ---
@@ -662,21 +756,75 @@ Kubernetes 클러스터에 배포한 애플리케이션이 안정적으로 작�
 ### 2-2 리소스 사용량 모니터링하기
 Kubernetes에서 Pod 및 노드의 리소스 사용량을 모니터링하려면 `Metrics Server`가 필요합니다. `Metrics Server`는 CPU와 메모리 사용량을 실시간으로 수집해주는 컴포넌트입니다.
 
-1. **Metrics Server 설치**
-    - `Metrics Server`가 설치되어 있지 않다면 설치합니다. 설치는 `kubectl apply` 명령어로 가능합니다.
-        ```bash
-        kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-        ```
-2. **Pod 및 노드 리소스 모니터링**
-    - `Metrics Server` 설치가 완료되면 아래 명령어로 리소스 사용량을 모니터링할 수 있습니다.
-    - **Pod 리소스 사용량 확인**각 Pod의 CPU와 메모리 사용량을 실시간으로 확인할 수 있습니다.
-        ```bash
-        kubectl top pods
-        ```
-    - **노드 리소스 사용량 확인**각 노드의 CPU 및 메모리 사용량을 확인해 클러스터 전체 리소스의 여유가 충분한지 점검합니다.
-        ```bash
-        kubectl top nodes
-        ```
+1. **Pod 모니터링을 위한 metrics-server-deployment.yaml 생성**<br/>
+   metrics-server-deployment.yaml이라는 새로운 파일을 k8s 디렉토리에 추가하여 Metric Server 설정을 포함하고 `--kubelet-insecure-tls` 플래그를 추가해 TLS 인증을 무시하도록 설정합니다.<br/>
+      ```yaml
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: metrics-server
+        namespace: kube-system
+        labels:
+          k8s-app: metrics-server
+      spec:
+        selector:
+          matchLabels:
+            k8s-app: metrics-server
+        template:
+          metadata:
+            labels:
+              k8s-app: metrics-server
+          spec:
+            containers:
+              - name: metrics-server
+                image: k8s.gcr.io/metrics-server/metrics-server:v0.6.1
+                args:
+                  - --cert-dir=/tmp
+                  - --secure-port=10250
+                  - --kubelet-preferred-address-types=InternalIP
+                  - --kubelet-insecure-tls  # TLS 인증 무시 플래그
+                  - --kubelet-use-node-status-port
+                ports:
+                  - containerPort: 10250
+                    name: https
+                volumeMounts:
+                  - name: tmp-dir
+                    mountPath: /tmp
+            nodeSelector:
+              kubernetes.io/os: linux
+            serviceAccountName: metrics-server
+            volumes:
+              - name: tmp-dir
+                emptyDir: {}
+      ```
+2. **Metric Server 적용**<br/>
+  작성한 metrics-server-deployment.yaml 파일을 사용하여 Metric Server를 배포합니다.<br/>(**리소스부터 반드시 먼저 다운로드해주세요**)<br/>
+   ```bash
+   # 모니터링을 위해 Metric Server 설치
+   kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+       
+   # deployment 추가(yaml을 이용해 설치한 Metric Server에 --kubelet-insecure-tls 플래그 추가)
+   kubectl apply -f k8s/metrics-server-deployment.yaml
+   # 추후 문제가 있을 시 삭제 방법
+   kubectl delete deployment metrics-server -n kube-system
+      
+   # 명령어를 통해 metric server 정상 실행 확인(이거 로딩되는데 1~2분 걸릴 수 있습니다만, 그 이상 걸리면 뭔가 문제가 있는거니 metric server 및 관련 deployment를 delete하고 다시 설치해주세요)
+   kubectl get deployments -n kube-system 
+   ```
+
+   <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/metric_deployment.png" alt="metric_deployment"/><br/>
+3. **Pod 리소스 사용량 확인**<br/>
+   ```bash
+   # Pod 리소스 사용량 확인
+   kubectl top pods
+   # pod명 확인
+   kubectl get pods
+   # 특정 Pod의 리소스 사용량 확인
+   kubectl top pod <pod-name>
+   ```
+
+   <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/pod_monitoring.png" alt="pod_monitoring"/><br/>
+   배포 후 Pod 및 Service의 상태를 점검하고, 리소스 사용량에 따라 자동으로 스케일 조정이 가능하도록 설정하는 데까지 완료했습니다.
 <br/><br/>
 
 ### 2-3 실시간 모니터링 및 시각화 도구 활용
