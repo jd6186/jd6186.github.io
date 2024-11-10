@@ -828,39 +828,97 @@ Kubernetes에서 Pod 및 노드의 리소스 사용량을 모니터링하려면 
 <br/><br/>
 
 ### 2-3 실시간 모니터링 및 시각화 도구 활용
-기본 명령어 외에도 Kubernetes 모니터링 도구를 활용해 더 심도 있는 데이터를 수집하고, 시각화할 수 있습니다. 대표적인 도구로 **Prometheus**와 **Grafana**가 있습니다.
+기본 명령어 외에도 Kubernetes 모니터링 도구를 활용해 더 심도 있는 데이터를 수집하고, 시각화할 수 있습니다. 대표적인 도구로 **Prometheus**와 **Grafana**가 있습니다.<br/>
+`helm`은 Kubernetes의 패키지 관리 도구로, Helm을 사용하면 간단하게 Prometheus와 Grafana를 설치하고 설정할 수 있습니다.
 
 1. **Prometheus 설치 및 설정**
     - Prometheus는 Kubernetes의 리소스 사용 데이터를 수집하는 오픈 소스 모니터링 시스템입니다. Helm을 통해 Prometheus를 간단히 설치할 수 있습니다.
         ```bash
+        # helm 설치
+        brew install helm
+        
+        # Prometheus 설치
         helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
         helm install prometheus prometheus-community/kube-prometheus-stack
+      
+        # 설치 상태 확인
+        helm status prometheus
+      
+        # 포트포워딩을 통한 프로메테우스 접근
+        kubectl port-forward -n default svc/prometheus-kube-prometheus-prometheus 9090:9090
         ```
     - 설치가 완료되면 Prometheus는 Kubernetes 리소스를 모니터링하고 수집된 데이터를 저장합니다.
 2. **Grafana를 통해 시각화**
     - Grafana는 Prometheus와 연동해 리소스 사용량 데이터를 실시간으로 시각화할 수 있습니다.
     - Helm을 사용하여 Grafana를 설치합니다.
         ```bash
+        # Grafana 설치
+        helm repo add grafana https://grafana.github.io/helm-charts
         helm install grafana grafana/grafana
+      
+        # 설치 상태 확인
+        helm status grafana
+      
+        # kubectl admin 패스워드 확인 > 로그인할 때 쓰입니다.
+        kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+        # grafana에 접속하기 위한 포트 설정(여기선 3000port로 설정)
+        export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
+        kubectl --namespace default port-forward $POD_NAME 3000:3000
+      
+        # admin 계정으로 로그인
+        # localhost:3000으로 접속
+        # username: admin, password: 위에서 확인한 패스워드 입력
         ```
-    - 설치 후, Kubernetes 클러스터 내에 생성된 Grafana 대시보드에 접근하여 리소스 사용량, HPA의 자동 스케일링 동작 여부 등을 시각화하여 한눈에 확인할 수 있습니다.
-3. **Grafana 대시보드 설정**
-    - Grafana에 Prometheus 데이터를 소스로 추가하여 Kubernetes 관련 시각화 대시보드를 생성합니다.
-    - Grafana의 기본 로그인 정보는 `admin/admin`이며, 로그인 후 데이터를 시각적으로 분석하고 대시보드를 커스터마이징할 수 있습니다.
+      
+      <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/grafana_ui.png" alt="grafana_ui"/><br/>
+      
+    - 설치 후, Kubernetes 클러스터 내에 생성된 Grafana 대시보드에 접근하여 리소스 사용량, HPA의 자동 스케일링 동작 여부 등을 시각화하여 한눈에 확인할 수 있습니다.<br/>
+3. **Grafana 대시보드 설정**<br/>
+   Grafana에 Prometheus 데이터를 소스로 추가하여 Kubernetes 관련 시각화 대시보드를 생성합니다.<br/>
+   1. **데이터 소스 추가**
+       - 먼저, Grafana에서 Prometheus를 데이터 소스로 추가해야 합니다.
+       - Grafana 화면에서 **Connections > Data Sources**로 이동하고, `Add data source`를 클릭한 후 `Prometheus`를 선택합니다.
+       - Prometheus의 URL을 입력합니다. (기본값: `http://prometheus-kube-prometheus-prometheus.default.svc.cluster.local:9090`)<br/>
+         <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/grafana_prometheus_setting.png" alt="grafana_prometheus_setting"/><br/>
+       - 입력 후 제일 하단으로 내려가 **Save & Test** 버튼을 클릭하여 데이터 소스가 정상적으로 연결되었는지 확인합니다.
+   2. **Prometheus UI로 접속해 집계하고 싶은 쿼리 입력**
+       - 위 방식을 따라 오셨다면 `http://localhost:9090`으로 접속하여 Prometheus UI에 접속할 수 있습니다.
+       - Prometheus를 활용하면 쿼리를 입력해 강력한 데이터 집계 기능을 사용할 수 있습니다. 하지만 상대적으로 시각화 부분에서는 Grafana가 더 강력한 기능들을 제공하고 있습니다. 여기서는 Prometheus UI를 통해 쿼리를 입력하는 방법을 안내해보겠습니다.
+       - 각 패널에서 Prometheus 쿼리를 입력해 시각화할 데이터를 지정합니다. 예를 들어, Pod CPU 사용량을 시각화하려면 다음과 같은 쿼리를 입력합니다.<br/>(다양한 쿼리에 대한 내용은 다른 블로그들에도 많고 ChatGPT 등을 활용하시면 더 많은 정보를 얻으실 수 있습니다.)<br/>
+           ```promql
+           sum(rate(container_cpu_usage_seconds_total{namespace="default", container!="POD"}[5m])) by (pod)
+           ```
+         
+         쿼리를 입력하면 아래에 그래프가 즉시 생성됩니다.<br/>
+         <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/prometheus_ui.png" alt="prometheus_ui"/><br/>
+   3. **새 대시보드 생성**
+       - Grafana에서 **Dashboard > New > New Dashboard**를 선택하여 새로운 대시보드를 만듭니다.
+       - Prometheus에서 추가한 쿼리를 아래 이미지들을 따라가며 Grafana 대시보드에 추가해줍니다.<br/>
+         <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/grafana_dashboard_setting_1.png" alt="grafana_dashboard_setting_1"/><br/>
+         <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/grafana_dashboard_setting_2.png" alt="grafana_dashboard_setting_2"/><br/>
+         <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/grafana_dashboard_setting_3.png" alt="grafana_dashboard_setting_3"/><br/>
+         <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/grafana_dashboard_setting_4.png" alt="grafana_dashboard_setting_4"/><br/> 
+   4. **시각화 형식 선택**
+       - 패널의 오른쪽에서 시각화 형식을 선택할 수 있습니다. `Time series`, `Gauge`, `Bar gauge` 등 원하는 형식을 선택하여 데이터가 더 잘 보이도록 설정합니다.<br/>
+         <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/grafana_dashboard_setting_4.png" alt="grafana_dashboard_setting_5"/><br/>
+   5. **패널 저장 및 반복**
+       - 설정이 완료된 패널은 저장하고, 다른 데이터를 시각화하려면 새 패널을 추가하여 쿼리를 입력하는 과정을 반복합니다.
+       - 이 과정을 통해 Grafana에서 원하는 Kubernetes 메트릭을 시각화할 수 있습니다. 쿼리와 시각화 형식은 필요에 맞게 커스터마이징할 수 있으며, 한 번 설정하면 대시보드에서 실시간 모니터링이 가능합니다.
 <br/><br/>
 
 ### 2-4 알람 설정하기
-모니터링은 문제가 발생했을 때 빠르게 대응하는 것이 목적이므로, 특정 상황에서 알람을 설정하는 것이 좋습니다. 예를 들어 CPU 사용량이 80% 이상이거나 Pod이 재시작될 때 알람이 울리도록 설정할 수 있습니다.
+모니터링은 문제가 발생했을 때 빠르게 대응하는 것이 목적이므로, 특정 상황에서 알람을 설정하는 것이 좋습니다.<br/>
+예를 들어 CPU 사용량이 80% 이상이거나 Pod이 재시작될 때 알람이 울리도록 설정할 수 있습니다.
 
 1. **Prometheus Alertmanager 설정**
     - Prometheus Alertmanager를 통해 특정 조건이 충족되면 알림을 보내도록 설정합니다.
     - 예를 들어, 특정 리소스 사용률이 80%를 초과하는 경우 이메일 또는 Slack을 통해 알림을 받을 수 있습니다.
 2. **Grafana Alert 설정**
     - Grafana에서도 알림 조건을 설정할 수 있습니다. 특정 대시보드에서 설정한 지표가 일정 임계값을 넘으면 알림을 받도록 설정할 수 있습니다.
-      <br/><br/>
 
 이와 같은 모니터링 과정을 통해 Kubernetes 클러스터와 애플리케이션 상태를 실시간으로 점검할 수 있습니다.<br/>
-`kubectl top` 명령어로 간단한 모니터링을 수행하고, Prometheus 및 Grafana와 같은 도구로 상세 모니터링 및 시각화를 진행하여 클러스터 상태를 지속적으로 확인하는 것이 좋습니다.
+개인적으로는 위처럼 알림을 설정하시더라도 항상 모니터링 도구를 활용해 눈으로 확인하시는 습관을 들이시는 것이 큰 문제로 이어질 수 있는 경우의 수를 줄이는 길이라 생각됩니다.<br/>
 <br/><br/><br/><br/>
 
 ---
