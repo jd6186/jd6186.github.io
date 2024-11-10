@@ -209,7 +209,7 @@ spec:
 쿠버네티스 공식 홈페이지를 방문하면 이런 파드들에 대한 라이프사이클 관리 문서를 확인할 수 있습니다.<br/>
 쿠버네티스에서 파드(Pod)는 컨테이너를 관리하는 기본 단위로, 각 파드는 정의된 라이프사이클을 따릅니다.
 
-<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/pod_lifecycle.png" alt="kubernetes pod lifecycle" width=1100/><br/>
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/pod_lifecycle.png" alt="kubernetes pod lifecycle" width=700/><br/>
 [출처: 쿠버네티스 공식 문서]
 
 **[파드의 라이프사이클 단계]**<br/>
