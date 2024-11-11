@@ -9,6 +9,7 @@ tags: [Kubernetes, DevOps]
 이번 글에서는 Kubernetes가 무엇인지 냄새를 맡아보는 시간입니다. 쿠버네티스와 도커를 통해 애플리케이션을 배포하고 관리하는 과정을 다루고자 합니다. <br/>
 처음 Kubernetes를 설치하고 클러스터를 설정하는 단계부터 배포, 모니터링, 스케일링, 업데이트, 롤백, 그리고 로깅까지 실무에서 꼭 필요한 핵심 기능들을 자세히 설명해보겠습니다.<br/>
 Kubernetes를 처음 사용하는 분들이나 실무에서 자주 마주치는 문제를 해결하고자 하는 분들에게 유용한 참고 자료가 됐으면 좋겠습니다.<br/>
+아 그리고 명령어들이 계속 중복해서 등장하는데, 계속 치시면서 같이 따라오시다보면, 어떤 명령어가 어떤 기능을 하는 구나~ 하는 감을 익히도록 일부러 중복되게 설명 적어두었습니다!
 
 아마... Kafka 글에 이어 분량 조절 실패할 것 같은 글이지만, 목차라도 잘 구분해서 적어보겠습니다 ㅎㅎ<br/>
 (급하신 분들은 [Kubernetes 클러스터에 배포 및 모니터링 방법](#kubernetes-클러스터에-배포-및-모니터링-방법) 부터 보시면 될 것 같아요.)
@@ -33,7 +34,8 @@ Kubernetes를 처음 사용하는 분들이나 실무에서 자주 마주치는 
      4. [Kubernetes 리소스 파일로 설정 적용하기](#4-kubernetes-리소스-파일로-설정-적용하기)
         - [파일 구조 예시](#4-1-파일-구조-예시)
         - [파일 내용](#4-2-파일-내용)
-        - [파일 적용 방법](#4-3-파일-적용-방법)
+        - [Cluster 생성](#4-3-cluster-생성)
+        - [파일 적용 방법](#4-4-파일-적용-방법)
 2. [Kubernetes 클러스터에 배포 및 모니터링 방법](#kubernetes-클러스터에-배포-및-모니터링-방법)
    - [위 설정 파일 기반으로 Kubernetes 클러스터에 배포하기](#1-위-설정-파일-기반으로-kubernetes-클러스터에-배포하기)
      1. [클러스터 초기 준비사항](#1-1-클러스터-초기-준비사항)
@@ -57,7 +59,7 @@ Kubernetes를 처음 사용하는 분들이나 실무에서 자주 마주치는 
      1. [설정 파일을 통한 Deployment 업데이트](#4-1-설정-파일을-통한-deployment-업데이트)
      2. [`kubectl set` 명령어로 특정 설정 업데이트하기](#4-2-kubectl-set-명령어로-특정-설정-업데이트하기)
      3. [Rolling Update 확인하기](#4-3-rolling-update-확인하기)
-     4. [환경 변수를 통한 설정 변경](#4-4-환경-변수를-통한-설정-변경)
+     4. [환경 변수 설정 변경 시 적용방법](#4-4-환경-변수-설정-변경-시-적용방법)
      5. [업데이트 기록 관리 및 롤백 준비](#4-5-업데이트-기록-관리-및-롤백-준비)
    - [Kubernetes 클러스터 롤링 업데이트하기](#5-kubernetes-클러스터-롤링-업데이트하기)
      1. [롤링 업데이트의 기본 원리](#5-1-롤링-업데이트의-기본-원리)
@@ -381,9 +383,39 @@ spec:
 
 ### 2. Kubernetes Service 리소스 정의하기(Service.yaml)
 Service 리소스는 Deployment 리소스로 생성된 Pod에 대한 로드 밸런싱을 제공합니다.<br/>
-Pod에 대한 로드 밸런싱을 위해 **ClusterIP** 타입을 사용하며, **NodePort** 타입을 사용할 수도 있습니다.<br/>
+Pod에 대한 로드 밸런싱을 위해 **ClusterIP** 타입을 사용하며, **NodePort**, **LoadBalancer** 타입도 사용 가능합니다.<br/>
 
-**[예시 - ClusterIP 타입]**<br/>
+**[예시1 - ClusterIP 타입]**<br/>
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-service
+spec:
+  selector:
+    app: fastapi-app
+  ports:
+    - protocol: TCP
+      port: 8000        # 서비스 포트
+      targetPort: 8000  # FastAPI 컨테이너 내부 포트
+  type: ClusterIP
+```
+
+ClusterIP 타입은 클러스터 내부 통신을 위해 사용되며 외부에서 직접 접근할 수 없습니다. 외부 접근이 필요할 경우 kubectl port-forward 명령어를 사용하여 로컬 호스트의 포트와 서비스 포트를 연결할 수 있습니다.<br/>
+예를 들어, 로컬 호스트의 포트 37000을 FastAPI 서비스의 포트 8000과 연결하려면 다음과 같이 실행합니다<br/>
+
+```bash
+kubectl port-forward service/fastapi-service 37000:8000
+```
+
+이제 http://localhost:37000으로 접근하여 클러스터 내부의 FastAPI 서비스에 연결할 수 있습니다.<br/>
+(로컬에서 테스 하실 때는 이 방식이 가장 편합니다~)
+
+<br/><br/>
+
+**[예시2 - NodePort 타입]**<br/>
+NodePort 타입은 클러스터 외부에서 노드의 IP 주소와 고정된 포트를 통해 서비스에 접근할 수 있도록 합니다. 이 타입을 사용하면 클러스터 외부에서 특정 포트를 통해 서비스에 접근할 수 있습니다.
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -395,9 +427,56 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8000  # FastAPI 컨테이너 내부 포트
-  type: ClusterIP
+      targetPort: 8000
+      nodePort: 30007  # NodePort 포트 설정
+  type: NodePort
 ```
+
+위 예시에서는 포트 30007이 NodePort로 설정되었습니다. 이제 노드의 IP 주소와 포트 30007을 통해 외부에서 FastAPI 서비스에 접근할 수 있습니다.<br/> 
+클러스터의 노드 IP 주소가 192.168.1.10이라면 다음 주소를 통해 도커를 통해 배포한 서비스에 접근할 수 있습니다<br/>
+클러스터 안에서는 이제 `http://<해당노드의IP주소>:30007`를 통해 접근이 가능해집니다.
+
+**주의**: 노드의 IP 주소는 클러스터 환경에 따라 다르므로, 각 노드의 실제 IP를 확인해야 합니다.<br/>
+아래 명령어를 입력하면 **INTERNAL-IP**가 나옵니다. 해당 IP 주소를 통해 노드에 접근할 수 있습니다.<br/>
+```shell
+# 노드IP 주소 확인 방법
+kubectl get nodes -o wide
+```
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/node_search.png" alt="노드 IP 주소 확인 이미지"/>
+
+<br/><br/>
+
+
+**[예시3 - LoadBalancer 타입]**<br/>
+LoadBalancer 타입은 클라우드 환경에서 외부 로드 밸런서를 자동으로 생성하여 서비스에 트래픽을 전달합니다. 이를 통해 클러스터 외부에서 쉽게 접근할 수 있도록 외부 IP 주소를 할당받습니다.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-service
+spec:
+  selector:
+    app: fastapi-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
+
+```
+
+이 설정을 사용하면 클라우드 프로바이더(AWS, GCP, Azure 등)가 외부 IP 주소를 할당해 줍니다.<br/>
+할당된 IP 주소는 `kubectl get service fastapi-service` 명령어로 확인할 수 있으며, 해당 IP 주소를 통해 외부에서 FastAPI 서비스에 접근 가능합니다.<br/>
+예를 들어, 할당된 외부 IP가 `34.120.0.1`이라면, 아래와 같은 주소로 서비스에 접근할 수 있습니다:
+
+```plaintext
+http://34.120.0.1:80
+```
+
+**참고**: 로컬 클러스터 환경에서는 LoadBalancer 타입으로 외부 IP가 할당되지 않을 수 있으며, 이 경우 MetalLB와 같은 LoadBalancer Controller를 설정하여 외부 접근을 지원할 수 있습니다.
+
 <br/><br/>
 
 
@@ -454,10 +533,12 @@ spec:
       labels:
         app: fastapi-app
     spec:
+      nodeSelector:
+        role: worker                    # worker라는 라벨을 가진 노드에 배포 > 자세한건 클러스터 생성 파트에 적어두었습니다.
       containers:
         - name: fastapi-app
           image: my-fastapi-app:latest  # 로컬에서 빌드한 이미지 사용
-          imagePullPolicy: Never        # 이미지를 당겨오지 않고 로컬 이미지를 사용
+          imagePullPolicy: Never        # 도커허브에서 이미지를 당겨오지 않고 로컬 이미지를 사용
           resources:
             requests:          # 요청한 최소 리소스
               memory: "512Mi"  # 최소 512Mb 메모리 요청
@@ -469,7 +550,7 @@ spec:
             - containerPort: 8000
 ```
 
-**[`service.yaml` (Service 설정 파일)]**<br/>
+**[`service.yaml` (Service 설정 파일 > 추후 Service 파트에서 다양한 종류를 다룰 것입니다.)]**<br/>
 ```yaml
 apiVersion: v1
 kind: Service
@@ -516,15 +597,41 @@ spec:
         averageUtilization: 50  # Memory 사용량 50% 이상 시 스케일 아웃
 ```
 
-#### 4-3. 파일 적용 방법
-아래 kubectl 명령어를 사용하여 각각 적용할 수 있습니다.<br/>
+#### 4-3. Cluster 생성
+kind를 사용하여 클러스터를 커스터마이징하고 싶다면, 다음과 같이 k8s 디렉토리에 kind-config.yaml 파일을 작성하고, 이를 통해 클러스터를 생성할 수 있습니다.<br/>
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+```
+
+위 설정에서는 컨트롤 플레인 노드 1개와 워커 노드 2개가 추가됩니다.<br/>
+클러스터 생성을 위해 위에서 생성한 설정 파일을 이용해 클러스터를 생성하려면 다음 명령어를 실행하세요.
+
 ```bash
 # Docker Desktop을 사용하는 경우
 brew install kind
 
-# Kubernetes Cluster 생성
-kind create cluster --name my-cluster
+# kind 클러스터 생성
+kind create cluster --name my-cluster --config k8s/kind-config.yaml
 
+# 생성여부 확인
+kubectl get nodes -o wide
+
+# Deployment에서 사용할 노드에 라벨을 추가합니다. > 이 라벨을 보고 배포가 진행됩니다.
+kubectl label nodes my-cluster-worker role=worker
+kubectl label nodes my-cluster-worker2 role=worker
+```
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/create_cluster.png" alt="kind 클러스터 생성 이미지"/>
+
+#### 4-4. 파일 적용 방법
+아래 kubectl 명령어를 사용하여 각각 적용할 수 있습니다.<br/>
+```bash
 # Deployment, Service, HPA 리소스 파일 적용
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
@@ -574,7 +681,7 @@ Kubernetes에 애플리케이션을 배포하기 전 준비가 필요합니다. 
    아래 명령어를 활용해 클러스터 생성
     ```bash
     # 클러스터 생성
-    kind create cluster --name my-cluster
+    kind create cluster --name my-cluster  --config k8s/kind-config.yaml
     # 추후 문제가 있을 시 삭제 방법
     kind delete cluster --name my-cluster
    
@@ -682,7 +789,7 @@ kind load docker-image <your-app>:latest --name <cluster-name>
 kind load docker-image my-fastapi-app:latest --name my-cluster
 
 # 해당 이미지가 로드 되었는지 체크
-kubectl kubectl get deployments
+kubectl get deployments
 ```
 
 <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/docker_image_load.png" alt="docker_image_load"/><br/>
@@ -939,6 +1046,9 @@ Kubernetes에서는 간단한 명령어로 Pod 개수를 수동으로 조정할 
     ```bash
     kubectl get deployment fastapi-app
     ```
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/manual_scaling.png" alt="manual_scaling"/><br/>
+
 <br/><br/>
 
 ### 3-2 자동 스케일링 (Horizontal Pod Autoscaler)
@@ -948,39 +1058,51 @@ Kubernetes에서는 간단한 명령어로 Pod 개수를 수동으로 조정할 
     - `minReplicas`: 최소로 유지할 Pod 수를 설정합니다.
     - `maxReplicas`: 최대 Pod 수를 설정해 무한 확장을 방지합니다.
     - `metrics`: 스케일링 기준을 정의하며, CPU 및 메모리 사용률을 동시에 설정할 수 있습니다. 예를 들어, CPU 또는 메모리 사용률이 50%를 초과하면 스케일 아웃이 발생합니다.<br/>
-    ```yaml
-    apiVersion: autoscaling/v2
-    kind: HorizontalPodAutoscaler
-    metadata:
-      name: fastapi-app-hpa
-    spec:
-      scaleTargetRef:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: fastapi-app
-      minReplicas: 1
-      maxReplicas: 10
-      metrics:
-      - type: Resource
-        resource:
-          name: cpu
-          target:
-            type: Utilization
-            averageUtilization: 50
-      - type: Resource
-        resource:
-          name: memory
-          target:
-            type: Utilization
-            averageUtilization: 50
-    
-    ```
+        ```yaml
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        metadata:
+          name: fastapi-app-hpa
+        spec:
+          scaleTargetRef:
+            apiVersion: apps/v1
+            kind: Deployment
+            name: fastapi-app
+          minReplicas: 1
+          maxReplicas: 5
+          behavior:
+            scaleDown:
+              stabilizationWindowSeconds: 300  # 5분 동안 CPU/Memory가 50% 이하로 유지되어야 스케일 인
+          metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 50  # CPU 사용량 50% 이상 시 스케일 아웃
+          - type: Resource
+            resource:
+              name: memory
+              target:
+                type: Utilization
+                averageUtilization: 50  # Memory 사용량 50% 이상 시 스케일 아웃
+        ```
 2. **HPA 적용**`kubectl apply -f k8s/hpa.yaml` 명령어로 HPA 설정을 적용합니다.
 3. **HPA 동작 확인**<br/>
    `TARGETS` 열을 통해 설정된 CPU 및 메모리 사용률이 임계값에 도달했는지 확인할 수 있습니다. 임계값을 초과할 경우 HPA는 자동으로 스케일 아웃을 시작하며, 반대로 사용률이 낮아지면 스케일 인을 실행합니다.<br/>
     ```bash
+    # 개괄적인 내용 확인
     kubectl get hpa
+   
+    # 상세한 내용 확인
+    kubectl describe hpa fastapi-app-hpa
     ```
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/auto_scaling_1.png" alt="auto_scaling_1"/><br/>
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/auto_scaling_2.png" alt="auto_scaling_2"/><br/>
+상세 내역을 살펴보면 더 다양한 내용을 확인할 수 있습니다.
+
 <br/><br/>
 
 ### 3-3 클러스터 노드 스케일링 (Cluster Autoscaler)
@@ -1025,7 +1147,7 @@ Kubernetes에서 애플리케이션을 업데이트하는 가장 일반적인 �
     ```
 2. **변경 사항 적용**<br/>
    수정된 설정 파일을 클러스터에 적용합니다.<br/>
-   `kubectl apply` 명령어는 현재 설정된 리소스와 비교하여 변경 사항이 있는 부분만 적용하기 때문에, 클러스터에 무중단으로 업데이트를 적용할 수 있습니다.<br/>
+   `kubectl apply` 명령어는 현재 설정된 리소스와 비교하여 변경 사항이 있는 부분만 적용해 롤링배포를 기본으로 하기 때문에, 클러스터에 무중단으로 업데이트를 적용할 수 있습니다.(롤링 업데이트는 아래에서 설명드릴게요~)<br/>
     ```bash
     kubectl apply -f k8s/deployment.yaml
     ```
@@ -1046,8 +1168,9 @@ Kubernetes에서 애플리케이션을 업데이트하는 가장 일반적인 �
 <br/><br/>
 
 ### 4-3 Rolling Update 확인하기
-Kubernetes의 `Rolling Update` 방식은 기존 Pod을 점진적으로 교체하여 무중단 배포를 가능하게 합니다.<br/>
-새 버전의 Pod이 준비 상태에 도달하면 기존 Pod을 순차적으로 종료하고 새 Pod로 교체합니다. 이로 인해 서비스 중단 없이 업데이트가 진행됩니다.
+Kubernetes의 `Rolling Update` 방식은 기존 Pod를 내리고 나서 다시 올리는 방식이 아니라, 새롭게 하나를 생성 후 정상 동작시 **교체하는 방식**으로 배포가 진행되는 것을 의미한다.
+교체 시 기존 Pod는 제거되며, 새롭게 올라간 Pod가 기존 역할을 대신한다. 이를 점진적으로 교체한다고 하며, 이 때문에 서비스 중단없이 **무중단 배포**가 가능한 것입니다.<br/>
+AWS ECS에서는 이를 ECS Blue/Green 등의 서비스로 지원하고 있습니다. 그럼 이제 아래에서 롤링 업데이트를 하는 방법에 대해 알아볼게요 ^^
 
 1. **업데이트 진행 상태 확인**<br/>
    업데이트 중인 Deployment의 상태를 다음 명령어로 확인할 수 있습니다.<br/>
@@ -1058,12 +1181,14 @@ Kubernetes의 `Rolling Update` 방식은 기존 Pod을 점진적으로 교체하
 2. **업데이트 완료 확인**<br/>
    업데이트가 완료되면, `kubectl get pods` 명령어로 모든 Pod이 새 버전으로 교체되었는지 확인합니다.<br/>
    새로운 Pod이 `Running` 상태로 변경되었는지, 그리고 `READY` 상태가 모두 충족되었는지 확인하여 업데이트가 성공적으로 완료되었는지 검토합니다.
+
+자세한 내용은 아래 [Kubernetes 클러스터 롤링 업데이트하기](#5-kubernetes-클러스터-롤링-업데이트하기)에서 다루도록 하겠습니다.
 <br/><br/>
 
-### 4-4 환경 변수를 통한 설정 변경
+### 4-4 환경 변수 설정 변경 시 적용방법
 Kubernetes Deployment에서 특정 환경 변수만 업데이트할 필요가 있을 때는 설정 파일을 통해 환경 변수를 추가하거나 수정하여 무중단 업데이트를 진행할 수 있습니다.
 
-1. **환경 변수 추가**<br/>
+1. **환경 변수 추가 예시**<br/>
    `deployment.yaml` 파일에 새로운 환경 변수를 추가합니다.<br/>
     ```yaml
     env:
@@ -1091,6 +1216,7 @@ Kubernetes Deployment에서 특정 환경 변수만 업데이트할 필요가 �
 1. **업데이트 기록 확인**<br/>
    다음 명령어로 Deployment의 업데이트 기록을 확인할 수 있습니다.<br/>
     ```bash
+    # kubectl rollout history deployment/<deployment-name>
     kubectl rollout history deployment/fastapi-app
     ```
 2. **이전 버전으로 롤백**<br/>
@@ -1146,6 +1272,47 @@ strategy:
     ```bash
     kubectl rollout status deployment/fastapi-app
     ```
+4. **스케일 아웃된 상태에서 롤링 업데이트 시 진행과정 확인**<br/>
+   스케일 아웃된 상태에서 롤링 업데이트 진행 과정을 확인하려면 kubectl get pods와 kubectl describe pod 명령어를 조합해 사용하여 어떤 파드가 내려가고, 올라왔고, 교체되었는지 확인할 수 있습니다. 다음 단계를 따라 확인할 수 있습니다.
+
+   - **Pod 목록 및 상태 확인**<br/>
+     kubectl get pods -w 명령어를 사용하여 실시간으로 파드의 상태 변화를 모니터링합니다. 이 명령어는 새로운 파드가 생성되고, 이전 버전의 파드가 종료되는 과정을 실시간으로 보여줍니다.
+
+      ```bash
+      kubectl get pods -w
+      ```
+     
+   - **파드 상세 정보 확인**<br/>
+     kubectl describe pod <pod-name> 명령어를 사용하여 특정 파드의 이벤트 로그를 확인합니다. 이를 통해 해당 파드가 어떤 이유로 종료되었고, 새롭게 생성된 파드가 정상적으로 실행 중인지 여부를 확인할 수 있습니다.
+
+      ```bash
+      kubectl describe pod <pod-name>
+      ```
+
+   - **롤링 업데이트 히스토리 확인**<br/>
+     kubectl rollout history deployment <deployment-name> 명령어를 사용하면 롤링 업데이트의 히스토리와 각 버전의 상태를 확인할 수 있습니다.
+
+      ```bash
+      kubectl rollout history deployment fastapi-app
+      ```
+
+   - **이전 버전과의 차이점 확인**<br/>
+     kubectl rollout status와 kubectl get replicaset 명령어를 사용하여 각 ReplicaSet의 상태를 확인합니다. 이를 통해 현재와 이전 버전의 파드가 동시에 존재하는지, 각각의 ReplicaSet이 몇 개의 파드를 유지하는지 확인할 수 있습니다.
+
+      ```bash
+      kubectl rollout status deployment/fastapi-app
+      kubectl get replicaset
+      ```
+
+   - **Pod 이벤트 실시간 로그 확인**<br/>
+     kubectl logs -f <pod-name> 명령어를 사용해 교체 중인 파드의 로그를 실시간으로 확인할 수 있습니다. 이를 통해 파드가 정상적으로 준비되고 있는지 실시간 상태를 모니터링할 수 있습니다.
+
+      ```bash
+      kubectl logs -f <pod-name>
+      ```
+
+이러한 방법들을 통해 롤링 업데이트 과정에서 발생하는 Pod의 상태 변화를 효과적으로 모니터링하고 분석할 수 있습니다.
+
 <br/><br/>
 
 ### 5-4 롤링 업데이트 중 문제 해결
