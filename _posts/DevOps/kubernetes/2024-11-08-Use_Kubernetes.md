@@ -788,6 +788,12 @@ kind load docker-image <your-app>:latest --name <cluster-name>
 # 로컬 Docker 이미지를 kind로 생성한 클러스터에 로딩 시키는 코드
 kind load docker-image my-fastapi-app:latest --name my-cluster
 
+# 이미지 로드 확인
+kubectl get pods
+
+# 수정된 이미지에 맞춰 Deployment를 다시 적용
+kubectl apply -f k8s/deployment.yaml
+
 # 해당 이미지가 로드 되었는지 체크
 kubectl get deployments
 ```
