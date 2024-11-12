@@ -1093,14 +1093,41 @@ Kubernetes에서는 간단한 명령어로 Pod 개수를 수동으로 조정할 
                 type: Utilization
                 averageUtilization: 50  # Memory 사용량 50% 이상 시 스케일 아웃
         ```
-2. **HPA 적용**`kubectl apply -f k8s/hpa.yaml` 명령어로 HPA 설정을 적용합니다.
-3. **HPA 동작 확인**<br/>
-   `TARGETS` 열을 통해 설정된 CPU 및 메모리 사용률이 임계값에 도달했는지 확인할 수 있습니다. 임계값을 초과할 경우 HPA는 자동으로 스케일 아웃을 시작하며, 반대로 사용률이 낮아지면 스케일 인을 실행합니다.<br/>
+2. **HPA 적용**`kubectl apply -f k8s/hpa.yaml` 명령어로 HPA 설정을 적용합니다.<br/>
     ```bash
+   
+    # HPA 설정 적용
+    kubectl apply -f k8s/hpa.yaml
+   
     # 개괄적인 내용 확인
     kubectl get hpa
    
     # 상세한 내용 확인
+    kubectl describe hpa fastapi-app-hpa
+    ```
+3. **HPA 동작 확인**<br/>
+   `TARGETS` 열을 통해 설정된 CPU 및 메모리 사용률이 임계값에 도달했는지 확인할 수 있습니다. 임계값을 초과할 경우 HPA는 자동으로 스케일 아웃을 시작하며, 반대로 사용률이 낮아지면 스케일 인을 실행합니다.<br/>
+    ```bash
+    # Metric Server가 정상적으로 동작하는지 확인, 현재 실행 중인 pod 정보들이 unknown이면 Metric Server가 정상적으로 동작하지 않는 것
+    kubectl get hpa
+    # 또는 아래 명령어로 확인
+    kubectl top pods
+   
+    # 모니터링을 위해 Metric Server 설치
+    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+       
+    # deployment 추가(yaml을 이용해 설치한 Metric Server에 --kubelet-insecure-tls 플래그 추가)
+    kubectl apply -f k8s/metrics-server-deployment.yaml
+    # 추후 문제가 있을 시 삭제 방법
+    kubectl delete deployment metrics-server -n kube-system
+      
+    # 명령어를 통해 metric server 정상 실행 확인(이거 로딩되는데 1~2분 걸릴 수 있습니다만, 그 이상 걸리면 뭔가 문제가 있는거니 metric server 및 관련 deployment를 delete하고 다시 설치해주세요)
+    kubectl get deployments -n kube-system 
+   
+    # 개괄적인 내용 확인
+    kubectl get hpa
+   
+    # 상세한 내용 확인 > kubectl describe hpa <hpa-name>
     kubectl describe hpa fastapi-app-hpa
     ```
 
