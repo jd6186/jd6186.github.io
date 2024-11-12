@@ -352,14 +352,16 @@ docker build -t my-fastapi-app:latest .
 Kubernetes에서 각 FastAPI 앱을 배포하려면 **Deployment**와 **Service** 리소스를 정의합니다.<br/>
 Deployment 리소스는 FastAPI 앱을 실행하는 Pod을 관리하고, Service 리소스는 Pod에 대한 로드 밸런싱을 제공합니다.<br/>
 
-**[예시 - 1GB 메모리와 1.0 CPU 코어 설정]**<br/>
+**[예시 - 최대 1GB 메모리와 1.0 CPU 코어 설정]**<br/>
 ```yaml 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fastapi-app
+  labels:
+    app: fastapi-app
 spec:
-  replicas: 3
+  replicas: 1  # 초기 파드 개수
   selector:
     matchLabels:
       app: fastapi-app
@@ -368,16 +370,21 @@ spec:
       labels:
         app: fastapi-app
     spec:
+      nodeSelector:
+        role: worker                    # worker라는 라벨을 가진 노드에 배포 > 자세한건 클러스터 생성 파트에 적어두었습니다.
       containers:
-      - name: fastapi-app
-        image: my-fastapi-app:latest
-        resources:
-          requests:
-            memory: "1Gi"   # 최소 1GB 메모리
-            cpu: "1000m"    # 최소 1.0 CPU 코어
-          limits:
-            memory: "1Gi"   # 최대 1GB 메모리
-            cpu: "1000m"    # 최대 1.0 CPU 코어
+        - name: fastapi-app
+          image: my-fastapi-app:latest  # 로컬에서 빌드한 이미지 사용
+          imagePullPolicy: Never        # 도커허브에서 이미지를 당겨오지 않고 로컬 이미지를 사용
+          resources:
+            requests:          # 요청한 최소 리소스
+              memory: "512Mi"  # 최소 512Mb 메모리 요청
+              cpu: "500m"      # 최소 0.5 CPU 코어 요청
+            limits:            # 최대 사용 가능한 리소스
+              memory: "1Gi"    # 최대 1GB 메모리
+              cpu: "1000m"     # 최대 1.0 CPU 코어
+          ports:
+            - containerPort: 8000
 ```
 <br/><br/><br/><br/>
 
@@ -561,7 +568,7 @@ spec:
     app: fastapi-app
   ports:
     - protocol: TCP
-      port: 80
+      port: 8000        # 서비스 포트
       targetPort: 8000  # FastAPI 컨테이너 내부 포트
   type: ClusterIP
 ```
@@ -604,9 +611,9 @@ kind를 사용하여 클러스터를 커스터마이징하고 싶다면, 다음�
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
-- role: control-plane
-- role: worker
-- role: worker
+  - role: control-plane
+  - role: worker
+  - role: worker
 ```
 
 위 설정에서는 컨트롤 플레인 노드 1개와 워커 노드 2개가 추가됩니다.<br/>
@@ -1064,35 +1071,6 @@ Kubernetes에서는 간단한 명령어로 Pod 개수를 수동으로 조정할 
     - `minReplicas`: 최소로 유지할 Pod 수를 설정합니다.
     - `maxReplicas`: 최대 Pod 수를 설정해 무한 확장을 방지합니다.
     - `metrics`: 스케일링 기준을 정의하며, CPU 및 메모리 사용률을 동시에 설정할 수 있습니다. 예를 들어, CPU 또는 메모리 사용률이 50%를 초과하면 스케일 아웃이 발생합니다.<br/>
-        ```yaml
-        apiVersion: autoscaling/v2
-        kind: HorizontalPodAutoscaler
-        metadata:
-          name: fastapi-app-hpa
-        spec:
-          scaleTargetRef:
-            apiVersion: apps/v1
-            kind: Deployment
-            name: fastapi-app
-          minReplicas: 1
-          maxReplicas: 5
-          behavior:
-            scaleDown:
-              stabilizationWindowSeconds: 300  # 5분 동안 CPU/Memory가 50% 이하로 유지되어야 스케일 인
-          metrics:
-          - type: Resource
-            resource:
-              name: cpu
-              target:
-                type: Utilization
-                averageUtilization: 50  # CPU 사용량 50% 이상 시 스케일 아웃
-          - type: Resource
-            resource:
-              name: memory
-              target:
-                type: Utilization
-                averageUtilization: 50  # Memory 사용량 50% 이상 시 스케일 아웃
-        ```
 2. **HPA 적용**`kubectl apply -f k8s/hpa.yaml` 명령어로 HPA 설정을 적용합니다.<br/>
     ```bash
    
