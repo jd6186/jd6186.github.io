@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[Kubernetes] Kubernetes 설정 및 활용 방법"
+title: "[Kubernetes] Kubernetes 실전 설정 및 활용 방법"
 tags: [Kubernetes, DevOps]
 ---
 
