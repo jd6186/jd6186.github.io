@@ -11,7 +11,7 @@ tags: [BackEnd JAVA]
 오늘은 GraalVM에 대해 알아보도록 하겠습니다.
 GraalVM은 Java, Javascript, Python, Ruby, 등을 지원하는 Virtual Machine입니다.<br/>
 
-https://www.graalvm.org/java/
+[Graalvm 홈페이지](https://www.graalvm.org/java/)<br/>
 <img src="../../../assets/img/2022-07-29-GraalVM/GraalVM.png"  width="700"/>
 
 기존 Java에는 JVM이 존재했습니다. Javac를 통해 컴파일된 Class파일들은 JVM 내 Class Loader를 통해 Class파일들을 JVM 내부에 할당합니다.<br/>
@@ -47,7 +47,7 @@ GraalVM은 Java로 구현된 HotSpot/OpenJDK 기반의 Java VM 및 JDK를 지원
 GraalVM은 컨테이너 환경에 대응하기 위해 Oracle이 새롭게 VM을 개발한 것이라고 이야기가 나오는 것 같습니다.
 
 > 더 자세한 내용은 아래 문서를 참고해보세요 ^^
-> http://www.regist-event.com/oracle/2019/mcd_down/pdf/Day1_Track4/Day1_T4_S1.%20Cloud%20Native%20Java%20GraalVM%20-%20%EA%B9%80%ED%83%9C%EC%99%84%20%EB%B6%80%EC%9E%A5.pdf
+> [문서](http://www.regist-event.com/oracle/2019/mcd_down/pdf/Day1_Track4/Day1_T4_S1.%20Cloud%20Native%20Java%20GraalVM%20-%20%EA%B9%80%ED%83%9C%EC%99%84%20%EB%B6%80%EC%9E%A5.pdf)
 
 ## GraalVM의 장점
 GraalVM의 장점은 크게 3가지입니다.
@@ -69,11 +69,11 @@ GraalVM을 Container에서 활용할 수 있도록 이번엔 Docker를 활용해
 
 - 먼저 개발을 위해 GraalVM, Quarkus 설치<br/>
   Quarkus 공식 문서 참고<br/>
-  > https://quarkus.io/guides/building-native-image
+  > [Quarkus 공식 문서](https://quarkus.io/guides/building-native-image)
   
   <br/>
   Quarkus 공식 문서와 연관된 GraalVM 설치 URL(OS맞게 설치)<br/>
-  > https://github.com/graalvm/graalvm-ce-builds/releases
+  > [Quarkus 공식 문서](https://github.com/graalvm/graalvm-ce-builds/releases)
 
 <br/>
 
@@ -92,7 +92,7 @@ GraalVM을 Container에서 활용할 수 있도록 이번엔 Docker를 활용해
 
 - Quarkus 설치<br/>
   각 OS맞게 설치해 주세요
-  > https://quarkus.io/get-started/
+  > [Quarkus 설치](https://quarkus.io/get-started/)
   저는 Window라 Powershell을 활용하여 설치하였습니다.(혹시 모르니 관리자 권한으로 실행해서 설치해주세요)
 
 <br/>

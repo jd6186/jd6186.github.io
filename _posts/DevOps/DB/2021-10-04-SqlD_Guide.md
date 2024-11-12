@@ -41,7 +41,7 @@ tags: [DevOps DB]
 
 이 때 정답 체크는 아예 하지 않았습니다.(거의 절반은 틀리는 수준이었으므로...)
 
-[정리했던 내용] : https://torpid-handstand-ca9.notion.site/SQLD-98784a936341433cbcf5cc04e2898d35
+[정리했던 내용](https://torpid-handstand-ca9.notion.site/SQLD-98784a936341433cbcf5cc04e2898d35)
 
 (위 내용은 저만 알알 볼 수 있게 막 정리한 것이라 참고만 해주세요~ 블로그로 정리해서 옮길 수 있으면 옮기겠습니다.)
 
