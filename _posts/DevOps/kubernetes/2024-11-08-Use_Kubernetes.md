@@ -777,7 +777,7 @@ Deployment가 준비되면, 이제 Pod을 외부와 연결해줄 **Service** 리
 
 ### 1-6 배포할 이미지 Kind에 로드하기
 **Docker 이미지 로드**: 본인이 빌드한 도커 이미지를 Kind에 로드 후 kubernetes가 인식할 수 있도록 합니다.<br/>
-(**이렇게 안하면 이미지를 찾을 수 없다는 에러가 발생합니다!!**)
+(**로컬에서 Docker build 시에는 변경 시 마다 코드를 실행해 주셔야하며, 이렇게 안하면 이미지를 찾을 수 없다는 에러가 발생합니다!!**)
 
 ```bash
 kind load docker-image <your-app>:latest --name <cluster-name>
@@ -1108,6 +1108,11 @@ Kubernetes에서는 간단한 명령어로 Pod 개수를 수동으로 조정할 
 
 <img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/auto_scaling_2.png" alt="auto_scaling_2"/><br/>
 상세 내역을 살펴보면 더 다양한 내용을 확인할 수 있습니다.
+
+<img src="../../../assets/img/DevOps/kubernetes/2024-11-08-Use_Kubernetes/auto_scaling_3.png" alt="auto_scaling_3"/><br/>
+부하를 줘서 Pod를 스케일링해보면 다음과 같습니다. 위 yaml 파일에서 50%를 기본으로 설정했기 때문에 50% 이하에서는 REPLICAS가 1개, 100%이하에는 2개, 150% 이하에서는 3개, 200%이하에서는 4개로 스케일 아웃되는 방식입니다.<br/>
+그래서 이미지 내 CPU 166%/50%에서는 REPLICAS가 4개로 증가되어 있는 것을 확인할 수 있습니다.<br/> 
+또한, AGE를 보면 17m에서 부하가 50%이하로 내려오고 yaml에서 지정한대로 5분이 지나서 스케일 인이 되었음을 확인할 수 있습니다.
 
 <br/><br/>
 
