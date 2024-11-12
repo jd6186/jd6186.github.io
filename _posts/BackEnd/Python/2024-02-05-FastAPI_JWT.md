@@ -168,5 +168,5 @@ def router_setting(app, master_router):
 이 글에서는 FastAPI와 JWT를 연동하여 사용자 인증을 구현하는 방법을 설명했습니다.<br/>
 JWT 토큰은 사용자 인증, 권한 관리 등 다양한 목적으로 활용될 수 있습니다. 더 많은 정보는 다음 링크를 참조하시기 바랍니다.
 
-FastAPI 공식 문서: https://fastapi.tiangolo.com/ <br/>
-PyJWT 공식 문서: https://pyjwt.readthedocs.io/en/stable/
+[FastAPI 공식 문서](https://fastapi.tiangolo.com/) <br/>
+[PyJWT 공식 문서](https://pyjwt.readthedocs.io/en/stable/)
