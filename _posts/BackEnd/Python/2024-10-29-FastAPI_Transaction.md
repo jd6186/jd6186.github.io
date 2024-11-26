@@ -71,7 +71,8 @@ def create_user_and_place_order(db: Session, user_data, order_data):
 ### 2. Isolation Level 설정 예시
 트랜잭션 격리 수준을 설정하여 트랜잭션 간 데이터 일관성 문제를 제어할 수 있습니다. 
 
-예를 들어, `SERIALIZABLE`로 설정하면 동시에 같은 데이터를 읽거나 쓸 수 없도록 가장 높은 수준의 일관성을 제공합니다.
+예를 들어, `SERIALIZABLE`로 설정하면 동시에 같은 데이터를 읽거나 쓸 수 없도록 가장 높은 수준의 일관성을 제공합니다.<br/>
+(이 부분은 서비스 목적에 맞게 각자 설정하시는 것이라 생각합니다.)
 
 ```python
 from sqlalchemy import create_engine
@@ -191,8 +192,7 @@ def complete_payment(db: Session, payment_id):
 <br/><br/>
 
 ### 1. 예제 시나리오: 결제 API의 복잡한 트랜잭션 처리
-**결제 API 단계:**
-
+**[결제 API 단계]**<br/>
 1. 사용자 포인트 차감
 2. 할인 쿠폰 적용 여부 확인 및 차감
 3. 결제 요청 상태를 "PENDING"으로 설정
