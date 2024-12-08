@@ -13,9 +13,19 @@ Kubernetes에서 도메인별 요청 라우팅 및 특정 노드로 트래픽을
 <br/><br/><br/><br/>
 
 # 목차
+- [Intro](#intro)
+- [Ingress란 무엇인가요?](#ingress란-무엇인가요)
+  1. [구현 전략](#1-구현-전략)
+  2. [설정 단계](#2-설정-단계)
+  3. [테스트](#3-테스트)
+  4. [문서 관리](#4-문서-관리)
+- [복잡한 구조의 ingress yaml 작성](#복잡한-구조의-ingress-yaml-작성)
+  1. [Host 기반 Ingress 리소스 작성](#1-host-기반-ingress-리소스-작성)
+  2. [Ingress 리소스 내 기본 요청 수신 Path설정](#2-ingress-리소스-내-기본-요청-수신-path설정)
+- [Outro](#outro)
 <br/><br/><br/><br/>
 
-## **Ingress란 무엇인가요?**
+# **Ingress란 무엇인가요?**
 Ingress Controller는 일반적으로 로드 밸런서 역할로 Ingress 규칙을 이행합니다.<br/>
 또한, Ingress는 클러스터 외부에서 클러스터 내부의 서비스 로 HTTP 및 HTTPS 경로를 노출합니다.<br/>
 트래픽 라우팅은 Ingress 리소스에 정의된 규칙에 의해 제어됩니다.<br/>
@@ -226,10 +236,11 @@ Kubernetes YAML 파일을 효율적으로 관리하기 위해 아래 방식을 �
     - 브랜치를 사용해 실수로 프로덕션 환경을 손상시키지 않도록 관리하세요.
 
 ---
+<br/><br/><br/><br/>
 
-## 복잡한 구조의 ingress yaml 작성
 
-### **1. Host 기반 Ingress 리소스 작성**
+# 복잡한 구조의 ingress yaml 작성
+## **1. Host 기반 Ingress 리소스 작성**
 
 호스트는 정확한 일치(예: " `foo.bar.com`") 또는 와일드카드(예: " `*.foo.com`")일 수 있습니다. 정확한 일치는 HTTP `host`헤더가 필드와 일치 해야 합니다 `host`. 와일드카드 일치는 HTTP `host`헤더가 와일드카드 규칙의 접미사와 동일해야 합니다.
 
@@ -272,7 +283,7 @@ spec:
 
 ---
 
-### **2. Ingress 리소스 내 기본 요청 수신 Path설정**
+## **2. Ingress 리소스 내 기본 요청 수신 Path설정**
 규칙에 정의된 호스트 없이 Ingress 리소스를 생성하면 이름 기반 가상 호스트가 필요하지 않고도 Ingress 컨트롤러의 IP 주소로 들어오는 모든 웹 트래픽을 매칭할 수 있습니다.<br/>
 예를 들어, 다음 Ingress는 요청된 트래픽 중 Host가 `first.bar.com`, `second.bar.com`인 것들은 그에 맞는 서비스로 라우팅하고, 요청 호스트 헤더가 일치하지 않는 모든 트래픽을 service3로 라우팅 합니다.
 
@@ -315,6 +326,7 @@ spec:
 ```
 
 ---
+<br/><br/><br/><br/>
 
 # Outro
 이상으로 Kubernetes Ingress에 대해 알아보았습니다.<br/>
